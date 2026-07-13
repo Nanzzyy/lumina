@@ -1,0 +1,1 @@
+export { noirTemplate } from './template';
