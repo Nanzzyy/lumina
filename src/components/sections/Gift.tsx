@@ -71,7 +71,7 @@ export function Gift(props: SectionComponentProps) {
               <p className="text-xs uppercase tracking-wider text-[var(--colors-text-muted)] mb-1">No. Rekening</p>
               <div className="flex items-center gap-2">
                 <code className={cn(
-                  'flex-1 text-lg font-bold px-3 py-2',
+                  'flex-1 text-lg font-bold px-3 py-2 break-all',
                   isNoir
                     ? 'text-[var(--colors-primary)] border border-[var(--colors-border)]'
                     : 'text-[var(--colors-primary)] bg-[var(--colors-primary-light)] rounded-[var(--radius-sm)]',

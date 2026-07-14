@@ -1,4 +1,5 @@
 export { Hero } from './Hero';
+export { Cover } from './Cover';
 export { Story } from './Story';
 export { Gallery } from './Gallery';
 export { Timeline } from './Timeline';

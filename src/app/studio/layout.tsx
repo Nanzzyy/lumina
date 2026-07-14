@@ -73,7 +73,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
 
       {/* Main content */}
       <main className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto p-6 sm:p-8">{children}</div>
+        <div className="p-6 sm:p-8">{children}</div>
       </main>
     </div>
   );

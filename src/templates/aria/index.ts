@@ -1,1 +1,0 @@
-export { ariaTemplate } from './template';

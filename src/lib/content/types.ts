@@ -106,12 +106,25 @@ export interface SectionBackground {
 
 /** Decorative ornament config */
 export interface OrnamentConfig {
+  id: string;
   type: 'flower' | 'divider' | 'dots' | 'frame' | 'leaf' | 'swirl' | 'heart' | 'custom';
-  position: 'top' | 'bottom' | 'left' | 'right' | 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  /** Free positioning as percentage of container (0-100). */
+  x?: number;
+  y?: number;
+  rotation?: number;
+  /** Legacy named position — used when x/y are not set. */
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   color?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | number;
   opacity?: number;
   customSvg?: string;
+  /** Entrance / exit animation config. */
+  animation?: {
+    entrance?: 'fadeIn' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scaleIn' | 'rotateIn' | 'bounceIn' | 'none';
+    exit?: 'fadeOut' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scaleOut' | 'rotateOut' | 'bounceOut' | 'none';
+    duration?: number;
+    delay?: number;
+  };
 }
 
 /**

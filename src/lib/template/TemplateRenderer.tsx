@@ -3,13 +3,15 @@
 import type { SectionConfig, TemplateDefinition, AnimationConfig } from './types';
 import type { InvitationContent, SectionBackground } from '@/lib/content/types';
 import { SectionRegistry } from './SectionRegistry';
-import { FloralDecoration } from '@/components/primitives';
+import { FloralDecoration, OrnamentGroup } from '@/components/primitives';
 
 interface TemplateRendererProps {
   template: TemplateDefinition;
   content: InvitationContent;
   /** CSS class for theming scope — passed to wrapper div so ThemeProvider vars target it. */
   scopeClass?: string;
+  /** Suppress built-in ornament rendering (used when OrnamentCanvas handles it). */
+  hideOrnaments?: boolean;
 }
 
 interface SectionRendererProps {
@@ -73,11 +75,12 @@ export function TemplateRenderer({
   template,
   content,
   scopeClass,
+  hideOrnaments,
 }: TemplateRendererProps) {
   const sectionBackgrounds = content.sectionBackgrounds || {};
 
   return (
-    <div className={`overflow-x-hidden ${template.layout?.wrapperClass ?? ''} ${scopeClass ?? ''}`}>
+    <div className={`overflow-x-hidden relative ${template.layout?.wrapperClass ?? ''} ${scopeClass ?? ''}`}>
       {template.decorations
         ?.filter((d) => d.anchor === 'global' && d.layer === 'behind')
         .map((d) => {
@@ -143,6 +146,13 @@ export function TemplateRenderer({
           const Component = DecorationRegistry[d.type];
           return Component ? <Component key={d.id} {...d.props} /> : null;
         })}
+
+      {/* Ornaments rendered by OrnamentCanvas overlay when editing, hidden here */}
+      {!hideOrnaments && content.ornaments && content.ornaments.length > 0 && (
+        <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+          <OrnamentGroup ornaments={content.ornaments} />
+        </div>
+      )}
     </div>
   );
 }

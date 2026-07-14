@@ -4,6 +4,7 @@
  */
 import { SectionRegistry, registerTemplate } from '@/lib/template';
 import { Hero } from '@/components/sections/Hero';
+import { Cover } from '@/components/sections/Cover';
 import { Story } from '@/components/sections/Story';
 import { Gallery } from '@/components/sections/Gallery';
 import { Timeline } from '@/components/sections/Timeline';
@@ -14,15 +15,15 @@ import { GuestBook } from '@/components/sections/GuestBook';
 import { Maps } from '@/components/sections/Maps';
 import { Footer } from '@/components/sections/Footer';
 import { CountdownSection } from '@/components/sections/Countdown';
-import { ariaTemplate } from '@/templates/aria';
-import { noirTemplate } from '@/templates/noir';
+import {
+  auroraTemplate, fleurTemplate, lunaTemplate, ivoryTemplate,
+  sakuraTemplate, nordicTemplate, royalTemplate, celesteTemplate,
+  veronaTemplate, noirTemplate,
+} from '@/templates/all-templates';
 
-/**
- * Register all section components.
- * The template engine uses this map to find components by section type.
- */
 export function registerAllSections() {
   SectionRegistry.hero = Hero;
+  SectionRegistry.cover = Cover;
   SectionRegistry.story = Story;
   SectionRegistry.gallery = Gallery;
   SectionRegistry.timeline = Timeline;
@@ -35,18 +36,19 @@ export function registerAllSections() {
   SectionRegistry.countdown = CountdownSection;
 }
 
-/**
- * Register all templates.
- * New templates should be added here.
- */
 export function registerAllTemplates() {
-  registerTemplate(ariaTemplate);
+  registerTemplate(auroraTemplate);
+  registerTemplate(fleurTemplate);
+  registerTemplate(lunaTemplate);
+  registerTemplate(ivoryTemplate);
+  registerTemplate(sakuraTemplate);
+  registerTemplate(nordicTemplate);
+  registerTemplate(royalTemplate);
+  registerTemplate(celesteTemplate);
+  registerTemplate(veronaTemplate);
   registerTemplate(noirTemplate);
 }
 
-/**
- * Initialize all registries.
- */
 export function initializeRegistries() {
   registerAllSections();
   registerAllTemplates();

@@ -5,9 +5,10 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useStudioStore, exportInvitationJSON } from '@/lib/studio/store';
 import { getTemplate, TemplateRenderer } from '@/lib/template';
 import { defaultTheme, ThemeProvider } from '@/lib/theme';
-import type { InvitationContent } from '@/lib/content/types';
+import type { InvitationContent, OrnamentConfig } from '@/lib/content/types';
 import type { DeepPartial, ThemeConfig } from '@/lib/theme/types';
 import { cn } from '@/lib/utils/cn';
+import { OrnamentCanvas, OrnamentPreview } from '@/components/studio/OrnamentCanvas';
 
 type EditorTab = 'content' | 'theme' | 'preview';
 
@@ -333,9 +334,10 @@ function OrnamentEditor({ content, onChange }: { content: InvitationContent; onC
   const ornaments = content.ornaments || [];
 
   const addOrnament = () => {
+    const id = crypto.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2);
     onChange({
       ...content,
-      ornaments: [...ornaments, { type: 'flower' as const, position: 'center' as const, size: 'md' as const, opacity: 0.5 }],
+      ornaments: [...ornaments, { id, type: 'flower' as const, position: 'center' as const, size: 'md' as const, opacity: 0.5 }],
     });
   };
 
@@ -465,6 +467,8 @@ export default function StudioEditorPage() {
   const [themeOverrides, setThemeOverrides] = useState<DeepPartial<ThemeConfig>>({});
   const [saved, setSaved] = useState(true);
   const [showExport, setShowExport] = useState(false);
+  const [device, setDevice] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
+  const [editOrnaments, setEditOrnaments] = useState(false);
 
   useEffect(() => {
     if (invitation) {
@@ -590,7 +594,7 @@ export default function StudioEditorPage() {
             {t.label}
           </button>
         ))}
-      </div>
+      </div>{/* close tab nav */}
 
       {/* Content Tab */}
       {tab === 'content' && (
@@ -686,22 +690,111 @@ export default function StudioEditorPage() {
       {/* Preview Tab */}
       {tab === 'preview' && (
         <div>
-          <p className="text-sm text-zinc-500 mb-6">Live preview of your invitation with the current content and theme.</p>
-          <div className="border border-zinc-200 rounded-xl overflow-hidden">
-            <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
-              <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-              <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-              <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-              <span className="ml-2 text-[10px]">Preview &middot; {template.name}</span>
+          {/* Sticky toolbar */}
+          <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-zinc-200 -mx-6 sm:-mx-8 px-6 sm:px-8 py-3 mb-0 flex items-center justify-between gap-4 shadow-sm">
+            <p className="text-sm text-zinc-500 truncate">Live preview{editOrnaments ? ' — editing ornaments' : ''}</p>
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1 p-1 bg-zinc-100 rounded-lg">
+                {(['mobile', 'tablet', 'desktop'] as const).map((d) => (
+                  <button key={d} onClick={() => setDevice(d)}
+                    className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
+                      device === d ? 'bg-white text-zinc-900 shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700')}>
+                    {d === 'mobile' && (
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
+                    )}
+                    {d === 'tablet' && (
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
+                    )}
+                    {d === 'desktop' && (
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                    )}
+                    {d === 'mobile' ? 'M' : d === 'tablet' ? 'T' : 'D'}
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => setEditOrnaments(!editOrnaments)}
+                className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
+                  editOrnaments ? 'bg-[var(--colors-primary)] text-white shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700 bg-zinc-100')}>
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+                {editOrnaments ? 'Done' : 'Ornaments'}
+              </button>
             </div>
-            <div className="max-h-[80vh] overflow-y-auto bg-white">
-              <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                <TemplateRenderer template={template} content={content} scopeClass="lumina-invitation-scope" />
-              </ThemeProvider>
+          </div>
+          <div className="flex justify-center">
+            <div className={cn(
+              'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
+              device === 'desktop' ? 'w-full' : 'shadow-xl',
+              editOrnaments && 'border-[var(--colors-primary)]/30',
+            )}
+              style={device !== 'desktop' ? { maxWidth: device === 'mobile' ? 375 : 768 } : undefined}
+            >
+              <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
+                <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                <span className="ml-2 text-[10px]">
+                  {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
+                </span>
+              </div>
+              <div className="bg-white" data-lumina-scroll>
+                <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                  <OrnamentCanvas
+                    ornaments={content.ornaments || []}
+                    onChange={(ornaments) => handleChange({ ...content, ornaments })}
+                    readOnly={!editOrnaments}
+                  >
+                    <TemplateRenderer template={template} content={content} scopeClass="lumina-invitation-scope" hideOrnaments />
+                  </OrnamentCanvas>
+                </ThemeProvider>
+              </div>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Floating + button for adding ornaments. Rendered outside the preview frame to avoid overflow clip. */
+function PlusOrnamentButton({ ornaments, onChange }: { ornaments: OrnamentConfig[]; onChange: (o: OrnamentConfig[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const types: OrnamentConfig['type'][] = ['flower', 'heart', 'leaf', 'swirl', 'dots', 'divider', 'frame', 'custom'];
+
+  const add = (type: OrnamentConfig['type']) => {
+    const id = crypto.randomUUID?.() || Date.now().toString(36) + Math.random().toString(36).slice(2);
+    onChange([...ornaments, { id, type, x: 50, y: 50, size: 24, opacity: 0.6 }]);
+    setOpen(false);
+  };
+
+  return (
+    <div className="fixed bottom-6 right-8 z-50" style={{ pointerEvents: 'none' }}>
+      <div style={{ pointerEvents: 'auto' }}>
+        <button onClick={() => setOpen(!open)}
+          className={cn('w-12 h-12 rounded-full shadow-xl flex items-center justify-center transition-all',
+            open ? 'bg-zinc-800 text-white rotate-45' : 'bg-[var(--colors-primary)] text-white')}
+          title="Add ornament">
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+
+        {open && (
+          <div className="absolute bottom-16 right-0 bg-white border border-zinc-200 rounded-xl shadow-xl p-2 w-48 z-40">
+            <div className="grid grid-cols-4 gap-1">
+              {types.map((type) => (
+                <button key={type} onClick={() => add(type)}
+                  className="w-10 h-10 rounded-lg hover:bg-zinc-100 flex items-center justify-center transition-colors" title={`Add ${type}`}>
+                  <OrnamentPreview type={type} size="sm" />
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-100">
+              <span className="text-[10px] text-zinc-400 pl-1">{ornaments.length} placed</span>
+              <button onClick={() => setOpen(false)} className="text-[10px] text-zinc-500 hover:text-zinc-700 px-2 py-0.5 rounded hover:bg-zinc-50">Close</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

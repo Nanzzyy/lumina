@@ -20,23 +20,47 @@ export default function NewInvitationPage() {
     setStep('name');
   };
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!title.trim() || !selectedTemplate) return;
-    const finalSlug = slug.trim() || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString(36);
+    let finalSlug = slug.trim() || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    if (!finalSlug) finalSlug = 'invitation';
+
+    // Ensure unique slug
+    const existingSlugs = new Set(invitations.map(i => i.slug));
+    let uniqueSlug = finalSlug;
+    let counter = 1;
+    while (existingSlugs.has(uniqueSlug)) {
+      uniqueSlug = `${finalSlug}-${counter}`;
+      counter++;
+    }
+    finalSlug = uniqueSlug;
 
     const content = { ...defaultInvitationContent, slug: finalSlug };
     content.couple = { ...content.couple, partner1: 'Partner 1', partner2: 'Partner 2' };
 
-    create({
-      slug: finalSlug,
-      templateId: selectedTemplate,
-      title: title.trim(),
-      content,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    });
-
-    router.push(`/studio/${finalSlug}`);
+    try {
+      await create({
+        slug: finalSlug,
+        templateId: selectedTemplate,
+        title: title.trim(),
+        content,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      router.push(`/studio/${finalSlug}`);
+    } catch (e: any) {
+      // Slug collision — retry with new timestamp
+      finalSlug = `${finalSlug.replace(/-\d+$/, '')}-${Date.now().toString(36)}`;
+      await create({
+        slug: finalSlug,
+        templateId: selectedTemplate,
+        title: title.trim(),
+        content: { ...content, slug: finalSlug },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      router.push(`/studio/${finalSlug}`);
+    }
   };
 
   if (step === 'pick') {

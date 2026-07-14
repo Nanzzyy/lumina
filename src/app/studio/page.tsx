@@ -9,7 +9,7 @@ export default function StudioDashboard() {
   const { invitations, loaded } = useStudioStore();
 
   return (
-    <div>
+    <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold font-[var(--typography-font-heading)] text-zinc-900">Dashboard</h1>
@@ -58,7 +58,7 @@ export default function StudioDashboard() {
                   </div>
 
                   <div className="flex items-center gap-1 text-xs text-zinc-400 mb-4">
-                    <span>{inv.content.couple.partner1} & {inv.content.couple.partner2}</span>
+                    <span>{inv.content?.couple?.partner1 || '?'} & {inv.content?.couple?.partner2 || '?'}</span>
                   </div>
 
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

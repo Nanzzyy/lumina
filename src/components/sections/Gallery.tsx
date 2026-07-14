@@ -1,143 +1,87 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Icon } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
 
-const gradients = [
-  'from-pink-200 to-rose-300',
-  'from-purple-200 to-violet-300',
-  'from-amber-200 to-orange-300',
-  'from-sky-200 to-blue-300',
-  'from-emerald-200 to-teal-300',
-  'from-fuchsia-200 to-pink-300',
-];
+function GalleryImage({ src, alt, onClick, className }: { src: string; alt: string; onClick?: () => void; className?: string }) {
+  const [err, setErr] = useState(false);
+  if (err || !src) return <div className={cn('w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200', className)}><Icon name="camera" size={24} className="text-zinc-300" /></div>;
+  return <img src={src} alt={alt} loading="lazy" onError={() => setErr(true)} onClick={onClick} className={cn('w-full h-full object-cover cursor-pointer transition-transform duration-500 hover:scale-105', className)} />;
+}
 
 export function Gallery(props: SectionComponentProps) {
   const { content, variant } = props;
   const images = content.gallery.images;
+  const layout = content.gallery.layout || 'grid';
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const isNoir = variant === 'noir';
-
   if (images.length === 0) return null;
 
-  return (
-    <Container className="overflow-hidden">
-      <SectionTitle title="Gallery" subtitle="Our special moments" accent />
+  const borderClass = isNoir ? 'border border-[var(--colors-border)]' : 'rounded-lg overflow-hidden';
 
-      {/* Noir: 3-col clean grid, Aria: grid with gaps */}
-      <div className={cn(
-        isNoir
-          ? 'grid grid-cols-2 sm:grid-cols-3 gap-3'
-          : 'grid grid-cols-2 md:grid-cols-3 gap-4',
-      )}>
-        {images.map((_src: string, i: number) => (
-          <motion.button
-            key={i}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            onClick={() => setSelectedIndex(i)}
-            className={cn(
-              'overflow-hidden cursor-pointer group relative',
-              isNoir
-                ? 'aspect-square border border-[var(--colors-border)] hover:border-[var(--colors-primary)] transition-colors'
-                : 'aspect-square rounded-[var(--radius-md)]',
-            )}
-          >
-            <div className={cn(
-              'w-full h-full bg-gradient-to-br flex items-center justify-center transition-transform duration-500 group-hover:scale-105',
-              gradients[i % gradients.length],
-            )}>
-              <div className="text-center">
-                <Icon name="camera" size={24} className="text-white/50 mb-1" />
-                <p className="text-white/30 text-xs">Photo {i + 1}</p>
+  return (
+    <Container>
+      <SectionTitle title="Gallery" subtitle="Momen Spesial" accent />
+
+      {/* Grid */}
+      {layout === 'grid' && (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          {images.map((src, i) => (
+            <motion.button key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+              onClick={() => setSelectedIndex(i)} className={cn('overflow-hidden aspect-square', borderClass)}>
+              <GalleryImage src={src} alt={`Foto ${i + 1}`} />
+            </motion.button>
+          ))}
+        </div>
+      )}
+
+      {/* Masonry */}
+      {layout === 'masonry' && (
+        <div className="columns-2 md:columns-3 gap-3 sm:gap-4">
+          {images.map((src, i) => (
+            <motion.button key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+              onClick={() => setSelectedIndex(i)} className={cn('mb-3 sm:mb-4 w-full overflow-hidden block', borderClass)}>
+              <div className={i % 3 === 0 ? 'aspect-[3/4]' : i % 3 === 1 ? 'aspect-square' : 'aspect-[4/3]'}>
+                <GalleryImage src={src} alt={`Foto ${i + 1}`} />
               </div>
-            </div>
-            {/* Noir overlay on hover */}
-            {isNoir && (
-              <div className="absolute inset-0 bg-[var(--colors-primary)]/0 group-hover:bg-[var(--colors-primary)]/10 transition-colors flex items-center justify-center">
-                <span className="text-white/0 group-hover:text-white/80 text-xs uppercase tracking-wider transition-all duration-300">
-                  View
-                </span>
-              </div>
-            )}
-          </motion.button>
-        ))}
-      </div>
+            </motion.button>
+          ))}
+        </div>
+      )}
+
+      {/* Carousel */}
+      {layout === 'carousel' && (
+        <div className="relative">
+          <div ref={carouselRef} className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-3 -mx-2 px-2 pb-4">
+            {images.map((src, i) => (
+              <motion.button key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+                onClick={() => setSelectedIndex(i)} className="flex-shrink-0 w-[85%] sm:w-[60%] md:w-[45%] snap-center cursor-pointer">
+                <div className="aspect-video overflow-hidden rounded-lg">
+                  <GalleryImage src={src} alt={`Foto ${i + 1}`} />
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Lightbox */}
       <AnimatePresence>
         {selectedIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedIndex(null)}
-            className={cn(
-              'fixed inset-0 z-50 flex items-center justify-center p-4',
-              isNoir ? 'bg-black/95' : 'bg-black/80',
-            )}
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-3xl"
-            >
-              {/* Image */}
-              <div className={cn(
-                'w-full aspect-[4/3] bg-gradient-to-br flex items-center justify-center',
-                gradients[selectedIndex % gradients.length],
-                isNoir ? '' : 'rounded-[var(--radius-lg)]',
-              )}>
-                <div className="text-center">
-                  <Icon name="camera" size={48} className="text-white/40 mx-auto mb-2" />
-                  <p className="text-white/30 text-sm">Photo {selectedIndex + 1}</p>
-                </div>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedIndex(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90">
+            <motion.div onClick={(e) => e.stopPropagation()} className="relative w-full max-w-3xl">
+              <img src={images[selectedIndex]} alt={`Foto ${selectedIndex + 1}`} className="w-full max-h-[80vh] object-contain rounded-lg" />
+              <div className="flex justify-between items-center mt-4">
+                <button onClick={() => setSelectedIndex((p) => (p! - 1 + images.length) % images.length)} className="p-2 text-white/60 hover:text-white"><Icon name="chevron-left" size={24} /></button>
+                <span className="text-white/50 text-sm">{selectedIndex + 1} / {images.length}</span>
+                <button onClick={() => setSelectedIndex((p) => (p! + 1) % images.length)} className="p-2 text-white/60 hover:text-white"><Icon name="chevron-right" size={24} /></button>
               </div>
-
-              {/* Controls */}
-              <div className="flex items-center justify-between mt-4">
-                <button
-                  onClick={() => setSelectedIndex((p) => (p! - 1 + images.length) % images.length)}
-                  className={cn(
-                    'transition-colors',
-                    isNoir ? 'text-[var(--colors-primary)] hover:text-white' : 'text-white/50 hover:text-white',
-                  )}
-                >
-                  <Icon name="chevron-left" size={28} />
-                </button>
-
-                <span className={cn(
-                  'text-sm',
-                  isNoir ? 'text-[var(--colors-text-muted)]' : 'text-white/50',
-                )}>
-                  {selectedIndex + 1} / {images.length}
-                </span>
-
-                <button
-                  onClick={() => setSelectedIndex((p) => (p! + 1) % images.length)}
-                  className={cn(
-                    'transition-colors',
-                    isNoir ? 'text-[var(--colors-primary)] hover:text-white' : 'text-white/50 hover:text-white',
-                  )}
-                >
-                  <Icon name="chevron-right" size={28} />
-                </button>
-              </div>
-
-              {/* Close button */}
-              <button
-                onClick={() => setSelectedIndex(null)}
-                className="absolute -top-12 right-0 text-white/60 hover:text-white transition-colors"
-              >
-                <Icon name="x" size={24} />
-              </button>
+              <button onClick={() => setSelectedIndex(null)} className="absolute -top-10 right-0 text-white/50 hover:text-white"><Icon name="x" size={24} /></button>
             </motion.div>
           </motion.div>
         )}

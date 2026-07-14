@@ -11,6 +11,7 @@ interface IconProps {
   name: IconName;
   className?: string;
   size?: number;
+  style?: React.CSSProperties;
 }
 
 const paths: Record<IconName, string> = {

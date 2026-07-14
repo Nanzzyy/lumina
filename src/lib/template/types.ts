@@ -4,6 +4,7 @@ import type { InvitationContent } from '@/lib/content/types';
 /** Known section types — extend as new sections are added. */
 export type SectionType =
   | 'hero'
+  | 'cover'
   | 'countdown'
   | 'story'
   | 'gallery'

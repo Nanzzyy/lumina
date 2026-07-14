@@ -1,5 +1,6 @@
 'use client';
 
+import { motion, AnimatePresence, type TargetAndTransition } from 'framer-motion';
 import { cn } from '@/lib/utils/cn';
 import type { OrnamentConfig } from '@/lib/content/types';
 
@@ -10,6 +11,7 @@ const ornamentSvgs: Record<string, string> = {
   swirl: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z',
   dots: 'M12 6m-1.5 0a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0M12 12m-1.5 0a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0M12 18m-1.5 0a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0 -3 0',
   divider: 'M3 12h18M3 6h18M3 18h18',
+  frame: 'M5 4h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1zm1 2h12v12H6V6zm1 1h10v10H7V7z',
 };
 
 const positionClasses: Record<string, string> = {
@@ -30,52 +32,116 @@ const sizeMap: Record<string, number> = {
   lg: 32,
 };
 
-/** A single decorative ornament */
-function OrnamentItem({ config }: { config: OrnamentConfig }) {
+const entranceVariants = {
+  fadeIn: { initial: { opacity: 0 } as const, animate: { opacity: 1 } as const },
+  slideUp: { initial: { opacity: 0, y: 30 } as const, animate: { opacity: 1, y: 0 } as const },
+  slideDown: { initial: { opacity: 0, y: -30 } as const, animate: { opacity: 1, y: 0 } as const },
+  slideLeft: { initial: { opacity: 0, x: 30 } as const, animate: { opacity: 1, x: 0 } as const },
+  slideRight: { initial: { opacity: 0, x: -30 } as const, animate: { opacity: 1, x: 0 } as const },
+  scaleIn: { initial: { opacity: 0, scale: 0 } as const, animate: { opacity: 1, scale: 1 } as const },
+  rotateIn: { initial: { opacity: 0, rotate: -180 } as const, animate: { opacity: 1, rotate: 0 } as const },
+  bounceIn: { initial: { opacity: 0, scale: 0.3 } as const, animate: { opacity: 1, scale: 1, transition: { type: 'spring' as const, stiffness: 300 } } as const },
+} as const;
+
+const exitVariants = {
+  fadeOut: { opacity: 0 },
+  slideUp: { opacity: 0, y: -30 },
+  slideDown: { opacity: 0, y: 30 },
+  slideLeft: { opacity: 0, x: -30 },
+  slideRight: { opacity: 0, x: 30 },
+  scaleOut: { opacity: 0, scale: 0 },
+  rotateOut: { opacity: 0, rotate: 180 },
+  bounceOut: { opacity: 0, scale: 0.3 },
+} as const;
+
+function getOrnamentSize(size: OrnamentConfig['size']): number {
+  if (typeof size === 'number') return size;
+  return sizeMap[size || 'md'];
+}
+
+/** A single decorative ornament with optional animation. */
+function OrnamentItem({ config, isCanvas }: { config: OrnamentConfig; isCanvas?: boolean }) {
   const path = ornamentSvgs[config.type] || ornamentSvgs.heart;
-  const size = sizeMap[config.size || 'md'];
+  const rawSize = getOrnamentSize(config.size);
   const opacity = config.opacity ?? 0.5;
   const color = config.color || 'currentColor';
+  const rotation = config.rotation ?? 0;
 
-  if (config.type === 'divider') {
-    return (
-      <div className={cn(positionClasses[config.position] || 'flex justify-center', 'pointer-events-none')}>
-        <svg width={size * 2} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
-          strokeWidth={1} opacity={opacity} className="flex-shrink-0">
-          <path d={path} />
-        </svg>
-      </div>
-    );
-  }
+  // Determine if using free positioning (x/y) or legacy position
+  const hasFreePosition = config.x !== undefined || config.y !== undefined;
 
-  if (config.type === 'custom' && config.customSvg) {
-    return (
-      <div className={cn(positionClasses[config.position] || 'flex justify-center', 'pointer-events-none')}>
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
-          strokeWidth={1.5} opacity={opacity} className="flex-shrink-0">
-          <path d={config.customSvg} />
-        </svg>
-      </div>
-    );
-  }
-
-  return (
-    <div className={cn(positionClasses[config.position] || 'flex justify-center', 'pointer-events-none')}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color}
-        strokeWidth={1.5} opacity={opacity} className="flex-shrink-0">
+  const svg = (
+    <svg
+      width={config.type === 'divider' ? rawSize * 2 : rawSize}
+      height={rawSize}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={config.type === 'divider' ? 1 : 1.5}
+      opacity={opacity}
+      className="flex-shrink-0"
+      style={{ transform: `rotate(${rotation}deg)` }}
+    >
+      {config.type === 'custom' && config.customSvg ? (
+        <path d={config.customSvg} />
+      ) : (
         <path d={path} />
-      </svg>
+      )}
+    </svg>
+  );
+
+  const content = (
+    <div
+      className={cn(
+        'pointer-events-none',
+        !hasFreePosition && (positionClasses[config.position || 'center'] || 'flex justify-center'),
+      )}
+      style={hasFreePosition ? {
+        position: 'absolute',
+        left: `${config.x ?? 50}%`,
+        top: `${config.y ?? 50}%`,
+        transform: `translate(-50%, -50%)`,
+      } : undefined}
+    >
+      {svg}
     </div>
   );
+
+  // Optional animation wrapper
+  const anim = config.animation;
+  const entranceKey = anim?.entrance && anim.entrance !== 'none' ? anim.entrance : null;
+  const exitKey = anim?.exit && anim.exit !== 'none' ? anim.exit : null;
+
+  if (entranceKey || exitKey) {
+    const duration = anim?.duration ?? 0.5;
+    const delay = anim?.delay ?? 0;
+    const variant = entranceKey ? entranceVariants[entranceKey] : null;
+
+    return (
+      <AnimatePresence>
+        <motion.div
+          key={config.id}
+          initial={variant?.initial}
+          animate={variant?.animate}
+          exit={exitKey ? exitVariants[exitKey] : undefined}
+          transition={{ duration, delay }}
+        >
+          {content}
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
+  return content;
 }
 
 /** Renders a list of ornament configs */
-export function OrnamentGroup({ ornaments, className }: { ornaments: OrnamentConfig[]; className?: string }) {
+export function OrnamentGroup({ ornaments, className, isCanvas }: { ornaments: OrnamentConfig[]; className?: string; isCanvas?: boolean }) {
   if (!ornaments || ornaments.length === 0) return null;
   return (
     <div className={cn('relative', className)} aria-hidden>
-      {ornaments.map((ornament, i) => (
-        <OrnamentItem key={i} config={ornament} />
+      {ornaments.map((ornament, idx) => (
+        <OrnamentItem key={ornament.id || idx} config={ornament} isCanvas={isCanvas} />
       ))}
     </div>
   );
