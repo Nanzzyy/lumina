@@ -127,6 +127,10 @@ export interface OrnamentConfig {
   };
 }
 
+export interface HeroContent {
+  subtitle?: string;
+}
+
 /**
  * Complete invitation data.
  * Every field is optional at the top level — the template decides what to render.
@@ -135,6 +139,7 @@ export interface InvitationContent {
   slug: string;
   couple: CoupleContent;
   event: EventContent;
+  hero?: HeroContent;
   story: StoryContent;
   gallery: GalleryContent;
   schedule: ScheduleContent;

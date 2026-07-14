@@ -1,16 +1,16 @@
 'use client';
 
-import type { SectionConfig, TemplateDefinition, AnimationConfig } from './types';
+import type { SectionConfig, AnimationConfig } from './types';
 import type { InvitationContent, SectionBackground } from '@/lib/content/types';
+import type { LayoutDefinition } from '@/lib/layout/types';
 import { SectionRegistry } from './SectionRegistry';
 import { FloralDecoration, OrnamentGroup } from '@/components/primitives';
 
 interface TemplateRendererProps {
-  template: TemplateDefinition;
+  template: { id: string; theme?: Record<string, unknown>; decorations?: { id: string; layer: string; anchor: string | number; type: string; props?: Record<string, unknown>; hiddenMobile?: boolean }[] };
+  layout: LayoutDefinition;
   content: InvitationContent;
-  /** CSS class for theming scope — passed to wrapper div so ThemeProvider vars target it. */
   scopeClass?: string;
-  /** Suppress built-in ornament rendering (used when OrnamentCanvas handles it). */
   hideOrnaments?: boolean;
 }
 
@@ -22,7 +22,6 @@ interface SectionRendererProps {
   background?: SectionBackground;
 }
 
-/** Convert SectionBackground to inline style */
 function backgroundToStyle(bg?: SectionBackground): React.CSSProperties {
   if (!bg) return {};
   const style: React.CSSProperties = {};
@@ -54,11 +53,7 @@ function SectionRenderer({
 }: SectionRendererProps) {
   if (section.hidden) return null;
 
-  const SectionComponent = SectionRegistry[section.type];
-  if (!SectionComponent) {
-    console.warn(`[TemplateRenderer] Unknown section type: "${section.type}"`);
-    return null;
-  }
+  const SectionComponent = SectionRegistry.get(section.type);
 
   return (
     <SectionComponent
@@ -73,6 +68,7 @@ function SectionRenderer({
 
 export function TemplateRenderer({
   template,
+  layout,
   content,
   scopeClass,
   hideOrnaments,
@@ -80,7 +76,7 @@ export function TemplateRenderer({
   const sectionBackgrounds = content.sectionBackgrounds || {};
 
   return (
-    <div className={`overflow-x-hidden relative ${template.layout?.wrapperClass ?? ''} ${scopeClass ?? ''}`}>
+    <div className={`overflow-x-hidden relative ${layout.wrapper?.containerClass ?? ''} ${scopeClass ?? ''}`} style={layout.wrapper?.bgClass ? {} : undefined}>
       {template.decorations
         ?.filter((d) => d.anchor === 'global' && d.layer === 'behind')
         .map((d) => {
@@ -88,7 +84,7 @@ export function TemplateRenderer({
           return Component ? <Component key={d.id} {...d.props} /> : null;
         })}
 
-      {template.sections.map((section, index) => {
+      {layout.sections.map((section, index) => {
         const bg = sectionBackgrounds[section.id];
         const bgStyle = backgroundToStyle(bg);
 
@@ -96,10 +92,8 @@ export function TemplateRenderer({
           <section
             key={section.id}
             id={`section-${section.id}`}
-            className={template.layout?.containerClass ?? ''}
             style={bgStyle}
           >
-            {/* Darken overlay */}
             {bg?.overlay === 'darken' && (
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -110,7 +104,6 @@ export function TemplateRenderer({
               />
             )}
 
-            {/* Blur overlay */}
             {bg?.overlay === 'blur' && (
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -132,7 +125,7 @@ export function TemplateRenderer({
             <SectionRenderer
               section={section}
               content={content}
-              animation={template.animation}
+              animation={layout.animation}
               index={index}
               background={bg}
             />
@@ -147,7 +140,6 @@ export function TemplateRenderer({
           return Component ? <Component key={d.id} {...d.props} /> : null;
         })}
 
-      {/* Ornaments rendered by OrnamentCanvas overlay when editing, hidden here */}
       {!hideOrnaments && content.ornaments && content.ornaments.length > 0 && (
         <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
           <OrnamentGroup ornaments={content.ornaments} />
@@ -157,7 +149,6 @@ export function TemplateRenderer({
   );
 }
 
-/** Decoration component registry — maps type strings to components */
 const DecorationRegistry: Record<string, React.FC<Record<string, unknown>>> = {
   'floral-decoration': FloralDecoration as React.FC<Record<string, unknown>>,
 };

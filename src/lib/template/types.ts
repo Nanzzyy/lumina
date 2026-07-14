@@ -17,11 +17,11 @@ export type SectionType =
   | 'footer';
 
 /**
- * Section configuration within a template.
- * Templates declare which sections exist, in what order, with which variant.
+ * Section configuration within a layout.
+ * Layouts declare which sections exist, in what order, with which variant.
  */
 export interface SectionConfig {
-  /** Unique id within the template */
+  /** Unique id within the layout */
   id: string;
   /** Which section component to render */
   type: SectionType;
@@ -60,29 +60,19 @@ export interface DecorationConfig {
   hiddenMobile?: boolean;
 }
 
-/** Template definition — pure configuration, zero business logic. */
+/** Template definition — pure visual theme (colors, typography, decorations). */
 export interface TemplateDefinition {
   id: string;
   name: string;
   description: string;
   /** Theme overrides applied when this template is active */
   theme?: DeepPartial<ThemeConfig>;
-  /** Ordered section list */
-  sections: SectionConfig[];
-  /** Default animation for sections */
-  animation?: AnimationConfig;
   /** Decorative elements */
   decorations?: DecorationConfig[];
-  /** Layout-level wrapper class overrides */
-  layout?: {
-    bgClass?: string;
-    containerClass?: string;
-    wrapperClass?: string;
-  };
 }
 
 /**
- * Resolved invitation — a template + content merged together.
+ * Resolved invitation — a template + layout + content merged together.
  * This is what the renderer consumes.
  */
 export interface ResolvedInvitation {

@@ -4,13 +4,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useStudioStore, exportInvitationJSON } from '@/lib/studio/store';
 import { getTemplate, TemplateRenderer } from '@/lib/template';
+import { getLayout, getAllLayouts } from '@/lib/layout';
 import { defaultTheme, ThemeProvider } from '@/lib/theme';
 import type { InvitationContent, OrnamentConfig } from '@/lib/content/types';
 import type { DeepPartial, ThemeConfig } from '@/lib/theme/types';
 import { cn } from '@/lib/utils/cn';
 import { OrnamentCanvas, OrnamentPreview } from '@/components/studio/OrnamentCanvas';
 
-type EditorTab = 'content' | 'theme' | 'preview';
+type EditorTab = 'content' | 'theme' | 'layout' | 'preview';
 
 /* ─── Field helper ─── */
 function Field({ label, children, fullWidth }: { label: string; children: React.ReactNode; fullWidth?: boolean }) {
@@ -452,6 +453,84 @@ function ThemePanel({ overrides, onChange }: { overrides: DeepPartial<ThemeConfi
   );
 }
 
+/* ─── Layout Tab ─── */
+function LayoutTab({ invitation, content, layout, onLayoutChange }: {
+  invitation: { templateId: string; layoutId?: string };
+  content: InvitationContent;
+  layout: import('@/lib/layout/types').LayoutDefinition;
+  onLayoutChange: (layoutId: string) => void;
+}) {
+  const [layouts, setLayouts] = useState<{ id: string; name: string; config: any }[]>([]);
+
+  useEffect(() => {
+    fetch('/api/layouts')
+      .then((r) => r.json())
+      .then(setLayouts)
+      .catch(() => {});
+  }, []);
+
+  return (
+    <div className="space-y-6 max-w-lg">
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Current Layout</h2>
+        <div className="bg-white border border-zinc-200 rounded-xl p-6">
+          <select
+            value={invitation.layoutId || 'default'}
+            onChange={(e) => onLayoutChange(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent"
+          >
+            {layouts.map((l) => (
+              <option key={l.id} value={l.id}>{l.name}</option>
+            ))}
+          </select>
+          <p className="text-xs text-zinc-400 mt-2">Switch layouts to change section ordering. Your content is preserved.</p>
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Section Structure</h2>
+        <div className="bg-white border border-zinc-200 rounded-xl divide-y divide-zinc-100">
+          {layout.sections.map((s, i) => (
+            <div key={i} className="px-4 py-3 flex items-center gap-3">
+              <span className="w-6 h-6 rounded-full bg-[var(--colors-primary-light)] text-[var(--colors-primary)] text-xs font-medium flex items-center justify-center flex-shrink-0">
+                {i + 1}
+              </span>
+              <span className="text-sm text-zinc-700 capitalize flex-1">{s.type}</span>
+              {layout.containers[i] && (
+                <span className="text-[10px] text-zinc-400 bg-zinc-100 px-2 py-0.5 rounded-full">
+                  {layout.containers[i].type}
+                </span>
+              )}
+              {s.hidden && (
+                <span className="text-[10px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                  Hidden
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="p-4 bg-zinc-50 rounded-lg">
+        <h3 className="text-sm font-semibold text-zinc-700 mb-2">Want a custom layout?</h3>
+        <p className="text-xs text-zinc-500 mb-3">
+          Create a new layout with your own section arrangement using the layout builder.
+        </p>
+        <a
+          href="/studio/layouts/new"
+          target="_blank"
+          className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)] font-medium inline-flex items-center gap-1"
+        >
+          Open Layout Builder
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Editor Page ─── */
 export default function StudioEditorPage() {
   const params = useParams();
@@ -461,6 +540,7 @@ export default function StudioEditorPage() {
 
   const invitation = useMemo(() => get(slug), [slug, get]);
   const template = useMemo(() => invitation ? getTemplate(invitation.templateId) : null, [invitation]);
+  const layout = useMemo(() => invitation ? getLayout(invitation.layoutId || 'default') : null, [invitation]);
 
   const [tab, setTab] = useState<EditorTab>('content');
   const [content, setContent] = useState<InvitationContent | null>(null);
@@ -524,6 +604,7 @@ export default function StudioEditorPage() {
   const tabs: { id: EditorTab; label: string }[] = [
     { id: 'content', label: 'Content' },
     { id: 'theme', label: 'Theme' },
+    { id: 'layout', label: 'Layout' },
     { id: 'preview', label: 'Preview' },
   ];
 
@@ -535,7 +616,7 @@ export default function StudioEditorPage() {
     } as DeepPartial<ThemeConfig>;
   }, [template?.theme, themeOverrides]);
 
-  if (!invitation || !content || !template) {
+  if (!invitation || !content || !template || !layout) {
     return (
       <div className="text-center py-20">
         <p className="text-zinc-500">Invitation not found.</p>
@@ -687,6 +768,19 @@ export default function StudioEditorPage() {
         </div>
       )}
 
+      {/* Layout Tab */}
+      {tab === 'layout' && (
+        <LayoutTab
+          invitation={invitation}
+          content={content}
+          layout={layout}
+          onLayoutChange={(newLayoutId) => {
+            update(slug, { layoutId: newLayoutId });
+            setSaved(true);
+          }}
+        />
+      )}
+
       {/* Preview Tab */}
       {tab === 'preview' && (
         <div>
@@ -743,7 +837,7 @@ export default function StudioEditorPage() {
                     onChange={(ornaments) => handleChange({ ...content, ornaments })}
                     readOnly={!editOrnaments}
                   >
-                    <TemplateRenderer template={template} content={content} scopeClass="lumina-invitation-scope" hideOrnaments />
+                    <TemplateRenderer template={template} layout={layout} content={content} scopeClass="lumina-invitation-scope" hideOrnaments />
                   </OrnamentCanvas>
                 </ThemeProvider>
               </div>

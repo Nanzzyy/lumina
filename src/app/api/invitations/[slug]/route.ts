@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvitation, updateInvitation, deleteInvitation } from '@/lib/db';
+import { updateInvitationSchema } from '@/lib/validation';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -16,8 +17,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
   const { slug } = await params;
   try {
     const body = await req.json();
-    const { title, templateId, content, themeOverrides, published } = body;
-    const updated = updateInvitation(slug, { title, templateId, content, themeOverrides, published });
+    const parsed = updateInvitationSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 });
+    }
+    const { title, templateId, layoutId, content, themeOverrides, published } = parsed.data;
+    const updated = updateInvitation(slug, { title, templateId, layoutId, content, themeOverrides, published });
     if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(updated);
   } catch {

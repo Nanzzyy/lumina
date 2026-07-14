@@ -21,8 +21,8 @@ export function proxy(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Public GET for invitations data
-  if (pathname.startsWith('/api/invitations') && req.method === 'GET') {
+  // Public GET for invitations, layouts, RSVPs, wishes data
+  if ((pathname.startsWith('/api/invitations') || pathname.startsWith('/api/layouts')) && req.method === 'GET') {
     return NextResponse.next();
   }
 

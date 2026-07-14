@@ -1,8 +1,9 @@
 /**
- * Central registry — wires templates, sections, and content together.
+ * Central registry — wires templates, sections, layouts, and content together.
  * Run once at app startup to register everything.
  */
 import { SectionRegistry, registerTemplate } from '@/lib/template';
+import { registerLayout, syncLayoutsFromDB } from '@/lib/layout';
 import { Hero } from '@/components/sections/Hero';
 import { Cover } from '@/components/sections/Cover';
 import { Story } from '@/components/sections/Story';
@@ -20,20 +21,24 @@ import {
   sakuraTemplate, nordicTemplate, royalTemplate, celesteTemplate,
   veronaTemplate, noirTemplate,
 } from '@/templates/all-templates';
+import {
+  defaultLayout, modernLayout, adatBaliLayout,
+  romanticLayout, minimalLayout,
+} from '@/layouts/built-in';
 
 export function registerAllSections() {
-  SectionRegistry.hero = Hero;
-  SectionRegistry.cover = Cover;
-  SectionRegistry.story = Story;
-  SectionRegistry.gallery = Gallery;
-  SectionRegistry.timeline = Timeline;
-  SectionRegistry.quote = Quote;
-  SectionRegistry.rsvp = RSVP;
-  SectionRegistry.gift = Gift;
-  SectionRegistry.guestbook = GuestBook;
-  SectionRegistry.maps = Maps;
-  SectionRegistry.footer = Footer;
-  SectionRegistry.countdown = CountdownSection;
+  SectionRegistry.register('hero', Hero);
+  SectionRegistry.register('cover', Cover);
+  SectionRegistry.register('story', Story);
+  SectionRegistry.register('gallery', Gallery);
+  SectionRegistry.register('timeline', Timeline);
+  SectionRegistry.register('quote', Quote);
+  SectionRegistry.register('rsvp', RSVP);
+  SectionRegistry.register('gift', Gift);
+  SectionRegistry.register('guestbook', GuestBook);
+  SectionRegistry.register('maps', Maps);
+  SectionRegistry.register('footer', Footer);
+  SectionRegistry.register('countdown', CountdownSection);
 }
 
 export function registerAllTemplates() {
@@ -49,7 +54,18 @@ export function registerAllTemplates() {
   registerTemplate(noirTemplate);
 }
 
+export function registerAllLayouts() {
+  registerLayout(defaultLayout);
+  registerLayout(modernLayout);
+  registerLayout(adatBaliLayout);
+  registerLayout(romanticLayout);
+  registerLayout(minimalLayout);
+}
+
 export function initializeRegistries() {
   registerAllSections();
   registerAllTemplates();
+  registerAllLayouts();
+  // Sync any custom layouts from DB into memory registry
+  syncLayoutsFromDB().catch(() => {});
 }

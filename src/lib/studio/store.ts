@@ -7,6 +7,7 @@ import type { DeepPartial, ThemeConfig } from '@/lib/theme/types';
 export interface StudioInvitation {
   slug: string;
   templateId: string;
+  layoutId?: string;
   title: string;
   content: InvitationContent;
   themeOverrides?: DeepPartial<ThemeConfig>;
@@ -58,6 +59,7 @@ export function useStudioStore() {
       setInvitations(list.map((i: any) => ({
         slug: i.slug,
         templateId: i.templateId,
+        layoutId: i.layoutId,
         title: i.title,
         content: i.content,
         themeOverrides: i.themeOverrides,
@@ -76,6 +78,7 @@ export function useStudioStore() {
       slug: invitation.slug,
       title: invitation.title,
       templateId: invitation.templateId,
+      layoutId: invitation.layoutId || 'default',
       content: invitation.content,
       themeOverrides: invitation.themeOverrides,
     });
@@ -86,6 +89,7 @@ export function useStudioStore() {
     await apiPut(`/api/invitations/${slug}`, {
       title: updates.title,
       templateId: updates.templateId,
+      layoutId: updates.layoutId,
       content: updates.content,
       themeOverrides: updates.themeOverrides,
     });

@@ -20,7 +20,6 @@ interface TemplateConfig {
     border: string;
     'border-light': string;
   };
-  animation: TemplateDefinition['animation'];
   decorations?: TemplateDefinition['decorations'];
 }
 
@@ -37,27 +36,9 @@ function makeTemplate(c: TemplateConfig): TemplateDefinition {
         'font-accent': '"Playfair Display", Georgia, serif',
       },
     },
-    sections: [
-      { id: 'cover', type: 'cover', variant: c.id },
-      { id: 'hero', type: 'hero', variant: c.id },
-      { id: 'quote', type: 'quote', variant: c.id },
-      { id: 'countdown', type: 'countdown', variant: c.id },
-      { id: 'story', type: 'story', variant: c.id },
-      { id: 'gallery', type: 'gallery', variant: 'grid' },
-      { id: 'timeline', type: 'timeline', variant: c.id },
-      { id: 'maps', type: 'maps', variant: c.id },
-      { id: 'rsvp', type: 'rsvp', variant: c.id },
-      { id: 'gift', type: 'gift', variant: c.id },
-      { id: 'guestbook', type: 'guestbook', variant: c.id },
-      { id: 'footer', type: 'footer', variant: c.id },
-    ],
     decorations: c.decorations || [
       { id: `${c.id}-bg`, type: 'floral-decoration', layer: 'behind', anchor: 'global', props: { position: 'top-right', color: c.colors.primary, opacity: 0.06 } },
     ],
-    animation: c.animation,
-    layout: {
-      wrapperClass: `bg-[${c.colors.background}] text-[${c.colors.text}]`,
-    },
   };
 }
 
@@ -72,7 +53,6 @@ export const auroraTemplate = makeTemplate({
     text: '#fafaf9', 'text-secondary': '#a8a29e', 'text-muted': '#57534e',
     border: '#292524', 'border-light': '#1c1917',
   },
-  animation: { preset: 'fade-up', duration: 0.8 },
   decorations: [
     { id: 'aurora-gold-top', type: 'floral-decoration', layer: 'behind', anchor: 'global', props: { position: 'top-right', color: '#c9a84c', opacity: 0.08 } },
     { id: 'aurora-gold-bottom', type: 'floral-decoration', layer: 'behind', anchor: 8, props: { position: 'bottom-left', color: '#c9a84c', opacity: 0.06 } },
@@ -88,7 +68,6 @@ export const fleurTemplate = makeTemplate({
     text: '#3d1a2e', 'text-secondary': '#7a4a5e', 'text-muted': '#b090a0',
     border: '#f0dce4', 'border-light': '#f8eaf0',
   },
-  animation: { preset: 'fade-up', duration: 0.8 },
 });
 
 export const lunaTemplate = makeTemplate({
@@ -100,7 +79,6 @@ export const lunaTemplate = makeTemplate({
     text: '#e8ecf4', 'text-secondary': '#a0acc8', 'text-muted': '#6078a0',
     border: '#2a3a5c', 'border-light': '#1e2e4a',
   },
-  animation: { preset: 'fade-in', duration: 1.0 },
 });
 
 export const ivoryTemplate = makeTemplate({
@@ -112,7 +90,6 @@ export const ivoryTemplate = makeTemplate({
     text: '#3d2e1a', 'text-secondary': '#7a6040', 'text-muted': '#b89870',
     border: '#e8d8c0', 'border-light': '#f0e8d8',
   },
-  animation: { preset: 'fade-up', duration: 0.8 },
 });
 
 export const sakuraTemplate = makeTemplate({
@@ -124,7 +101,6 @@ export const sakuraTemplate = makeTemplate({
     text: '#4a1a2e', 'text-secondary': '#8a4a5e', 'text-muted': '#c090a0',
     border: '#f8dce4', 'border-light': '#fceaf0',
   },
-  animation: { preset: 'fade-up', duration: 0.8 },
 });
 
 export const nordicTemplate = makeTemplate({
@@ -136,7 +112,6 @@ export const nordicTemplate = makeTemplate({
     text: '#2a3028', 'text-secondary': '#6a7068', 'text-muted': '#a0a898',
     border: '#d8dcd4', 'border-light': '#e8ece4',
   },
-  animation: { preset: 'slide-up', duration: 0.7 },
 });
 
 export const royalTemplate = makeTemplate({
@@ -148,7 +123,6 @@ export const royalTemplate = makeTemplate({
     text: '#f0f4fc', 'text-secondary': '#b0c0dc', 'text-muted': '#6880a8',
     border: '#2a3a5c', 'border-light': '#1e2e4a',
   },
-  animation: { preset: 'scale-in', duration: 0.8 },
 });
 
 export const celesteTemplate = makeTemplate({
@@ -160,7 +134,6 @@ export const celesteTemplate = makeTemplate({
     text: '#1a3040', 'text-secondary': '#5a7888', 'text-muted': '#98b0c0',
     border: '#d0e4f0', 'border-light': '#e0eef4',
   },
-  animation: { preset: 'fade-in', duration: 0.8 },
 });
 
 export const veronaTemplate = makeTemplate({
@@ -172,7 +145,6 @@ export const veronaTemplate = makeTemplate({
     text: '#3d2018', 'text-secondary': '#7a4830', 'text-muted': '#b88868',
     border: '#e8d4c0', 'border-light': '#f0e0d0',
   },
-  animation: { preset: 'fade-up', duration: 0.8 },
 });
 
 export const noirTemplate = makeTemplate({
@@ -184,5 +156,4 @@ export const noirTemplate = makeTemplate({
     text: '#f0f0f0', 'text-secondary': '#b0b0b0', 'text-muted': '#707070',
     border: '#333333', 'border-light': '#2a2a2a',
   },
-  animation: { preset: 'fade-in', duration: 0.6 },
 });

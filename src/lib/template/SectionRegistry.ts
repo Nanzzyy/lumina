@@ -2,16 +2,6 @@ import type { SectionType, AnimationConfig } from './types';
 import type { InvitationContent } from '@/lib/content/types';
 import type { FC } from 'react';
 
-/**
- * Section registry — maps section type strings to their React components.
- * This is the single source of truth for the template engine.
- *
- * Each section component receives:
- * - content: InvitationContent (full data — section picks what it needs)
- * - variant?: string
- * - animation?: AnimationConfig
- * - sectionIndex?: number
- */
 export interface SectionComponentProps {
   content: InvitationContent;
   variant?: string;
@@ -22,5 +12,22 @@ export interface SectionComponentProps {
 
 export type SectionComponent = FC<SectionComponentProps>;
 
-export const SectionRegistry: Partial<Record<SectionType, SectionComponent>> =
-  {};
+const registry: Partial<Record<SectionType, SectionComponent>> = {};
+
+export const SectionRegistry = {
+  register(type: SectionType, component: SectionComponent) {
+    registry[type] = component;
+  },
+
+  get(type: SectionType): SectionComponent {
+    const comp = registry[type];
+    if (!comp) {
+      throw new Error(`[SectionRegistry] Unknown section type: "${type}". Did you call initializeRegistries()?`);
+    }
+    return comp;
+  },
+
+  has(type: SectionType): boolean {
+    return type in registry;
+  },
+};
