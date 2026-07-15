@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const AUTH_COOKIE = 'lumina_admin_token';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'lumina-studio-2026';
+const AUTH_COOKIE = 'lumina_session';
 
 function isAuthenticated(req: NextRequest): boolean {
-  const token = req.cookies.get(AUTH_COOKIE)?.value;
-  return token === ADMIN_PASSWORD;
+  return req.cookies.has(AUTH_COOKIE);
 }
 
 export function proxy(req: NextRequest) {
@@ -17,7 +15,7 @@ export function proxy(req: NextRequest) {
   }
 
   // Public API
-  if (pathname.startsWith('/api/rsvp') || pathname.startsWith('/api/wishes') || pathname.startsWith('/api/upload')) {
+  if (pathname.startsWith('/api/rsvp') || pathname.startsWith('/api/wishes') || pathname.startsWith('/api/upload') || pathname.startsWith('/api/auth')) {
     return NextResponse.next();
   }
 

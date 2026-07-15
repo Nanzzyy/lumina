@@ -11,10 +11,24 @@ function LoginForm() {
   const [error, setError] = useState('');
   const redirect = searchParams.get('redirect') || '/studio';
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    document.cookie = `lumina_admin_token=${encodeURIComponent(password)}; path=/; max-age=86400; SameSite=Lax`;
-    router.push(redirect);
+    setError('');
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || 'Invalid password');
+        return;
+      }
+      router.push(redirect);
+    } catch {
+      setError('Network error. Try again.');
+    }
   }
 
   return (

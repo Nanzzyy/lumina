@@ -837,7 +837,7 @@ export default function StudioEditorPage() {
                     onChange={(ornaments) => handleChange({ ...content, ornaments })}
                     readOnly={!editOrnaments}
                   >
-                    <TemplateRenderer template={template} layout={layout} content={content} scopeClass="lumina-invitation-scope" hideOrnaments />
+                    <TemplateRenderer template={template} layout={layout} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
                   </OrnamentCanvas>
                 </ThemeProvider>
               </div>

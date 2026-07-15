@@ -1,35 +1,55 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Button, Icon } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
 
-interface Confirmation {
+interface RSVPEntry {
+  id: string;
   name: string;
+  status: string;
+  guests: number;
   message: string;
-  timestamp: Date;
+  created_at: string;
 }
 
 export function RSVP(props: SectionComponentProps) {
-  const { content, variant } = props;
+  const { content, variant, slug } = props;
   const { title = 'Will You Attend?', description, deadline, showConfirmationList } = content.rsvp;
   const [submitted, setSubmitted] = useState(false);
-  const [confirmations, setConfirmations] = useState<Confirmation[]>([]);
+  const [confirmations, setConfirmations] = useState<RSVPEntry[]>([]);
+  const [submittedName, setSubmittedName] = useState('');
   const [formData, setFormData] = useState({ name: '', message: '' });
   const isNoir = variant === 'noir';
 
-  const handleSubmit = (e: FormEvent) => {
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setConfirmations(data);
+      })
+      .catch(() => {});
+  }, [slug]);
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
-    const newConf: Confirmation = {
-      name: formData.name.trim(),
-      message: formData.message.trim(),
-      timestamp: new Date(),
-    };
-    setConfirmations(p => [newConf, ...p]);
-    setSubmitted(true);
+    if (!formData.name.trim() || !slug) return;
+    try {
+      const res = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, name: formData.name.trim(), message: formData.message.trim(), status: 'hadir', guests: 1 }),
+      });
+      if (res.ok) {
+        const newEntry = await res.json();
+        setConfirmations(p => [newEntry, ...p]);
+        setSubmittedName(formData.name.trim());
+        setSubmitted(true);
+      }
+    } catch {}
   };
 
   // After submit: show thank you + full confirmation list
@@ -52,7 +72,7 @@ export function RSVP(props: SectionComponentProps) {
             </div>
             <h3 className={cn('text-2xl font-bold font-[var(--typography-font-heading)] mb-2',
               isNoir ? 'text-[var(--colors-text)]' : 'text-[var(--colors-text)]')}>
-              Terima Kasih, {confirmations[0]?.name}!
+              Terima Kasih, {submittedName}!
             </h3>
             <p className="text-[var(--colors-text-secondary)]">Kedatangan Anda sudah dikonfirmasi.</p>
           </div>
@@ -67,7 +87,7 @@ export function RSVP(props: SectionComponentProps) {
               <div className={cn('space-y-3 max-w-md mx-auto', isNoir ? '' : '')}>
                 {confirmations.map((c, i) => (
                   <motion.div
-                    key={i}
+                    key={c.id || i}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
@@ -86,7 +106,7 @@ export function RSVP(props: SectionComponentProps) {
                         <span className="font-medium text-sm text-[var(--colors-text)]">{c.name}</span>
                       </div>
                       <span className="text-xs text-[var(--colors-text-muted)]">
-                        {c.timestamp.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        {new Date(c.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     {c.message && (
@@ -169,7 +189,7 @@ export function RSVP(props: SectionComponentProps) {
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-medium text-sm text-[var(--colors-text)]">{c.name}</span>
                   <span className="text-xs text-[var(--colors-text-muted)]">
-                    {c.timestamp.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                    {new Date(c.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                   </span>
                 </div>
                 {c.message && (

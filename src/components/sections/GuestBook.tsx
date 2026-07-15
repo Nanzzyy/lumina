@@ -1,31 +1,52 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Button } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
 
-interface Entry {
+interface WishEntry {
+  id: string;
   name: string;
   message: string;
-  timestamp: Date;
+  created_at: string;
 }
 
 export function GuestBook(props: SectionComponentProps) {
-  const { content, variant } = props;
+  const { content, variant, slug } = props;
   const { title = 'Guest Book', description, enabled, showMessages } = content.guestbook;
-  const [entries, setEntries] = useState<Entry[]>([]);
+  const [entries, setEntries] = useState<WishEntry[]>([]);
   const [formData, setFormData] = useState({ name: '', message: '' });
   const isNoir = variant === 'noir';
 
+  useEffect(() => {
+    if (!slug) return;
+    fetch(`/api/wishes?slug=${encodeURIComponent(slug)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setEntries(data);
+      })
+      .catch(() => {});
+  }, [slug]);
+
   if (!enabled) return null;
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.message.trim()) return;
-    setEntries(p => [{ ...formData, timestamp: new Date() }, ...p]);
-    setFormData({ name: '', message: '' });
+    if (!formData.name.trim() || !formData.message.trim() || !slug) return;
+    try {
+      const res = await fetch('/api/wishes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, name: formData.name.trim(), message: formData.message.trim() }),
+      });
+      if (res.ok) {
+        const newEntry = await res.json();
+        setEntries(p => [newEntry, ...p]);
+        setFormData({ name: '', message: '' });
+      }
+    } catch {}
   };
 
   return (
@@ -53,12 +74,12 @@ export function GuestBook(props: SectionComponentProps) {
       {showMessages !== false && entries.length > 0 && (
         <div className="space-y-4 max-w-md mx-auto px-4">
           <h4 className="text-sm font-semibold text-center text-[var(--colors-text)]">Ucapan ({entries.length})</h4>
-          {entries.map((entry, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+          {entries.map((entry) => (
+            <motion.div key={entry.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}
               className="p-4 rounded-lg bg-[var(--colors-surface)] border border-[var(--colors-border-light)]">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium text-sm text-[var(--colors-text)]">{entry.name}</span>
-                <span className="text-xs text-[var(--colors-text-muted)]">{entry.timestamp.toLocaleDateString('id-ID')}</span>
+                <span className="text-xs text-[var(--colors-text-muted)]">{new Date(entry.created_at).toLocaleDateString('id-ID')}</span>
               </div>
               <p className="text-sm text-[var(--colors-text-secondary)] leading-relaxed">{entry.message}</p>
             </motion.div>

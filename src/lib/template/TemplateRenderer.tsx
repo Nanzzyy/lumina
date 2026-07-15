@@ -12,6 +12,7 @@ interface TemplateRendererProps {
   content: InvitationContent;
   scopeClass?: string;
   hideOrnaments?: boolean;
+  slug?: string;
 }
 
 interface SectionRendererProps {
@@ -20,6 +21,7 @@ interface SectionRendererProps {
   animation?: AnimationConfig;
   index: number;
   background?: SectionBackground;
+  slug?: string;
 }
 
 function backgroundToStyle(bg?: SectionBackground): React.CSSProperties {
@@ -50,6 +52,7 @@ function SectionRenderer({
   animation,
   index,
   background,
+  slug,
 }: SectionRendererProps) {
   if (section.hidden) return null;
 
@@ -61,6 +64,7 @@ function SectionRenderer({
       variant={section.variant}
       animation={animation}
       sectionIndex={index}
+      slug={slug}
       {...section.props}
     />
   );
@@ -72,6 +76,7 @@ export function TemplateRenderer({
   content,
   scopeClass,
   hideOrnaments,
+  slug,
 }: TemplateRendererProps) {
   const sectionBackgrounds = content.sectionBackgrounds || {};
 
@@ -128,6 +133,7 @@ export function TemplateRenderer({
               animation={layout.animation}
               index={index}
               background={bg}
+              slug={slug}
             />
           </section>
         );

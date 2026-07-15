@@ -13,6 +13,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@types/better-sqlite3": "^7.6.13",
+    "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.11.1",
     "framer-motion": "^12.42.2",
     "next": "16.2.10",

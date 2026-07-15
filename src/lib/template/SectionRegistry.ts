@@ -7,6 +7,7 @@ export interface SectionComponentProps {
   variant?: string;
   animation?: AnimationConfig;
   sectionIndex?: number;
+  slug?: string;
   [key: string]: unknown;
 }
 
