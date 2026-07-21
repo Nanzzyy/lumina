@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - LUMINA_DB_PATH=/data/lumina.db
       - LUMINA_JWT_SECRET=${LUMINA_JWT_SECRET:-change-me-in-production}
