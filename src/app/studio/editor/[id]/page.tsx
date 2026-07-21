@@ -9,7 +9,10 @@ import Inspector from '@/components/studio/editor/Inspector';
 import DataSourcePanel from '@/components/studio/editor/DataSourcePanel';
 import TimelinePanel from '@/components/studio/editor/TimelinePanel';
 import ThemePanel from '@/components/studio/editor/ThemePanel';
-import { GOLDEN_SPEC, buildGoldenProject } from '../../../../../bench/golden-project';
+// TODO: golden-project is a local dev artifact, not committed to git
+// import { GOLDEN_SPEC, buildGoldenProject } from '../../../../../bench/golden-project';
+const GOLDEN_SPEC = {};
+function buildGoldenProject() { return {}; }
 import { resolveResponsiveFrame } from '@core/responsive';
 import { DEVICE_VIEWPORTS } from '@core/responsive';
 import type { DeviceKey } from '@core/responsive';
