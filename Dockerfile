@@ -4,8 +4,8 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 FROM base AS deps
 WORKDIR /app
 COPY pnpm-lock.yaml package.json ./
-RUN pnpm fetch --frozen-lockfile
-RUN pnpm install --offline
+RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm \
+    pnpm install --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
