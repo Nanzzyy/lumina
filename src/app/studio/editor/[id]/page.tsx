@@ -12,7 +12,7 @@ import ThemePanel from '@/components/studio/editor/ThemePanel';
 // TODO: golden-project is a local dev artifact, not committed to git
 // import { GOLDEN_SPEC, buildGoldenProject } from '../../../../../bench/golden-project';
 const GOLDEN_SPEC = {};
-function buildGoldenProject() { return {}; }
+function buildGoldenProject(_spec: Record<string, unknown> = {}) { return {} as Document; }
 import { resolveResponsiveFrame } from '@core/responsive';
 import { DEVICE_VIEWPORTS } from '@core/responsive';
 import type { DeviceKey } from '@core/responsive';
