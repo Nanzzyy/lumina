@@ -4,6 +4,7 @@
  */
 import { SectionRegistry, registerTemplate } from '@/lib/template';
 import { registerLayout, syncLayoutsFromDB } from '@/lib/layout';
+import { PluginHost } from '@/lib/plugin/host';
 import { Hero } from '@/components/sections/Hero';
 import { Cover } from '@/components/sections/Cover';
 import { Story } from '@/components/sections/Story';
@@ -16,10 +17,16 @@ import { GuestBook } from '@/components/sections/GuestBook';
 import { Maps } from '@/components/sections/Maps';
 import { Footer } from '@/components/sections/Footer';
 import { CountdownSection } from '@/components/sections/Countdown';
+import { heroManifest, heroHooks } from '@/data/library/plugins/hero';
+import { countdownManifest } from '@/data/library/plugins/countdown';
+import { rsvpManifest } from '@/data/library/plugins/rsvp';
 import {
   auroraTemplate, fleurTemplate, lunaTemplate, ivoryTemplate,
   sakuraTemplate, nordicTemplate, royalTemplate, celesteTemplate,
-  veronaTemplate, noirTemplate,
+  veronaTemplate, noirTemplate, premiumWeddingTemplate, terracottaWeddingTemplate,
+  luxuryWeddingTemplate, metatahBaliTemplate, birthdayGalaTemplate,
+  birthdayWishTemplate, mobileCanvasTemplate, floraWeddingTemplate,
+  hanaWeddingTemplate,
 } from '@/templates/all-templates';
 import {
   defaultLayout, modernLayout, adatBaliLayout,
@@ -52,6 +59,15 @@ export function registerAllTemplates() {
   registerTemplate(celesteTemplate);
   registerTemplate(veronaTemplate);
   registerTemplate(noirTemplate);
+  registerTemplate(premiumWeddingTemplate);
+  registerTemplate(terracottaWeddingTemplate);
+  registerTemplate(luxuryWeddingTemplate);
+  registerTemplate(metatahBaliTemplate);
+  registerTemplate(birthdayGalaTemplate);
+  registerTemplate(birthdayWishTemplate);
+  registerTemplate(floraWeddingTemplate);
+  registerTemplate(hanaWeddingTemplate);
+  registerTemplate(mobileCanvasTemplate);
 }
 
 export function registerAllLayouts() {
@@ -62,10 +78,35 @@ export function registerAllLayouts() {
   registerLayout(minimalLayout);
 }
 
+export let pluginHost: PluginHost | null = null;
+
 export function initializeRegistries() {
   registerAllSections();
   registerAllTemplates();
   registerAllLayouts();
   // Sync any custom layouts from DB into memory registry
   syncLayoutsFromDB().catch(() => {});
+  // Initialize plugin host with builtin plugins (P7)
+  initBuiltinPlugins().catch(() => {});
+}
+
+async function initBuiltinPlugins() {
+  const host = new PluginHost();
+  host.register(heroManifest, heroHooks);
+  host.register(countdownManifest, {});
+  host.register(rsvpManifest, {});
+  const mockRuntime = {
+    doc: { getProject: () => ({}), getPage: () => ({}), getNode: () => ({}) },
+    renderTree: { getTree: () => ({}), getNode: () => undefined },
+    registry: { listComponents: () => [], getComponent: () => undefined, listProperties: () => [] },
+    assets: { resolve: (url: string) => url, getManifest: () => ({}) },
+    bus: { on: () => () => {}, emit: () => {} },
+    applyPatch: () => {},
+    setVariable: () => {},
+    transformRenderTree: () => {},
+  };
+  for (const id of ['lumina.hero', 'lumina.countdown', 'lumina.rsvp']) {
+    await host.activate(id, mockRuntime as any);
+  }
+  pluginHost = host;
 }

@@ -32,6 +32,8 @@ export async function syncLayoutsFromDB(): Promise<void> {
           containers: l.config.containers || [],
           animation: l.config.animation,
           wrapper: l.config.wrapper,
+          engine: l.config.engine,
+          nodes: l.config.nodes,
         });
       }
     }

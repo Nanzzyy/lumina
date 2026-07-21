@@ -1,10 +1,15 @@
 import type { InvitationContent } from './types';
+import { defaultCanvasElements } from './canvas-types';
 
 export const defaultInvitationContent: InvitationContent = {
   slug: 'default',
   couple: {
     partner1: 'Partner 1',
     partner2: 'Partner 2',
+    partner1Father: 'Bpk. ...',
+    partner1Mother: 'Ibu ...',
+    partner2Father: 'Bpk. ...',
+    partner2Mother: 'Ibu ...',
   },
   event: {
     date: 'January 1, 2026',
@@ -17,14 +22,19 @@ export const defaultInvitationContent: InvitationContent = {
     paragraphs: ['We met and fell in love.'],
     imagePosition: 'left',
   },
+  stories: [
+    { year: '2021', title: 'Pertemuan Pertama', desc: 'Awal perjumpaan kami.' },
+    { year: '2023', title: 'Komitmen Bersama', desc: 'Melangkah pada komitmen yang lebih serius.' },
+    { year: '2025', title: 'Lamaran Resmi', desc: 'Meminang di hadapan kedua keluarga.' },
+  ],
   gallery: {
     images: [],
   },
   schedule: {
     title: 'Schedule',
     items: [
-      { time: '10:00', title: 'Ceremony' },
-      { time: '12:00', title: 'Reception' },
+      { time: '08:00 - 10:00 WIB', title: 'Akad Nikah', venue: 'Masjid', address: '', mapsUrl: 'https://maps.google.com' },
+      { time: '11:00 - 14:00 WIB', title: 'Resepsi Pernikahan', venue: 'Ballroom', address: '', mapsUrl: 'https://maps.google.com' },
     ],
   },
   quote: {
@@ -36,6 +46,9 @@ export const defaultInvitationContent: InvitationContent = {
   gift: {
     enabled: true,
     layout: 'standalone',
+    items: [
+      { name: 'Bank BCA', bank: 'Bank BCA', number: '0000000000', owner: 'Nama' },
+    ],
   },
   guestbook: {
     enabled: false,
@@ -46,4 +59,7 @@ export const defaultInvitationContent: InvitationContent = {
     text: 'Thank you for celebrating with us!',
     showCredit: true,
   },
+  canvasElements: defaultCanvasElements(),
+  canvasDimensions: { w: 375, h: 667 },
+  canvasSettings: { backgroundColor: '#0B0F19' },
 };

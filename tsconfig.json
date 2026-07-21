@@ -25,6 +25,18 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@core/*": [
+        "./src/lib/core/*"
+      ],
+      "@editor/*": [
+        "./src/lib/editor/*"
+      ],
+      "@runtime/*": [
+        "./src/lib/runtime/*"
+      ],
+      "@ui/*": [
+        "./src/components/*"
       ]
     }
   },
@@ -38,6 +50,7 @@
     ".next/dev/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "TEMPLATE-READY"
   ]
 }

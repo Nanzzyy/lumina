@@ -5,10 +5,13 @@ import type { InvitationContent, SectionBackground } from '@/lib/content/types';
 import type { LayoutDefinition } from '@/lib/layout/types';
 import { SectionRegistry } from './SectionRegistry';
 import { FloralDecoration, OrnamentGroup } from '@/components/primitives';
+import { TreeRenderer } from './TreeRenderer';
+import { CanvasRenderer } from '@/components/mobile/CanvasRenderer';
 
 interface TemplateRendererProps {
-  template: { id: string; theme?: Record<string, unknown>; decorations?: { id: string; layer: string; anchor: string | number; type: string; props?: Record<string, unknown>; hiddenMobile?: boolean }[] };
-  layout: LayoutDefinition;
+  template: { id: string; kind?: 'composed' | 'monolithic' | 'mobile-canvas'; component?: React.FC<{ content: InvitationContent; slug?: string; preview?: boolean }>; theme?: Record<string, unknown>; decorations?: { id: string; layer: string; anchor: string | number; type: string; props?: Record<string, unknown>; hiddenMobile?: boolean }[] };
+  /** Required for composed/tree; ignored by monolithic templates. */
+  layout?: LayoutDefinition;
   content: InvitationContent;
   scopeClass?: string;
   hideOrnaments?: boolean;
@@ -78,6 +81,25 @@ export function TemplateRenderer({
   hideOrnaments,
   slug,
 }: TemplateRendererProps) {
+  // Monolithic switch: a self-contained template renders the whole page itself.
+  if (template.kind === 'monolithic' && template.component) {
+    const Monolithic = template.component;
+    return <Monolithic content={content} slug={slug} preview={true} />;
+  }
+
+  // Mobile-canvas switch: free-position element canvas.
+  if (template.kind === 'mobile-canvas') {
+    return <CanvasRenderer content={content} />;
+  }
+
+  // Composed paths require a layout.
+  if (!layout) return null;
+
+  // Engine switch: tree layouts render via the responsive CSS-grid TreeRenderer.
+  if (layout.engine === 'tree') {
+    return <TreeRenderer template={template} layout={layout} content={content} scopeClass={scopeClass} hideOrnaments={hideOrnaments} slug={slug} />;
+  }
+
   const sectionBackgrounds = content.sectionBackgrounds || {};
 
   return (

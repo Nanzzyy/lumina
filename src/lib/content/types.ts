@@ -1,3 +1,15 @@
+import type { CanvasElement, CanvasDimensions, CanvasSettings } from './canvas-types';
+
+/** A single celebrant — name, title, parents, social, bio. */
+export interface Partner {
+  name: string;
+  title?: string;
+  father?: string;
+  mother?: string;
+  instagram?: string;
+  desc?: string;
+}
+
 /** All text/content is driven by this interface — never hardcoded in components. */
 export interface CoupleContent {
   partner1: string;
@@ -5,6 +17,19 @@ export interface CoupleContent {
   partner1Title?: string;
   partner2Title?: string;
   parents?: string;
+  /** Per-partner parents (used by richer templates, e.g. premium). */
+  partner1Father?: string;
+  partner1Mother?: string;
+  partner2Father?: string;
+  partner2Mother?: string;
+  /** Per-partner social handles. */
+  partner1Instagram?: string;
+  partner2Instagram?: string;
+  /** Short bio / description per partner (used by richer templates). */
+  partner1Desc?: string;
+  partner2Desc?: string;
+  /** Partner list for multi-celebrant templates (wedding groups, ceremonies). */
+  partners?: Partner[];
 }
 
 export interface EventContent {
@@ -34,6 +59,17 @@ export interface ScheduleItem {
   title: string;
   description?: string;
   icon?: string;
+  /** Venue + address for richer event cards (e.g. premium Akad/Resepsi). */
+  venue?: string;
+  address?: string;
+  mapsUrl?: string;
+}
+
+/** A single love-story moment (premium timeline). */
+export interface StoryMoment {
+  year: string;
+  title: string;
+  desc: string;
 }
 
 export interface ScheduleContent {
@@ -59,6 +95,10 @@ export interface RSVPContent {
 export interface GiftItem {
   name: string;
   note?: string;
+  /** Bank account fields (premium gift cards). */
+  bank?: string;
+  number?: string;
+  owner?: string;
 }
 
 export interface GiftContent {
@@ -131,6 +171,14 @@ export interface HeroContent {
   subtitle?: string;
 }
 
+/** Headline imagery used by richer templates (cover/hero backgrounds, portraits). */
+export interface MediaContent {
+  cover?: string;
+  hero?: string;
+  partner1Photo?: string;
+  partner2Photo?: string;
+}
+
 /**
  * Complete invitation data.
  * Every field is optional at the top level — the template decides what to render.
@@ -140,7 +188,11 @@ export interface InvitationContent {
   couple: CoupleContent;
   event: EventContent;
   hero?: HeroContent;
+  /** Headline images (cover/hero backgrounds, portraits) — used by richer templates. */
+  media?: MediaContent;
   story: StoryContent;
+  /** Optional love-story timeline (used by richer templates, e.g. premium). */
+  stories?: StoryMoment[];
   gallery: GalleryContent;
   schedule: ScheduleContent;
   quote: QuoteContent;
@@ -158,6 +210,18 @@ export interface InvitationContent {
     title?: string;
     autoplay?: boolean;
   };
+  /** Guest list — each name yields a personalized `/i/<slug>?to=<name>` link. */
+  guestList?: string[];
+  /** Guest name override — shown on cover (fallback: ?to= URL param). */
+  guestName?: string;
+
+  // ─── Mobile-canvas builder fields ────────────────────────────
+  /** Positioned elements on the mobile canvas (Canva-like builder). */
+  canvasElements?: CanvasElement[];
+  /** Virtual canvas dimensions, default 375×667. */
+  canvasDimensions?: CanvasDimensions;
+  /** Canvas-level backgrounds / settings. */
+  canvasSettings?: CanvasSettings;
   seo?: {
     title?: string;
     description?: string;

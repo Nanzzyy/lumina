@@ -157,3 +157,25 @@ export const noirTemplate = makeTemplate({
     border: '#333333', 'border-light': '#2a2a2a',
   },
 });
+
+// Monolithic (self-contained) templates — bypass makeTemplate (no theme/layout).
+export {
+  premiumWeddingTemplate,
+  terracottaWeddingTemplate,
+  luxuryWeddingTemplate,
+  metatahBaliTemplate,
+  birthdayGalaTemplate,
+  birthdayWishTemplate,
+  floraWeddingTemplate,
+  hanaWeddingTemplate,
+} from "./premium";
+
+// Mobile-canvas meta-template.
+export const mobileCanvasTemplate: TemplateDefinition = {
+  id: 'mobile-canvas',
+  name: 'Mobile Canvas',
+  description: 'Canva-like builder — posisikan teks, gambar, tombol bebas di kanvas mobile. Cocok untuk ucapan, pengumuman, dan undangan sederhana.',
+  kind: 'mobile-canvas',
+  category: 'event',
+  mode: 'solo',
+};

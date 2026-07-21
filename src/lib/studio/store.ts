@@ -11,6 +11,7 @@ export interface StudioInvitation {
   title: string;
   content: InvitationContent;
   themeOverrides?: DeepPartial<ThemeConfig>;
+  published?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -92,6 +93,7 @@ export function useStudioStore() {
       layoutId: updates.layoutId,
       content: updates.content,
       themeOverrides: updates.themeOverrides,
+      published: updates.published,
     });
     await refresh();
   }, [refresh]);

@@ -1,4 +1,6 @@
 export { TemplateRenderer } from './TemplateRenderer';
+export { TreeRenderer } from './TreeRenderer';
+export { SectionShell } from './SectionShell';
 export { SectionRegistry } from './SectionRegistry';
 export {
   registerTemplate,

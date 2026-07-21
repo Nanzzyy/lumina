@@ -32,4 +32,8 @@ export interface LayoutDefinition {
     containerClass?: string;
     maxWidth?: string;
   };
+  /** Render engine. 'tree' uses TreeRenderer (CSS-grid, responsive); omitted/'legacy' keeps TemplateRenderer. */
+  engine?: 'legacy' | 'tree';
+  /** Tree nodes (present when engine === 'tree'). Absent on legacy layouts — normalized via migrateToTree. */
+  nodes?: import('./tree').LayoutNode[];
 }
