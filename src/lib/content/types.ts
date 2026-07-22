@@ -205,6 +205,9 @@ export interface InvitationContent {
   sectionBackgrounds?: Record<string, SectionBackground>;
   /** Global ornaments for the invitation */
   ornaments?: OrnamentConfig[];
+  /** OG / social sharing overrides */
+  ogImage?: string;
+  ogDescription?: string;
   music?: {
     src: string;
     title?: string;

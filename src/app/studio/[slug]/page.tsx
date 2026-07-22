@@ -349,6 +349,26 @@ function RSVPGuestBookGiftEditor({ content, onChange }: { content: InvitationCon
   );
 }
 
+function OGEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const ogImage = content.ogImage || content.media?.cover || '';
+  const ogDesc = content.ogDescription || '';
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-zinc-500">Atur tampilan saat link undangan dibagikan ke WhatsApp, Facebook, dll.</p>
+      <div>
+        <label className="block text-xs font-medium text-zinc-600 mb-1">OG Image (URL gambar)</label>
+        <Input value={ogImage} onChange={(v) => onChange({ ...content, ogImage: v })} placeholder="URL gambar untuk preview sosmed (kosongkan = pakai foto cover)" />
+        <p className="text-[10px] text-zinc-400 mt-1">Kosongkan untuk otomatis pakai foto cover. Disarankan 1200×630px.</p>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-zinc-600 mb-1">OG Description</label>
+        <Input value={ogDesc} onChange={(v) => onChange({ ...content, ogDescription: v })} placeholder="Deskripsi yang muncul saat link dibagikan" multiline rows={2} />
+        <p className="text-[10px] text-zinc-400 mt-1">Kosongkan untuk otomatis generate dari nama pasangan &amp; kutipan.</p>
+      </div>
+    </div>
+  );
+}
+
 function QuoteFooterEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
   const qt = content.quote || { text: "" }; const ft = content.footer || { text: "", showCredit: true };
   return (
@@ -945,6 +965,11 @@ export default function StudioEditorPage() {
               <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Quote &amp; Footer</h2>
               <QuoteFooterEditor content={content} onChange={handleChange} />
             </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">SEO &amp; Social Sharing</h2>
+              <OGEditor content={content} onChange={handleChange} />
+            </section>
           </div>
 
           {/* Right: Live preview */}
@@ -1080,6 +1105,11 @@ export default function StudioEditorPage() {
               <section>
                 <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Quote &amp; Footer</h2>
                 <QuoteFooterEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">SEO &amp; Social Sharing</h2>
+                <OGEditor content={content} onChange={handleChange} />
               </section>
               <div className="border-t border-zinc-200" />
               <section>
