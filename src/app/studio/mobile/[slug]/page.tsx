@@ -124,7 +124,7 @@ export default function MobileEditorPage() {
 
         {/* Right: Mobile preview */}
         <div className="flex-1 bg-zinc-100 flex items-start justify-center p-6 overflow-auto">
-          <div className="w-[375px] bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[700px]">
+          <div className="w-[393px] bg-white rounded-2xl shadow-2xl overflow-hidden min-h-[700px]">
             <div className="bg-dark text-white text-[9px] text-center py-1.5 uppercase tracking-widest font-medium bg-gradient-to-r from-[#3D2C2A] to-[#4A3530]">
               <Smartphone className="w-3 h-3 inline mr-1 -mt-0.5" />
               {template.name}

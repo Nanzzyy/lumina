@@ -88,7 +88,7 @@ export default function MobileBuilderSlugPage() {
       {/* Editor */}
       {showPreview ? (
         <div className="flex-1 bg-zinc-100 flex items-start justify-center p-6 overflow-auto">
-          <div className="w-[375px] bg-white rounded-xl shadow-2xl overflow-hidden">
+          <div className="w-[393px] bg-white rounded-xl shadow-2xl overflow-hidden">
             {/* Dynamic import for CanvasRenderer — it renders the final look */}
             <PreviewFrame content={content} />
           </div>
