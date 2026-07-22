@@ -10,6 +10,7 @@ import type { InvitationContent, OrnamentConfig } from '@/lib/content/types';
 import type { DeepPartial, ThemeConfig } from '@/lib/theme/types';
 import { cn } from '@/lib/utils/cn';
 import { OrnamentCanvas, OrnamentPreview } from '@/components/studio/OrnamentCanvas';
+import { Globe } from 'lucide-react';
 import { IframePreview } from '@/components/studio/IframePreview';
 
 type EditorTab = 'content' | 'theme' | 'layout' | 'preview';
@@ -869,6 +870,7 @@ export default function StudioEditorPage() {
               Save Now
             </button>
           )}
+          <PublishToggle slug={slug} published={invitation.published} onToggle={(val) => update(slug, { published: val })} />
           <button onClick={() => setShowExport(!showExport)}
             className="px-3 py-1.5 text-xs bg-zinc-100 text-zinc-700 rounded-md hover:bg-zinc-200 transition-colors flex items-center gap-1">
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
@@ -1216,6 +1218,42 @@ export default function StudioEditorPage() {
           )}
         </>
       )}
+    </div>
+  );
+}
+
+/** Publish toggle with copy-link button. */
+function PublishToggle({ slug, published, onToggle }: { slug: string; published?: boolean; onToggle: (val: boolean) => void }) {
+  const [pub, setPub] = useState(published ?? false);
+  const [copied, setCopied] = useState(false);
+
+  const toggle = () => {
+    const next = !pub;
+    setPub(next);
+    onToggle(next);
+  };
+
+  const copyLink = () => {
+    const url = `${window.location.origin}/invitation/${slug}`;
+    navigator.clipboard?.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="flex items-center gap-1.5">
+      {pub && (
+        <button onClick={copyLink}
+          className="px-3 py-1.5 text-xs bg-zinc-100 text-zinc-700 rounded-md hover:bg-zinc-200 transition-colors flex items-center gap-1">
+          <Globe className="w-3.5 h-3.5" />
+          {copied ? 'Copied!' : 'Copy Link'}
+        </button>
+      )}
+      <button onClick={toggle}
+        className={cn('px-3 py-1.5 text-xs rounded-md transition-colors font-medium',
+          pub ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200')}>
+        {pub ? 'Published' : 'Draft'}
+      </button>
     </div>
   );
 }
