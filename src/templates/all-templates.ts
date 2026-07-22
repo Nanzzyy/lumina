@@ -168,6 +168,7 @@ export {
   birthdayWishTemplate,
   floraWeddingTemplate,
   hanaWeddingTemplate,
+  sakuraWeddingTemplate,
 } from "./premium";
 
 // Mobile-canvas meta-template.

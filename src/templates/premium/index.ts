@@ -8,6 +8,7 @@ import { UndanganMetatahBali, UndanganBirthdayGala } from './UndanganCelebration
 import { UndanganBirthdayWish } from './UndanganBirthdayWish';
 import { UndanganPernikahanFlora } from './UndanganPernikahanFlora';
 import { UndanganPernikahanHana } from './UndanganPernikahanHana';
+import { UndanganPernikahanSakura } from './UndanganPernikahanSakura';
 
 /**
  * Monolithic premium templates — a single self-contained component renders the
@@ -86,5 +87,14 @@ export const hanaWeddingTemplate: TemplateDefinition = {
   kind: 'monolithic',
   category: 'mobile',
   component: UndanganPernikahanHana,
+};
+
+export const sakuraWeddingTemplate: TemplateDefinition = {
+  id: 'sakura',
+  name: 'Sakura 桜',
+  description: 'Cherry blossom elegance — palet plum & pink, font Petit Formal Script + DM Sans, ornamen bunga sakura, floating petals, animasi smooth.',
+  kind: 'monolithic',
+  category: 'mobile',
+  component: UndanganPernikahanSakura,
 };
 
