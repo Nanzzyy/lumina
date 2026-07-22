@@ -173,24 +173,43 @@ function FloatingPetals() {
 /** Decorative background sakura blossoms scattered across a section */
 function BgOrnaments() {
   const ornaments = [
-    { top: '10%', left: '5%', size: 'w-8 h-8', delay: 0 },
-    { top: '15%', right: '8%', size: 'w-5 h-5', delay: 1 },
-    { top: '40%', left: '2%', size: 'w-6 h-6', delay: 0.5 },
-    { top: '60%', right: '4%', size: 'w-10 h-10', delay: 2 },
-    { top: '80%', left: '10%', size: 'w-5 h-5', delay: 1.5 },
-    { bottom: '8%', right: '12%', size: 'w-7 h-7', delay: 0.8 },
+    // Large accent blossoms
+    { style: { top: '5%', left: '3%' }, size: 'w-12 h-12', delay: 0, dur: 5, fill: SAKURA_LIGHT, opacity: 0.1 },
+    { style: { top: '12%', right: '6%' }, size: 'w-7 h-7', delay: 1.5, dur: 4, fill: SAKURA, opacity: 0.08 },
+    { style: { bottom: '8%', right: '4%' }, size: 'w-14 h-14', delay: 0.8, dur: 6, fill: ROSE_GOLD, opacity: 0.07 },
+    // Medium scattered
+    { style: { top: '35%', left: '8%' }, size: 'w-6 h-6', delay: 2, dur: 4.5, fill: SAKURA_LIGHT, opacity: 0.09 },
+    { style: { top: '55%', right: '2%' }, size: 'w-8 h-8', delay: 1, dur: 5.5, fill: SAKURA, opacity: 0.08 },
+    { style: { top: '75%', left: '12%' }, size: 'w-5 h-5', delay: 2.5, dur: 4, fill: ROSE_GOLD, opacity: 0.1 },
+    // Small accent dots (petal clusters)
+    { style: { top: '20%', left: '25%' }, size: 'w-3 h-3', delay: 0.5, dur: 3.5, fill: SAKURA, opacity: 0.12 },
+    { style: { top: '45%', right: '15%' }, size: 'w-4 h-4', delay: 1.8, dur: 4, fill: SAKURA_LIGHT, opacity: 0.1 },
+    { style: { bottom: '25%', left: '5%' }, size: 'w-3.5 h-3.5', delay: 3, dur: 3.8, fill: ROSE_GOLD, opacity: 0.08 },
+    { style: { bottom: '40%', right: '10%' }, size: 'w-5 h-5', delay: 0.3, dur: 5, fill: SAKURA, opacity: 0.07 },
   ];
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
       {ornaments.map((o, i) => (
         <motion.div key={i} className="absolute"
-          style={{ top: o.top, left: o.left, right: o.right, bottom: o.bottom } as React.CSSProperties}
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: [0, 0.12, 0.08, 0.12], scale: 1 }}
+          style={{ ...o.style } as React.CSSProperties}
+          initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+          whileInView={{ opacity: [0, o.opacity, o.opacity * 0.6, o.opacity], scale: 1, rotate: [0, 5, -3, 0] }}
           viewport={{ once: true }}
-          transition={{ duration: 4, delay: o.delay, repeat: Infinity, ease: 'easeInOut' }}>
-          <SakuraBlossom className={o.size} fill={SAKURA} />
+          transition={{ duration: o.dur, delay: o.delay, repeat: Infinity, ease: 'easeInOut' }}>
+          <SakuraBlossom className={o.size} fill={o.fill} />
         </motion.div>
+      ))}
+      {/* Branch-like decorative lines */}
+      {[
+        { style: { top: '30%', left: '1%' }, w: 'w-16', delay: 1 },
+        { style: { bottom: '15%', right: '2%' }, w: 'w-12', delay: 2 },
+      ].map((b, i) => (
+        <motion.div key={`b${i}`} className={`absolute h-px ${b.w}`}
+          style={{ ...b.style, background: `linear-gradient(to right, transparent, ${SAKURA}30, transparent)` } as React.CSSProperties}
+          initial={{ scaleX: 0, opacity: 0 }}
+          whileInView={{ scaleX: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.5, delay: b.delay, ease: EASE }} />
       ))}
     </div>
   );
