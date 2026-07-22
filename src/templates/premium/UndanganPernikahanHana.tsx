@@ -477,7 +477,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
       )}
 
       {/* ═══ 8. GIFT ═══ */}
-      {gifts.length > 0 && (
+      {content.gift?.enabled !== false && gifts.length > 0 && (
         <ScrollR><section className="py-24 px-6" style={{ backgroundColor: IVORY }}>
           <div className="max-w-xl mx-auto text-center">
             <HanaDivider />
@@ -546,7 +546,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
             </form>
           )}
 
-          {wishes.length > 0 && (
+          {content.guestbook?.enabled !== false && wishes.length > 0 && (
             <div className="mt-10 space-y-3 max-h-[400px] overflow-y-auto pr-1">
               {wishes.slice(0, 20).map((w) => (
                 <div key={w.id} className="bg-white/80 p-4 rounded-xl" style={{ border: `1px solid ${GOLD}1A` }}>

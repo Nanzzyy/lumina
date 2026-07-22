@@ -581,6 +581,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
                 {isSubmitted ? <><Check className="w-4 h-4" /> Terkirim!</> : <><Send className="w-4 h-4" /> Kirim Ucapan</>}
               </button>
             </form>
+            {content.guestbook?.enabled !== false && (
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-[#D4A574]/10 flex flex-col h-[400px]">
               <div className="flex items-center justify-between border-b border-[#D4A574]/10 pb-4 mb-4">
                 <span className="font-serif text-sm font-medium text-dark"><MessageSquare className="w-4 h-4 text-[#D4A574] inline mr-1.5" />Ucapan ({wishes.length})</span>
@@ -602,11 +603,13 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
                 ))}
               </div>
             </div>
+            )}
           </div>
         </div>
       </section></ScrollR>
 
       {/* 9. GIFT */}
+      {content.gift?.enabled !== false && (
       <ScrollR><section className="py-24 px-6 bg-[#FAF0E8]">
         <div className="max-w-xl mx-auto text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-[#D4A574]/10 rounded-full mb-4">
@@ -635,6 +638,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
           </div>
         </div>
       </section></ScrollR>
+      )}
 
       {/* 10. FOOTER */}
       <footer className="py-24 px-6 bg-[#3D2C2A] text-[#FDF8F4] relative overflow-hidden">
