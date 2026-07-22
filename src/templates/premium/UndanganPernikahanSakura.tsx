@@ -152,18 +152,44 @@ function OrnateDivider({ className = "" }: { className?: string }) {
 function FloatingPetals() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {[...Array(8)].map((_, i) => (
+      {[...Array(12)].map((_, i) => (
         <motion.div key={i} className="absolute"
-          initial={{ y: -30, x: `${5 + (i * 13) % 90}%`, opacity: 0, rotate: 0 }}
-          animate={{ y: '100vh', opacity: [0, 0.5, 0.2, 0], rotate: 360 }}
-          transition={{ duration: 7 + i * 1.5, delay: i * 1.2, repeat: Infinity, ease: 'linear' }}
-          style={{ left: `${5 + (i * 13) % 90}%` }}>
-          <svg width={`${12 + i % 2 * 6}`} height={`${14 + i % 2 * 6}`} viewBox="0 0 20 24" fill={SAKURA}>
+          initial={{ y: -30, x: `${3 + (i * 8) % 94}%`, opacity: 0, rotate: 0 }}
+          animate={{ y: '100vh', opacity: [0, 0.4, 0.15, 0], rotate: 360 }}
+          transition={{ duration: 8 + i * 1.5, delay: i * 1.8, repeat: Infinity, ease: 'linear' }}
+          style={{ left: `${3 + (i * 8) % 94}%` }}>
+          <svg width={`${10 + i % 3 * 6}`} height={`${12 + i % 3 * 6}`} viewBox="0 0 20 24" fill={SAKURA}>
             <path d="M10 3 Q13 0 10 6 Q7 0 10 3Z" />
             <path d="M10 6 Q16 8 13 12 Q14 7 10 6Z" opacity="0.8" />
             <path d="M10 6 Q4 8 7 12 Q6 7 10 6Z" opacity="0.8" />
             <circle cx="10" cy="7" r="1.5" fill={ROSE_GOLD} opacity="0.6" />
           </svg>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+/** Decorative background sakura blossoms scattered across a section */
+function BgOrnaments() {
+  const ornaments = [
+    { top: '10%', left: '5%', size: 'w-8 h-8', delay: 0 },
+    { top: '15%', right: '8%', size: 'w-5 h-5', delay: 1 },
+    { top: '40%', left: '2%', size: 'w-6 h-6', delay: 0.5 },
+    { top: '60%', right: '4%', size: 'w-10 h-10', delay: 2 },
+    { top: '80%', left: '10%', size: 'w-5 h-5', delay: 1.5 },
+    { bottom: '8%', right: '12%', size: 'w-7 h-7', delay: 0.8 },
+  ];
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {ornaments.map((o, i) => (
+        <motion.div key={i} className="absolute"
+          style={{ top: o.top, left: o.left, right: o.right, bottom: o.bottom } as React.CSSProperties}
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: [0, 0.12, 0.08, 0.12], scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 4, delay: o.delay, repeat: Infinity, ease: 'easeInOut' }}>
+          <SakuraBlossom className={o.size} fill={SAKURA} />
         </motion.div>
       ))}
     </div>
@@ -306,6 +332,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
         style={{ backgroundColor: BG_LIGHT }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}0A 0%, transparent 50%)` }} />
+        <BgOrnaments />
         <div className="max-w-xl mx-auto text-center relative z-10">
           <OrnateDivider />
           <p className="font-title text-4xl mb-4 leading-none" style={{ color: SAKURA }}>"</p>
@@ -321,6 +348,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
         style={{ backgroundColor: BG }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${ROSE_GOLD}0A 0%, transparent 50%)` }} />
+        <BgOrnaments />
         <div className="max-w-2xl mx-auto text-center relative z-10">
           <OrnateDivider />
           <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-2" style={{ color: MUTED }}>Kedua Mempelai</p>
@@ -363,6 +391,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
         style={{ backgroundColor: BG_LIGHT }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}0A 0%, transparent 50%)` }} />
+        <BgOrnaments />
         <div className="max-w-lg mx-auto text-center relative z-10">
           <OrnateDivider />
           <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-2" style={{ color: MUTED }}>Menuju Hari Bahagia</p>
@@ -402,6 +431,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       <motion.section className="relative px-6 py-24 overflow-hidden"
         style={{ backgroundColor: BG }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <BgOrnaments />
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-14">
             <OrnateDivider />
@@ -432,6 +462,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       <motion.section className="relative px-6 py-24 overflow-hidden"
         style={{ backgroundColor: BG_LIGHT }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <BgOrnaments />
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
             <OrnateDivider />
@@ -487,6 +518,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       <motion.section className="relative px-6 py-24 overflow-hidden"
         style={{ backgroundColor: BG }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <BgOrnaments />
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
             <OrnateDivider />
@@ -533,6 +565,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
         style={{ backgroundColor: BG_LIGHT }}
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}0A 0%, transparent 50%)` }} />
+        <BgOrnaments />
         <div className="max-w-xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <OrnateDivider />
@@ -600,7 +633,8 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
         <motion.section className="relative px-6 py-24 overflow-hidden"
           style={{ backgroundColor: BG }}
           initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
-          <div className="max-w-xl mx-auto text-center">
+          <BgOrnaments />
+          <div className="max-w-xl mx-auto text-center relative z-10">
             <OrnateDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-1" style={{ color: MUTED }}>Tanda Kasih</p>
             <h2 className="font-script text-3xl mb-3" style={{ color: PLUM }}>Kado Digital</h2>
