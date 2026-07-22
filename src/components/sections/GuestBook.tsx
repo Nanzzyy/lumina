@@ -62,11 +62,11 @@ export function GuestBook(props: SectionComponentProps) {
       >
         <input required value={formData.name}
           onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
-          className="w-full px-4 py-3 rounded-lg border border-[var(--colors-border)] text-sm text-[var(--colors-text)] bg-[var(--colors-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent"
+          className="w-full px-4 py-3 rounded-lg border border-[var(--colors-border)] text-base sm:text-sm text-[var(--colors-text)] bg-[var(--colors-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent"
           placeholder="Nama Anda" />
         <textarea required value={formData.message}
           onChange={(e) => setFormData(p => ({ ...p, message: e.target.value }))}
-          rows={3} className="w-full px-4 py-3 rounded-lg border border-[var(--colors-border)] text-sm text-[var(--colors-text)] bg-[var(--colors-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent resize-none"
+          rows={3} className="w-full px-4 py-3 rounded-lg border border-[var(--colors-border)] text-base sm:text-sm text-[var(--colors-text)] bg-[var(--colors-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent resize-none"
           placeholder="Tulis ucapan dan doa untuk kami..." />
         <Button variant={isNoir ? 'outline' : 'primary'} fullWidth>Kirim Ucapan</Button>
       </motion.form>

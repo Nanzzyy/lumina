@@ -40,7 +40,7 @@ function LoginForm() {
           <div>
             <label className="block text-xs text-zinc-500">Password</label>
             <input type="password" value={password} onChange={e => { setPassword(e.target.value); setError(''); }}
-              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-700 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300"
+              className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-base sm:text-sm text-zinc-700 outline-none focus:border-zinc-400 focus:ring-1 focus:ring-zinc-300"
               placeholder="••••••••" autoFocus />
             {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
           </div>

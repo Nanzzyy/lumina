@@ -161,7 +161,7 @@ export function LayoutBuilder({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Layout name..."
-              className="px-3 py-1.5 text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] w-48"
+              className="px-3 py-1.5 text-base sm:text-sm border border-zinc-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] w-48"
               disabled={readOnly}
             />
             <input
@@ -351,7 +351,7 @@ export function LayoutBuilder({
               <select
                 value={selectedContainer.type}
                 onChange={(e) => updateContainer(selectedIndex!, { type: e.target.value as ContainerType })}
-                className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]"
+                className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]"
                 disabled={readOnly}
               >
                 {containerTypes.map((ct) => (
@@ -388,7 +388,7 @@ export function LayoutBuilder({
                 <select
                   value={selectedContainer.variant || 'image-left'}
                   onChange={(e) => updateContainer(selectedIndex!, { variant: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]"
+                  className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]"
                   disabled={readOnly}
                 >
                   <option value="image-left">Image Left</option>

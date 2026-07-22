@@ -47,8 +47,8 @@ export function StickyNav({ items, variant = 'default' }: StickyNavProps) {
   return (
     <nav
       className={cn(
-        'fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-3',
-        'opacity-30 hover:opacity-100 transition-opacity duration-300',
+        'fixed end-2 sm:end-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-2.5',
+        'opacity-30 hover:opacity-100 focus-within:opacity-100 transition-opacity duration-300',
       )}
       aria-label="Section navigation"
     >
@@ -56,12 +56,12 @@ export function StickyNav({ items, variant = 'default' }: StickyNavProps) {
         <button
           key={item.id}
           onClick={() => scrollTo(item.id)}
-          className="group relative flex items-center justify-center p-1"
+          className="group relative flex items-center justify-center p-1.5 min-h-[32px] min-w-[32px]"
           aria-label={`Go to ${item.label}`}
         >
           <span
             className={cn(
-              'block w-2.5 h-2.5 rounded-full transition-all duration-300',
+              'block w-2 h-2 rounded-full transition-all duration-300',
               i === activeIndex
                 ? variant === 'noir'
                   ? 'bg-[var(--colors-text)] scale-125'
@@ -71,7 +71,8 @@ export function StickyNav({ items, variant = 'default' }: StickyNavProps) {
           />
           <span
             className={cn(
-              'absolute right-full mr-3 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none',
+              'absolute end-full me-3 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity pointer-events-none',
+              'hidden sm:inline',
               variant === 'noir' ? 'text-[var(--colors-text-secondary)]' : 'text-[var(--colors-text-muted)]',
             )}
           >

@@ -1,12 +1,14 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useStudioStore } from '@/lib/studio/store';
 import { getTemplate } from '@/lib/template';
 
 export default function StudioDashboard() {
   const router = useRouter();
-  const { invitations, loaded } = useStudioStore();
+  const { invitations, loaded, remove } = useStudioStore();
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -61,10 +63,21 @@ export default function StudioDashboard() {
                     <span>{inv.content?.couple?.partner1 || '?'} & {inv.content?.couple?.partner2 || '?'}</span>
                   </div>
 
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
                     <button onClick={() => router.push(`/studio/${inv.slug}`)}
                       className="flex-1 px-3 py-1.5 text-xs bg-zinc-100 text-zinc-700 rounded-md hover:bg-zinc-200 transition-colors">
                       Edit
+                    </button>
+                    <button
+                      onClick={async () => {
+                        if (!confirm(`Hapus "${inv.title}"?`)) return;
+                        setDeleting(inv.slug);
+                        try { await remove(inv.slug); } catch {}
+                        setDeleting(null);
+                      }}
+                      disabled={deleting === inv.slug}
+                      className="px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40">
+                      {deleting === inv.slug ? '...' : 'Hapus'}
                     </button>
                   </div>
                 </div>

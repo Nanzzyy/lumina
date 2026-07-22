@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { storeAsset } from '@/lib/assets';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
@@ -25,15 +24,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid file type' }, { status: 415 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const uploadDir = path.join(process.cwd(), 'public/uploads');
+    // ADR-009: content-addressed storage + DB index (dedup by sha256, immutable path).
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const stored = await storeAsset(buffer, {
+      ext,
+      mime: file.type || 'application/octet-stream',
+      bytes: file.size,
+    });
 
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(path.join(uploadDir, name), buffer);
-
-    return NextResponse.json({ url: `/uploads/${name}` });
+    return NextResponse.json({
+      url: stored.url,
+      id: stored.id,
+      hash: stored.hash,
+      duplicated: stored.duplicated,
+    });
   } catch {
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }

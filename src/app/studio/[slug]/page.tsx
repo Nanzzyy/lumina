@@ -26,7 +26,7 @@ function Field({ label, children, fullWidth }: { label: string; children: React.
 function Input({ value, onChange, placeholder, multiline, rows = 2, type }: {
   value: string; onChange: (v: string) => void; placeholder?: string; multiline?: boolean; rows?: number; type?: string;
 }) {
-  const cls = 'w-full px-3 py-2 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent transition-shadow';
+  const cls = 'w-full px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent transition-shadow';
   if (multiline) return <textarea className={`${cls} resize-none`} rows={rows} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />;
   return <input type={type || 'text'} className={cls} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />;
 }
@@ -37,65 +37,78 @@ function ColorInput({ value, onChange }: { value: string; onChange: (v: string) 
       <input type="color" value={value || '#000000'} onChange={(e) => onChange(e.target.value)}
         className="w-9 h-9 rounded-md border border-zinc-300 cursor-pointer flex-shrink-0" />
       <input type="text" value={value} onChange={(e) => onChange(e.target.value)}
-        className="flex-1 px-3 py-2 rounded-lg border border-zinc-300 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent" placeholder="#hex" />
+        className="flex-1 px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent" placeholder="#hex" />
     </div>
   );
 }
 
 /* ─── Content Editor Sections ─── */
-function CoupleEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+function CoupleEditor({ content, onChange, isSolo }: { content: InvitationContent; onChange: (c: InvitationContent) => void; isSolo?: boolean }) {
   const update = (field: keyof typeof content.couple, value: string) => {
     onChange({ ...content, couple: { ...content.couple, [field]: value } });
   };
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <Field label="Partner 1 Name"><Input value={content.couple.partner1} onChange={(v) => update('partner1', v)} placeholder="Sarah" /></Field>
-      <Field label="Partner 2 Name"><Input value={content.couple.partner2} onChange={(v) => update('partner2', v)} placeholder="Alexander" /></Field>
+      {!isSolo && <><Field label="Partner 2 Name"><Input value={content.couple.partner2} onChange={(v) => update('partner2', v)} placeholder="Alexander" /></Field></>}
       <Field label="Partner 1 Full Title"><Input value={content.couple.partner1Title || ''} onChange={(v) => update('partner1Title', v)} placeholder="Sarah Johnson" /></Field>
-      <Field label="Partner 2 Full Title"><Input value={content.couple.partner2Title || ''} onChange={(v) => update('partner2Title', v)} placeholder="Alexander Chen" /></Field>
+      {!isSolo && <><Field label="Partner 2 Full Title"><Input value={content.couple.partner2Title || ''} onChange={(v) => update('partner2Title', v)} placeholder="Alexander Chen" /></Field></>}
       <Field label="Parents" fullWidth><Input value={content.couple.parents || ''} onChange={(v) => update('parents', v)} placeholder="Mr. & Mrs. Johnson" /></Field>
+      <div className="col-span-full mt-2">
+        <p className="text-xs text-zinc-400 mb-2">Detail per-mempelai (untuk template premium)</p>
+      </div>
+      <Field label="Partner 1 Father"><Input value={content.couple.partner1Father || ''} onChange={(v) => update('partner1Father', v)} placeholder="Bpk. ..." /></Field>
+      <Field label="Partner 1 Mother"><Input value={content.couple.partner1Mother || ''} onChange={(v) => update('partner1Mother', v)} placeholder="Ibu ..." /></Field>
+      {!isSolo && <><Field label="Partner 2 Father"><Input value={content.couple.partner2Father || ''} onChange={(v) => update('partner2Father', v)} placeholder="Bpk. ..." /></Field></>}
+      {!isSolo && <><Field label="Partner 2 Mother"><Input value={content.couple.partner2Mother || ''} onChange={(v) => update('partner2Mother', v)} placeholder="Ibu ..." /></Field></>}
+      <Field label="Partner 1 Instagram"><Input value={content.couple.partner1Instagram || ''} onChange={(v) => update('partner1Instagram', v)} placeholder="@handle" /></Field>
+      {!isSolo && <><Field label="Partner 2 Instagram"><Input value={content.couple.partner2Instagram || ''} onChange={(v) => update('partner2Instagram', v)} placeholder="@handle" /></Field></>}
+      <Field label="Partner 1 Bio" fullWidth><Input value={content.couple.partner1Desc || ''} onChange={(v) => update('partner1Desc', v)} placeholder="Short bio..." /></Field>
+      {!isSolo && <><Field label="Partner 2 Bio" fullWidth><Input value={content.couple.partner2Desc || ''} onChange={(v) => update('partner2Desc', v)} placeholder="Short bio..." /></Field></>}
     </div>
   );
 }
 
 function EventEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
-  const set = (k: string, v: string) => onChange({ ...content, event: { ...content.event, [k]: v } });
+  const ev = content.event || {} as InvitationContent['event'];
+  const set = (k: string, v: string) => onChange({ ...content, event: { ...(content.event || {}), [k]: v } });
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <Field label="Date"><Input value={content.event.date} onChange={(v) => set('date', v)} placeholder="2026-09-15T16:00:00" /></Field>
-      <Field label="Time"><Input value={content.event.time} onChange={(v) => set('time', v)} placeholder="4:00 PM" /></Field>
-      <Field label="Location" fullWidth><Input value={content.event.location} onChange={(v) => set('location', v)} placeholder="The Grand Botanical Garden" /></Field>
-      <Field label="Address" fullWidth><Input value={content.event.address} onChange={(v) => set('address', v)} placeholder="123 Main Street" /></Field>
-      <Field label="Google Maps URL" fullWidth><Input value={content.event.mapsUrl || ''} onChange={(v) => set('mapsUrl', v)} placeholder="https://maps.google.com/maps?q=..." /></Field>
-      <Field label="Note" fullWidth><Input value={content.event.note || ''} onChange={(v) => set('note', v)} multiline rows={2} placeholder="Garden attire..." /></Field>
+      <Field label="Date"><Input value={ev.date || ''} onChange={(v) => set('date', v)} placeholder="2026-09-15T16:00:00" /></Field>
+      <Field label="Time"><Input value={ev.time || ''} onChange={(v) => set('time', v)} placeholder="4:00 PM" /></Field>
+      <Field label="Location" fullWidth><Input value={ev.location || ''} onChange={(v) => set('location', v)} placeholder="The Grand Botanical Garden" /></Field>
+      <Field label="Address" fullWidth><Input value={ev.address || ''} onChange={(v) => set('address', v)} placeholder="123 Main Street" /></Field>
+      <Field label="Google Maps URL" fullWidth><Input value={ev.mapsUrl || ''} onChange={(v) => set('mapsUrl', v)} placeholder="https://maps.google.com/maps?q=..." /></Field>
+      <Field label="Note" fullWidth><Input value={ev.note || ''} onChange={(v) => set('note', v)} multiline rows={2} placeholder="Garden attire..." /></Field>
     </div>
   );
 }
 
 function StoryEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const st = content.story || { title: "", paragraphs: [""], imagePosition: "left" };
   const updateParagraph = (i: number, v: string) => {
-    const p = [...content.story.paragraphs];
+    const p = [...st.paragraphs];
     p[i] = v;
     onChange({ ...content, story: { ...content.story, paragraphs: p } });
   };
-  const addParagraph = () => onChange({ ...content, story: { ...content.story, paragraphs: [...content.story.paragraphs, ''] } });
-  const removeParagraph = (i: number) => onChange({ ...content, story: { ...content.story, paragraphs: content.story.paragraphs.filter((_, idx) => idx !== i) } });
+  const addParagraph = () => onChange({ ...content, story: { ...content.story, paragraphs: [...st.paragraphs, ''] } });
+  const removeParagraph = (i: number) => onChange({ ...content, story: { ...content.story, paragraphs: st.paragraphs.filter((_, idx) => idx !== i) } });
 
   return (
     <div className="space-y-4">
-      <Field label="Story Title"><Input value={content.story.title} onChange={(v) => onChange({ ...content, story: { ...content.story, title: v } })} placeholder="Our Love Story" /></Field>
+      <Field label="Story Title"><Input value={st.title} onChange={(v) => onChange({ ...content, story: { ...content.story, title: v } })} placeholder="Our Love Story" /></Field>
       <div className="grid grid-cols-2 gap-4">
         <Field label="Image Position">
-          <select value={content.story.imagePosition || 'left'} onChange={(e) => onChange({ ...content, story: { ...content.story, imagePosition: e.target.value as 'left' | 'right' } })}
-            className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]">
+          <select value={st.imagePosition || 'left'} onChange={(e) => onChange({ ...content, story: { ...content.story, imagePosition: e.target.value as 'left' | 'right' } })}
+            className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]">
             <option value="left">Kiri</option>
             <option value="right">Kanan</option>
           </select>
         </Field>
-        <Field label="Story Image URL"><Input value={content.story.image || ''} onChange={(v) => onChange({ ...content, story: { ...content.story, image: v } })} placeholder="https://..." /></Field>
+        <Field label="Story Image URL"><Input value={st.image || ''} onChange={(v) => onChange({ ...content, story: { ...content.story, image: v } })} placeholder="https://..." /></Field>
       </div>
       <div className="space-y-3">
-        {content.story.paragraphs.map((p, i) => (
+        {st.paragraphs.map((p, i) => (
           <div key={i} className="flex gap-2 items-start">
             <div className="flex-1"><Input value={p} onChange={(v) => updateParagraph(i, v)} multiline rows={2} placeholder={`Paragraph ${i + 1}...`} /></div>
             <button onClick={() => removeParagraph(i)} className="mt-2 text-zinc-400 hover:text-red-500 transition-colors flex-shrink-0">
@@ -110,51 +123,53 @@ function StoryEditor({ content, onChange }: { content: InvitationContent; onChan
 }
 
 function GalleryEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const gl = content.gallery || { images: [], layout: "grid" };
   const set = (k: string, v: unknown) => onChange({ ...content, gallery: { ...content.gallery, [k]: v } } as InvitationContent);
-  const addImage = () => set('images', [...content.gallery.images, '']);
+  const addImage = () => set('images', [...gl.images, '']);
   const updateImage = (i: number, v: string) => {
-    const imgs = [...content.gallery.images]; imgs[i] = v;
+    const imgs = [...gl.images]; imgs[i] = v;
     set('images', imgs);
   };
-  const removeImage = (i: number) => set('images', content.gallery.images.filter((_, idx) => idx !== i));
+  const removeImage = (i: number) => set('images', gl.images.filter((_, idx) => idx !== i));
 
   return (
     <div className="space-y-4">
       <Field label="Layout">
-        <select value={content.gallery.layout || 'grid'} onChange={(e) => set('layout', e.target.value)}
-          className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]">
+        <select value={gl.layout || 'grid'} onChange={(e) => set('layout', e.target.value)}
+          className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]">
           <option value="grid">Grid</option>
           <option value="masonry">Masonry</option>
           <option value="carousel">Carousel</option>
         </select>
       </Field>
       <div className="space-y-2">
-        {content.gallery.images.map((img, i) => (
+        {gl.images.map((img, i) => (
           <div key={i} className="flex gap-2 items-center">
             <span className="text-xs text-zinc-400 w-6">{i + 1}.</span>
-            <Input value={img} onChange={(v) => updateImage(i, v)} placeholder="Image URL" />
+            <Input value={img} onChange={(v) => updateImage(i, v)} placeholder="Image / video URL (.mp4/.webm)" />
             <button onClick={() => removeImage(i)} className="text-zinc-400 hover:text-red-500"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
           </div>
         ))}
         <button onClick={addImage} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ Add image</button>
-        <p className="text-xs text-zinc-400">{content.gallery.images.length} image{content.gallery.images.length !== 1 ? 's' : ''}</p>
+        <p className="text-xs text-zinc-400">{gl.images.length} image{gl.images.length !== 1 ? 's' : ''}</p>
       </div>
     </div>
   );
 }
 
 function ScheduleEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const sch = content.schedule || { title: "", items: [] };
   const updateItem = (i: number, k: string, v: string) => {
-    const items = content.schedule.items.map((item, idx) => idx === i ? { ...item, [k]: v } : item);
+    const items = sch.items.map((item, idx) => idx === i ? { ...item, [k]: v } : item);
     onChange({ ...content, schedule: { ...content.schedule, items } });
   };
-  const addItem = () => onChange({ ...content, schedule: { ...content.schedule, items: [...content.schedule.items, { time: '', title: '', description: '' }] } } as InvitationContent);
-  const removeItem = (i: number) => onChange({ ...content, schedule: { ...content.schedule, items: content.schedule.items.filter((_, idx) => idx !== i) } } as InvitationContent);
+  const addItem = () => onChange({ ...content, schedule: { ...content.schedule, items: [...sch.items, { time: '', title: '', description: '' }] } } as InvitationContent);
+  const removeItem = (i: number) => onChange({ ...content, schedule: { ...content.schedule, items: sch.items.filter((_, idx) => idx !== i) } } as InvitationContent);
 
   return (
     <div className="space-y-4">
-      <Field label="Schedule Title"><Input value={content.schedule.title} onChange={(v) => onChange({ ...content, schedule: { ...content.schedule, title: v } })} placeholder="Wedding Day Timeline" /></Field>
-      {content.schedule.items.map((item, i) => (
+      <Field label="Schedule Title"><Input value={sch.title} onChange={(v) => onChange({ ...content, schedule: { ...content.schedule, title: v } })} placeholder="Wedding Day Timeline" /></Field>
+      {sch.items.map((item, i) => (
         <div key={i} className="p-4 border border-zinc-200 rounded-lg space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Event {i + 1}</span>
@@ -164,27 +179,104 @@ function ScheduleEditor({ content, onChange }: { content: InvitationContent; onC
             <div><label className="block text-xs text-zinc-500 mb-1">Time</label><Input value={item.time} onChange={(v) => updateItem(i, 'time', v)} placeholder="4:00 PM" /></div>
             <div><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={item.title} onChange={(v) => updateItem(i, 'title', v)} placeholder="Ceremony" /></div>
           </div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Venue</label><Input value={item.venue || ''} onChange={(v) => updateItem(i, 'venue', v)} placeholder="Venue name (template premium)" /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Address</label><Input value={item.address || ''} onChange={(v) => updateItem(i, 'address', v)} placeholder="Full address" /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Maps URL</label><Input value={item.mapsUrl || ''} onChange={(v) => updateItem(i, 'mapsUrl', v)} placeholder="https://maps.google.com/..." /></div>
           <div><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={item.description || ''} onChange={(v) => updateItem(i, 'description', v)} multiline rows={1} placeholder="Event description..." /></div>
         </div>
       ))}
       <button onClick={addItem} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ Add event</button>
-      <Field label="Schedule Note"><Input value={content.schedule.note || ''} onChange={(v) => onChange({ ...content, schedule: { ...content.schedule, note: v } })} multiline rows={1} placeholder="Subject to change..." /></Field>
+      <Field label="Schedule Note"><Input value={sch.note || "" || ''} onChange={(v) => onChange({ ...content, schedule: { ...content.schedule, note: v } })} multiline rows={1} placeholder="Subject to change..." /></Field>
+    </div>
+  );
+}
+
+function MediaEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const m = content.media || {};
+  const set = (k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo', v: string) =>
+    onChange({ ...content, media: { ...m, [k]: v } });
+  const fields: { k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo'; label: string }[] = [
+    { k: 'cover', label: 'Cover Background' },
+    { k: 'hero', label: 'Hero Background' },
+    { k: 'partner1Photo', label: 'Foto Mempelai 1' },
+    { k: 'partner2Photo', label: 'Foto Mempelai 2' },
+  ];
+  const music = content.music ?? { src: '' };
+  const setMusic = (k: 'src' | 'title', v: string) => onChange({ ...content, music: { ...music, [k]: v } });
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-zinc-400">Gambar <strong>atau video</strong> (.mp4/.webm/.mov) — tempel URL, terdeteksi otomatis.</p>
+      {fields.map(({ k, label }) => (
+        <div key={k} className="flex gap-3 items-center">
+          <div className="w-14 h-14 rounded-lg border border-zinc-200 overflow-hidden flex-shrink-0 bg-zinc-50">
+            {m[k] ? (
+              <img src={m[k]} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-zinc-300 text-xs">—</div>
+            )}
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs text-zinc-500 mb-1">{label}</label>
+            <Input value={m[k] || ''} onChange={(v) => set(k, v)} placeholder="https://... (gambar / video)" />
+          </div>
+        </div>
+      ))}
+
+      <div className="pt-3 mt-2 border-t border-zinc-200">
+        <p className="text-xs text-zinc-400 mb-2">Lagu (background music)</p>
+        <div className="space-y-2">
+          <Input value={music.src || ''} onChange={(v) => setMusic('src', v)} placeholder="https://.../lagu.mp3" />
+          <Input value={music.title || ''} onChange={(v) => setMusic('title', v)} placeholder="Judul lagu (opsional)" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StoriesEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const stories = content.stories || [];
+  const update = (i: number, k: 'year' | 'title' | 'desc', v: string) => {
+    const next = stories.map((s, idx) => (idx === i ? { ...s, [k]: v } : s));
+    onChange({ ...content, stories: next });
+  };
+  const add = () => onChange({ ...content, stories: [...stories, { year: '', title: '', desc: '' }] });
+  const remove = (i: number) => onChange({ ...content, stories: stories.filter((_, idx) => idx !== i) });
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-zinc-400">Timeline kisah cinta (dipakai template premium). Kosong = fallback default.</p>
+      {stories.map((s, i) => (
+        <div key={i} className="p-4 border border-zinc-200 rounded-lg space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Momen {i + 1}</span>
+            <button onClick={() => remove(i)} className="text-zinc-400 hover:text-red-500"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div><label className="block text-xs text-zinc-500 mb-1">Year</label><Input value={s.year} onChange={(v) => update(i, 'year', v)} placeholder="2021" /></div>
+            <div className="col-span-2"><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={s.title} onChange={(v) => update(i, 'title', v)} placeholder="Pertemuan Pertama" /></div>
+          </div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={s.desc} onChange={(v) => update(i, 'desc', v)} multiline rows={2} placeholder="Cerita singkat..." /></div>
+        </div>
+      ))}
+      <button onClick={add} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ Tambah momen</button>
     </div>
   );
 }
 
 function RSVPGuestBookGiftEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const rsvp = content.rsvp || {}; const gft = content.gift || { enabled: true, layout: "standalone", items: [] }; const gbk = content.guestbook || { enabled: true, showMessages: true };
   return (
     <div className="space-y-6">
       <div className="p-4 bg-zinc-50 rounded-lg">
         <h3 className="text-sm font-semibold text-zinc-700 mb-3">RSVP</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={content.rsvp.title || ''} onChange={(v) => onChange({ ...content, rsvp: { ...content.rsvp, title: v } })} placeholder="Will You Attend?" /></div>
-          <div><label className="block text-xs text-zinc-500 mb-1">Deadline</label><Input value={content.rsvp.deadline || ''} onChange={(v) => onChange({ ...content, rsvp: { ...content.rsvp, deadline: v } })} placeholder="2026-08-15" /></div>
-          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={content.rsvp.description || ''} onChange={(v) => onChange({ ...content, rsvp: { ...content.rsvp, description: v } })} multiline rows={1} placeholder="Please let us know..." /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={(rsvp.title ?? "") || ''} onChange={(v) => onChange({ ...content, rsvp: { ...content.rsvp, title: v } })} placeholder="Will You Attend?" /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Deadline</label><Input value={(rsvp.deadline ?? "") || ''} onChange={(v) => onChange({ ...content, rsvp: { ...content.rsvp, deadline: v } })} placeholder="2026-08-15" /></div>
+          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={(rsvp.description ?? "") || ''} onChange={(v) => onChange({ ...content, rsvp: { ...content.rsvp, description: v } })} multiline rows={1} placeholder="Please let us know..." /></div>
           <div className="flex items-center gap-3 mt-2">
             <label className="text-sm text-zinc-700">Show Confirmation List</label>
-            <input type="checkbox" checked={content.rsvp.showConfirmationList !== false} onChange={(e) => onChange({ ...content, rsvp: { ...content.rsvp, showConfirmationList: e.target.checked } })}
+            <input type="checkbox" checked={(rsvp.showConfirmationList ?? true) !== false} onChange={(e) => onChange({ ...content, rsvp: { ...content.rsvp, showConfirmationList: e.target.checked } })}
               className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
           </div>
         </div>
@@ -194,37 +286,59 @@ function RSVPGuestBookGiftEditor({ content, onChange }: { content: InvitationCon
         <h3 className="text-sm font-semibold text-zinc-700 mb-3">Wedding Gift</h3>
         <div className="flex items-center gap-3 mb-3">
           <label className="text-sm text-zinc-700">Tampilkan Gift</label>
-          <input type="checkbox" checked={content.gift.enabled !== false} onChange={(e) => onChange({ ...content, gift: { ...content.gift, enabled: e.target.checked } })}
+          <input type="checkbox" checked={(gft.enabled ?? true) !== false} onChange={(e) => onChange({ ...content, gift: { ...content.gift, enabled: e.target.checked } })}
             className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Layout</label>
-            <select value={content.gift.layout || 'standalone'} onChange={(e) => onChange({ ...content, gift: { ...content.gift, layout: e.target.value as 'standalone' | 'below-attendance' } })}
-              className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]">
+            <select value={(gft.layout ?? "standalone") || 'standalone'} onChange={(e) => onChange({ ...content, gift: { ...content.gift, layout: e.target.value as 'standalone' | 'below-attendance' } })}
+              className="w-full px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)]">
               <option value="standalone">Section Sendiri</option>
               <option value="below-attendance">Di Bawah Attendance</option>
             </select>
           </div>
-          <div><label className="block text-xs text-zinc-500 mb-1">Bank Name</label><Input value={content.gift.bankName || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, bankName: v } })} placeholder="First National Bank" /></div>
-          <div><label className="block text-xs text-zinc-500 mb-1">Account Number</label><Input value={content.gift.accountNumber || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, accountNumber: v } })} placeholder="1234-5678" /></div>
-          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Account Name</label><Input value={content.gift.accountName || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, accountName: v } })} placeholder="Sarah & Alexander" /></div>
-          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={content.gift.description || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, description: v } })} multiline rows={1} placeholder="Your presence is the greatest gift..." /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Bank Name</label><Input value={(gft.bankName ?? "") || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, bankName: v } })} placeholder="First National Bank" /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Account Number</label><Input value={(gft.accountNumber ?? "") || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, accountNumber: v } })} placeholder="1234-5678" /></div>
+          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Account Name</label><Input value={(gft.accountName ?? "") || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, accountName: v } })} placeholder="Sarah & Alexander" /></div>
+          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={(gft.description ?? "") || ''} onChange={(v) => onChange({ ...content, gift: { ...content.gift, description: v } })} multiline rows={1} placeholder="Your presence is the greatest gift..." /></div>
+        </div>
+
+        <div className="mt-4 pt-3 border-t border-zinc-200">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-zinc-500">Rekening multiple (template premium)</span>
+            <button onClick={() => onChange({ ...content, gift: { ...content.gift, items: [...((gft.items || []) || []), { name: '', bank: '', number: '', owner: '' }] } })}
+              className="text-xs text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ tambah</button>
+          </div>
+          <div className="space-y-2">
+            {((gft.items || []) || []).map((item, i) => (
+              <div key={i} className="flex gap-2 items-start">
+                <div className="flex-1 grid grid-cols-3 gap-2">
+                  <Input value={item.bank || ''} onChange={(v) => { const items = [...((gft.items || []) || [])]; items[i] = { ...item, bank: v }; onChange({ ...content, gift: { ...content.gift, items } }); }} placeholder="Bank BCA" />
+                  <Input value={item.number || ''} onChange={(v) => { const items = [...((gft.items || []) || [])]; items[i] = { ...item, number: v }; onChange({ ...content, gift: { ...content.gift, items } }); }} placeholder="1234567890" />
+                  <Input value={item.owner || ''} onChange={(v) => { const items = [...((gft.items || []) || [])]; items[i] = { ...item, owner: v }; onChange({ ...content, gift: { ...content.gift, items } }); }} placeholder="A/N nama" />
+                </div>
+                <button onClick={() => onChange({ ...content, gift: { ...content.gift, items: ((gft.items || []) || []).filter((_, idx) => idx !== i) } })} className="mt-2 text-zinc-400 hover:text-red-500 flex-shrink-0">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="p-4 bg-zinc-50 rounded-lg">
         <h3 className="text-sm font-semibold text-zinc-700 mb-3">Guest Book</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={content.guestbook.title || ''} onChange={(v) => onChange({ ...content, guestbook: { ...content.guestbook, title: v } })} placeholder="Guest Book" /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={(gbk.title ?? "") || ''} onChange={(v) => onChange({ ...content, guestbook: { ...content.guestbook, title: v } })} placeholder="Guest Book" /></div>
           <div className="flex items-center gap-3 mt-5">
             <label className="text-sm text-zinc-700">Enabled</label>
-            <input type="checkbox" checked={content.guestbook.enabled} onChange={(e) => onChange({ ...content, guestbook: { ...content.guestbook, enabled: e.target.checked } })}
+            <input type="checkbox" checked={(gbk.enabled ?? true)} onChange={(e) => onChange({ ...content, guestbook: { ...content.guestbook, enabled: e.target.checked } })}
               className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
           </div>
-          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={content.guestbook.description || ''} onChange={(v) => onChange({ ...content, guestbook: { ...content.guestbook, description: v } })} multiline rows={1} placeholder="Leave a message..." /></div>
+          <div className="col-span-full"><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={(gbk.description ?? "") || ''} onChange={(v) => onChange({ ...content, guestbook: { ...content.guestbook, description: v } })} multiline rows={1} placeholder="Leave a message..." /></div>
           <div className="flex items-center gap-3">
             <label className="text-sm text-zinc-700">Tampilkan Ucapan</label>
-            <input type="checkbox" checked={content.guestbook.showMessages !== false} onChange={(e) => onChange({ ...content, guestbook: { ...content.guestbook, showMessages: e.target.checked } })}
+            <input type="checkbox" checked={(gbk.showMessages ?? true) !== false} onChange={(e) => onChange({ ...content, guestbook: { ...content.guestbook, showMessages: e.target.checked } })}
               className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
           </div>
         </div>
@@ -234,26 +348,133 @@ function RSVPGuestBookGiftEditor({ content, onChange }: { content: InvitationCon
 }
 
 function QuoteFooterEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const qt = content.quote || { text: "" }; const ft = content.footer || { text: "", showCredit: true };
   return (
     <div className="space-y-6">
       <div className="p-4 bg-zinc-50 rounded-lg">
         <h3 className="text-sm font-semibold text-zinc-700 mb-3">Quote</h3>
         <div className="space-y-3">
-          <div><label className="block text-xs text-zinc-500 mb-1">Quote Text</label><Input value={content.quote.text} onChange={(v) => onChange({ ...content, quote: { ...content.quote, text: v } })} multiline rows={2} placeholder="Love is..." /></div>
-          <div><label className="block text-xs text-zinc-500 mb-1">Source</label><Input value={content.quote.source || ''} onChange={(v) => onChange({ ...content, quote: { ...content.quote, source: v } })} placeholder="Antoine de Saint-Exupéry" /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Quote Text</label><Input value={qt.text} onChange={(v) => onChange({ ...content, quote: { ...content.quote, text: v } })} multiline rows={2} placeholder="Love is..." /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Source</label><Input value={qt.source || "" || ''} onChange={(v) => onChange({ ...content, quote: { ...content.quote, source: v } })} placeholder="Antoine de Saint-Exupéry" /></div>
         </div>
       </div>
 
       <div className="p-4 bg-zinc-50 rounded-lg">
         <h3 className="text-sm font-semibold text-zinc-700 mb-3">Footer</h3>
         <div className="space-y-3">
-          <div><label className="block text-xs text-zinc-500 mb-1">Footer Text</label><Input value={content.footer.text} onChange={(v) => onChange({ ...content, footer: { ...content.footer, text: v } })} placeholder="With love..." /></div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Footer Text</label><Input value={ft.text} onChange={(v) => onChange({ ...content, footer: { ...content.footer, text: v } })} placeholder="With love..." /></div>
           <div className="flex items-center gap-3">
             <label className="text-sm text-zinc-700">Show Credit</label>
-            <input type="checkbox" checked={content.footer.showCredit ?? true} onChange={(e) => onChange({ ...content, footer: { ...content.footer, showCredit: e.target.checked } })}
+            <input type="checkbox" checked={ft.showCredit ?? true} onChange={(e) => onChange({ ...content, footer: { ...content.footer, showCredit: e.target.checked } })}
               className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Partners Editor (multi-person events with >2 people) ─── */
+function PartnersEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const list = content.couple?.partners || [];
+  const update = (i: number, k: keyof import('@/lib/content/types').Partner, v: string) => {
+    const next = list.map((p, idx) => (idx === i ? { ...p, [k]: v } : p));
+    onChange({ ...content, couple: { ...content.couple, partners: next } });
+  };
+  const add = () => onChange({ ...content, couple: { ...content.couple, partners: [...list, { name: '' }] } });
+  const remove = (i: number) => onChange({ ...content, couple: { ...content.couple, partners: list.filter((_, idx) => idx !== i) } });
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-zinc-400">Untuk acara dengan lebih dari 2 partisipan (keluarga, grup, dll).</p>
+      {list.map((p, i) => (
+        <div key={i} className="p-4 border border-zinc-200 rounded-lg space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-zinc-500 uppercase">Partisipan {i + 1}</span>
+            <button onClick={() => remove(i)} className="text-zinc-400 hover:text-red-500 p-1">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Input value={p.name} onChange={(v) => update(i, 'name', v)} placeholder="Nama" />
+            <Input value={p.title || ''} onChange={(v) => update(i, 'title', v)} placeholder="Gelar / title" />
+            <Input value={p.father || ''} onChange={(v) => update(i, 'father', v)} placeholder="Ayah" />
+            <Input value={p.mother || ''} onChange={(v) => update(i, 'mother', v)} placeholder="Ibu" />
+            <Input value={p.instagram || ''} onChange={(v) => update(i, 'instagram', v)} placeholder="@instagram" />
+            <div className="col-span-full">
+              <Input value={p.desc || ''} onChange={(v) => update(i, 'desc', v)} multiline rows={2} placeholder="Deskripsi / bio" />
+            </div>
+          </div>
+        </div>
+      ))}
+      <button onClick={add} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ Tambah partisipan</button>
+    </div>
+  );
+}
+
+/* ─── Guest List Editor (per-guest shareable links) ─── */
+function GuestListEditor({ content, onChange, slug }: { content: InvitationContent; onChange: (c: InvitationContent) => void; slug: string }) {
+  const list = content.guestList || [];
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const base = `${origin}/i/${slug}`;
+  const [copied, setCopied] = useState<string | null>(null);
+  const copy = (key: string, text: string) => {
+    navigator.clipboard?.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  const update = (i: number, v: string) => {
+    const next = [...list]; next[i] = v;
+    onChange({ ...content, guestList: next });
+  };
+  const add = () => onChange({ ...content, guestList: [...list, ''] });
+  const remove = (i: number) => onChange({ ...content, guestList: list.filter((_, idx) => idx !== i) });
+  const named = list.map((n) => n.trim()).filter(Boolean);
+
+  const inputCls = 'flex-1 px-3 py-2 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent transition-shadow min-w-0';
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-zinc-500">
+        Link <strong>default</strong> menampilkan "Tamu Undangan" di cover. Link <strong>per-nama</strong> menampilkan nama tamu tersebut.
+      </p>
+
+      {/* Default link */}
+      <div className="flex items-center gap-2 p-3 bg-zinc-50 rounded-lg border border-zinc-200">
+        <span className="text-[10px] uppercase tracking-wider text-zinc-400 flex-shrink-0">Default</span>
+        <code className="flex-1 text-xs text-zinc-600 truncate">{base}</code>
+        <button onClick={() => copy('default', base)} className="text-xs px-2.5 py-1.5 rounded-md bg-white border border-zinc-200 hover:bg-zinc-100 flex-shrink-0">
+          {copied === 'default' ? '✓ Tersalin' : 'Salin'}
+        </button>
+      </div>
+
+      {/* Per-guest rows */}
+      <div className="space-y-2">
+        {list.map((name, i) => {
+          const url = name.trim() ? `${base}?to=${encodeURIComponent(name.trim())}` : base;
+          return (
+            <div key={i} className="flex gap-2 items-center">
+              <input value={name} onChange={(e) => update(i, e.target.value)} placeholder="Nama tamu" className={inputCls} />
+              <button onClick={() => copy(`g${i}`, url)} title={url} className="text-xs px-2.5 py-2 rounded-md bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 flex-shrink-0">
+                {copied === `g${i}` ? '✓' : 'Salin Link'}
+              </button>
+              <button onClick={() => remove(i)} className="text-zinc-400 hover:text-red-500 flex-shrink-0 p-1">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-4">
+        <button onClick={add} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ Tambah tamu</button>
+        {named.length > 0 && (
+          <button onClick={() => copy('all', named.map((n) => `${n}: ${base}?to=${encodeURIComponent(n)}`).join('\n'))}
+            className="text-sm text-zinc-500 hover:text-zinc-700">
+            {copied === 'all' ? '✓ Semua link tersalin' : 'Salin semua link'}
+          </button>
+        )}
+        {named.length > 0 && <span className="text-xs text-zinc-400 ml-auto">{named.length} tamu</span>}
       </div>
     </div>
   );
@@ -477,7 +698,7 @@ function LayoutTab({ invitation, content, layout, onLayoutChange }: {
           <select
             value={invitation.layoutId || 'default'}
             onChange={(e) => onLayoutChange(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent"
+            className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent"
           >
             {layouts.map((l) => (
               <option key={l.id} value={l.id}>{l.name}</option>
@@ -601,11 +822,12 @@ export default function StudioEditorPage() {
   };
 
   // All hooks must be called before any early return — Rules of Hooks
+  const isMonolithic = template?.kind === 'monolithic';
   const tabs: { id: EditorTab; label: string }[] = [
     { id: 'content', label: 'Content' },
-    { id: 'theme', label: 'Theme' },
-    { id: 'layout', label: 'Layout' },
     { id: 'preview', label: 'Preview' },
+    // Theme + Layout only apply to composed templates (premium renders itself).
+    ...(isMonolithic ? [] : [{ id: 'theme' as const, label: 'Theme' }, { id: 'layout' as const, label: 'Layout' }]),
   ];
 
   const mergedTheme = useMemo(() => {
@@ -616,7 +838,7 @@ export default function StudioEditorPage() {
     } as DeepPartial<ThemeConfig>;
   }, [template?.theme, themeOverrides]);
 
-  if (!invitation || !content || !template || !layout) {
+  if (!invitation || !content || !template || (!isMonolithic && !layout)) {
     return (
       <div className="text-center py-20">
         <p className="text-zinc-500">Invitation not found.</p>
@@ -682,7 +904,21 @@ export default function StudioEditorPage() {
         <div className="space-y-8">
           <section>
             <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Couple</h2>
-            <CoupleEditor content={content} onChange={handleChange} />
+            <CoupleEditor content={content} onChange={handleChange} isSolo={template?.mode === 'solo'} />
+          </section>
+
+          <div className="border-t border-zinc-200" />
+
+          <section>
+            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Partisipan (acara multi orang)</h2>
+            <PartnersEditor content={content} onChange={handleChange} />
+          </section>
+
+          <div className="border-t border-zinc-200" />
+
+          <section>
+            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Media (Gambar)</h2>
+            <MediaEditor content={content} onChange={handleChange} />
           </section>
 
           <div className="border-t border-zinc-200" />
@@ -694,9 +930,20 @@ export default function StudioEditorPage() {
 
           <div className="border-t border-zinc-200" />
 
+          {!isMonolithic && (
+            <>
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Story</h2>
+                <StoryEditor content={content} onChange={handleChange} />
+              </section>
+
+              <div className="border-t border-zinc-200" />
+            </>
+          )}
+
           <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Story</h2>
-            <StoryEditor content={content} onChange={handleChange} />
+            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Love Story Timeline</h2>
+            <StoriesEditor content={content} onChange={handleChange} />
           </section>
 
           <div className="border-t border-zinc-200" />
@@ -723,23 +970,34 @@ export default function StudioEditorPage() {
           <div className="border-t border-zinc-200" />
 
           <section>
+            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Daftar Tamu &amp; Link</h2>
+            <GuestListEditor content={content} onChange={handleChange} slug={slug} />
+          </section>
+
+          <div className="border-t border-zinc-200" />
+
+          <section>
             <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Quote &amp; Footer</h2>
             <QuoteFooterEditor content={content} onChange={handleChange} />
           </section>
 
-          <div className="border-t border-zinc-200" />
+          {!isMonolithic && (
+            <>
+              <div className="border-t border-zinc-200" />
 
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Section Backgrounds</h2>
-            <SectionBackgroundEditor content={content} onChange={handleChange} />
-          </section>
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Section Backgrounds</h2>
+                <SectionBackgroundEditor content={content} onChange={handleChange} />
+              </section>
 
-          <div className="border-t border-zinc-200" />
+              <div className="border-t border-zinc-200" />
 
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Ornaments</h2>
-            <OrnamentEditor content={content} onChange={handleChange} />
-          </section>
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Ornaments</h2>
+                <OrnamentEditor content={content} onChange={handleChange} />
+              </section>
+            </>
+          )}
         </div>
       )}
 
@@ -769,7 +1027,7 @@ export default function StudioEditorPage() {
       )}
 
       {/* Layout Tab */}
-      {tab === 'layout' && (
+      {tab === 'layout' && layout && (
         <LayoutTab
           invitation={invitation}
           content={content}
@@ -806,12 +1064,14 @@ export default function StudioEditorPage() {
                   </button>
                 ))}
               </div>
-              <button onClick={() => setEditOrnaments(!editOrnaments)}
-                className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
-                  editOrnaments ? 'bg-[var(--colors-primary)] text-white shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700 bg-zinc-100')}>
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
-                {editOrnaments ? 'Done' : 'Ornaments'}
-              </button>
+              {!isMonolithic && (
+                <button onClick={() => setEditOrnaments(!editOrnaments)}
+                  className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
+                    editOrnaments ? 'bg-[var(--colors-primary)] text-white shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700 bg-zinc-100')}>
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+                  {editOrnaments ? 'Done' : 'Ornaments'}
+                </button>
+              )}
             </div>
           </div>
           <div className="flex justify-center">
@@ -819,8 +1079,14 @@ export default function StudioEditorPage() {
               'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
               device === 'desktop' ? 'w-full' : 'shadow-xl',
               editOrnaments && 'border-[var(--colors-primary)]/30',
+              // Monolithic templates use position:fixed/min-h-screen — contain them to a
+              // fixed-height "device viewport" so the cover doesn't cover the studio chrome.
+              isMonolithic && 'h-[80vh]',
             )}
-              style={device !== 'desktop' ? { maxWidth: device === 'mobile' ? 375 : 768 } : undefined}
+              style={{
+                ...(device !== 'desktop' ? { maxWidth: device === 'mobile' ? 375 : 768 } : {}),
+                ...(isMonolithic ? { transform: 'translateZ(0)' } : {}),
+              }}
             >
               <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
                 <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
@@ -830,14 +1096,14 @@ export default function StudioEditorPage() {
                   {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
                 </span>
               </div>
-              <div className="bg-white" data-lumina-scroll>
+              <div className={cn('bg-white', isMonolithic && 'h-full overflow-y-auto')} data-lumina-scroll>
                 <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
                   <OrnamentCanvas
                     ornaments={content.ornaments || []}
                     onChange={(ornaments) => handleChange({ ...content, ornaments })}
                     readOnly={!editOrnaments}
                   >
-                    <TemplateRenderer template={template} layout={layout} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                    <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
                   </OrnamentCanvas>
                 </ThemeProvider>
               </div>
