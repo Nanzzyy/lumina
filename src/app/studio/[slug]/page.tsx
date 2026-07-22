@@ -10,6 +10,7 @@ import type { InvitationContent, OrnamentConfig } from '@/lib/content/types';
 import type { DeepPartial, ThemeConfig } from '@/lib/theme/types';
 import { cn } from '@/lib/utils/cn';
 import { OrnamentCanvas, OrnamentPreview } from '@/components/studio/OrnamentCanvas';
+import { IframePreview } from '@/components/studio/IframePreview';
 
 type EditorTab = 'content' | 'theme' | 'layout' | 'preview';
 
@@ -1075,39 +1076,59 @@ export default function StudioEditorPage() {
             </div>
           </div>
           <div className="flex justify-center">
-            <div className={cn(
-              'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
-              device === 'desktop' ? 'w-full' : 'shadow-xl',
-              editOrnaments && 'border-[var(--colors-primary)]/30',
-              // Monolithic templates use position:fixed/min-h-screen — contain them to a
-              // fixed-height "device viewport" so the cover doesn't cover the studio chrome.
-              isMonolithic && 'h-[80vh]',
-            )}
-              style={{
-                ...(device !== 'desktop' ? { maxWidth: device === 'mobile' ? 375 : 768 } : {}),
-                ...(isMonolithic ? { transform: 'translateZ(0)' } : {}),
-              }}
-            >
-              <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
-                <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                <span className="ml-2 text-[10px]">
-                  {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
-                </span>
-              </div>
-              <div className={cn('bg-white', isMonolithic && 'h-full overflow-y-auto')} data-lumina-scroll>
-                <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                  <OrnamentCanvas
-                    ornaments={content.ornaments || []}
-                    onChange={(ornaments) => handleChange({ ...content, ornaments })}
-                    readOnly={!editOrnaments}
-                  >
+            {/* Use iframe for mobile/tablet to properly isolate viewport (position:fixed, vh units, etc.) */}
+            {!editOrnaments && device !== 'desktop' ? (
+              <div className="shadow-xl" style={{ width: device === 'mobile' ? 384 : 768 }}>
+                <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2 rounded-t-xl">
+                  <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <span className="ml-2 text-[10px]">
+                    Preview &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : 'Tablet (768×1024)'}
+                  </span>
+                </div>
+                <IframePreview
+                  width={device === 'mobile' ? 384 : 768}
+                  height={device === 'mobile' ? 728 : 1024}
+                >
+                  <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
                     <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                  </OrnamentCanvas>
-                </ThemeProvider>
+                  </ThemeProvider>
+                </IframePreview>
               </div>
-            </div>
+            ) : (
+              <div className={cn(
+                'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
+                device === 'desktop' ? 'w-full' : 'shadow-xl',
+                editOrnaments && 'border-[var(--colors-primary)]/30',
+                isMonolithic && 'h-[80vh]',
+              )}
+                style={{
+                  ...(device !== 'desktop' ? { maxWidth: device === 'mobile' ? 384 : 768 } : {}),
+                  ...(isMonolithic ? { transform: 'translateZ(0)' } : {}),
+                }}
+              >
+                <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
+                  <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <span className="ml-2 text-[10px]">
+                    {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
+                  </span>
+                </div>
+                <div className={cn('bg-white', isMonolithic && 'h-full overflow-y-auto')} data-lumina-scroll>
+                  <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                    <OrnamentCanvas
+                      ornaments={content.ornaments || []}
+                      onChange={(ornaments) => handleChange({ ...content, ornaments })}
+                      readOnly={!editOrnaments}
+                    >
+                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                    </OrnamentCanvas>
+                  </ThemeProvider>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

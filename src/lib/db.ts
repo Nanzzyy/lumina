@@ -276,7 +276,7 @@ function backfillInvitationsToProjects(d: Database.Database): void {
     'INSERT INTO frames (id, page_id, name, viewport, nodes, ordinal) VALUES (?, ?, ?, ?, ?, 0)',
   );
   const setProjectId = d.prepare('UPDATE invitations SET project_id = ? WHERE id = ?');
-  const viewport = JSON.stringify({ w: 390, h: 844, device: 'mobile' });
+  const viewport = JSON.stringify({ w: 384, h: 728, device: 'mobile' });
   for (const inv of invs) {
     let nodes: unknown[] = [];
     try {
@@ -783,7 +783,7 @@ export function loadDocumentBySlug(slug: string): Document | null {
       id: f.id,
       pageId: p.id,
       name: f.name,
-      viewport: safeParse(f.viewport, { w: 390, h: 844, device: 'mobile' as const }),
+      viewport: safeParse(f.viewport, { w: 384, h: 728, device: 'mobile' as const }),
       nodes: safeParse<Node[]>(f.nodes, []),
       ordinal: f.ordinal,
     }));

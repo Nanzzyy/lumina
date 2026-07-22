@@ -27,7 +27,7 @@ export function buildSampleInvitation(): Document {
       id: genId('n'),
       name: 'Cover Photo',
       componentId: 'image',
-      frame: { x: 0, y: 0, w: 390, h: 460 },
+      frame: { x: 0, y: 0, w: 384, h: 460 },
       props: {
         image: 'https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80',
         opacity: 0.55,

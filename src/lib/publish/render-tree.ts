@@ -79,7 +79,7 @@ export function buildRenderTree(
   baseUrl = '/',
   opts: BuildRenderTreeOptions = {},
 ): RenderTree {
-  const viewport = opts.viewport ?? { w: 390, h: 844 };
+  const viewport = opts.viewport ?? { w: 384, h: 728 };
   const breakpoint: DeviceKey = opts.breakpoint ?? 'base';
   const page: RenderPage = {
     id: genId('page'),

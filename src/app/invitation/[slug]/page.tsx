@@ -67,7 +67,7 @@ export default function InvitationPublicPage() {
     <ThemeProvider theme={theme} scopeClass="lumina-invitation-scope">
       {isMobile ? (
         <div className="flex items-start justify-center min-h-screen bg-zinc-100 overflow-auto">
-          <div className="w-full max-w-[393px] min-h-screen bg-white shadow-2xl mx-auto md:my-0">
+          <div className="w-full max-w-[384px] min-h-screen bg-white shadow-2xl mx-auto md:my-0">
             <TemplateRenderer
               template={template}
               layout={layout}

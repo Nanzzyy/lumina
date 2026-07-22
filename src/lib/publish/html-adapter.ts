@@ -161,7 +161,7 @@ function nodeAttrs(node: RenderNode): string {
 function buildGlobalStyles(page: RenderPage): string {
   return page.nodes
     .map((node) => nodeToCss(node))
-    .concat('.lumina-root { position: relative; width: 390px; max-width: 100%; min-height: 844px; margin: 0 auto; box-sizing: border-box; overflow: hidden; }')
+    .concat('.lumina-root { position: relative; width: 384px; max-width: 100%; min-height: 728px; margin: 0 auto; box-sizing: border-box; overflow: hidden; }')
     .concat('.lumina-node { box-sizing: border-box; }')
     .concat('.lumina-button { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; border: none; text-decoration: none; }')
     .join('\n');

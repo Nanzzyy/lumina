@@ -18,7 +18,7 @@ import { genId } from './id';
 // ─── Public types ───────────────────────────────────────────
 export const BREAKPOINT_ORDER: BreakpointKey[] = ['sm', 'md', 'lg', 'xl', '2xl'];
 export const DEVICE_VIEWPORTS: Record<string, { w: number; h: number; label: string }> = {
-  base: { w: 390, h: 844, label: 'Phone' },
+  base: { w: 384, h: 728, label: 'Phone' },
   sm: { w: 640, h: 360, label: 'Phone Landscape' },
   md: { w: 768, h: 1024, label: 'Tablet' },
   lg: { w: 1024, h: 768, label: 'Desktop' },
