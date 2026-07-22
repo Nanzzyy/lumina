@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useEffect, type ReactNode } from 'react';
-import { createRoot, type Root } from 'react-dom/client';
+import { useRef, useEffect, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 interface IframePreviewProps {
   width: number;
@@ -10,11 +10,16 @@ interface IframePreviewProps {
   className?: string;
 }
 
+/**
+ * Renders children inside an iframe for proper viewport isolation.
+ * Uses createPortal so the React tree stays in the parent — state updates
+ * propagate instantly (real-time preview), while CSS viewport units and
+ * position:fixed are scoped to the iframe dimensions.
+ */
 export function IframePreview({ width, height, children, className }: IframePreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const rootRef = useRef<Root | null>(null);
-  const childrenRef = useRef<ReactNode>(children);
-  childrenRef.current = children;
+  const mountRef = useRef<HTMLElement | null>(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -24,15 +29,13 @@ export function IframePreview({ width, height, children, className }: IframePrev
       const doc = iframe.contentDocument;
       if (!doc) return;
 
-      // Viewport meta
-      const existing = doc.querySelector('meta[name="viewport"]');
-      if (existing) existing.remove();
+      // Viewport meta — sets the iframe's CSS viewport width
       const meta = doc.createElement('meta');
       meta.name = 'viewport';
       meta.content = `width=${width}, initial-scale=1.0, maximum-scale=1.0, user-scalable=no`;
       doc.head.appendChild(meta);
 
-      // Copy all parent stylesheets into iframe
+      // Copy all parent stylesheets (Tailwind + injected styles)
       const parentStyles = document.querySelectorAll('style, link[rel="stylesheet"]');
       parentStyles.forEach((el) => {
         doc.head.appendChild(el.cloneNode(true));
@@ -42,12 +45,14 @@ export function IframePreview({ width, height, children, className }: IframePrev
       doc.body.style.margin = '0';
       doc.body.style.padding = '0';
 
-      // Create React root inside iframe
-      const root = createRoot(doc.body);
-      rootRef.current = root;
-      root.render(childrenRef.current);
+      // Create mount point for the portal
+      const mount = doc.createElement('div');
+      doc.body.appendChild(mount);
+      mountRef.current = mount;
 
-      // Sync any dynamically added styles (e.g. template injectStyles())
+      setReady(true);
+
+      // Sync dynamically added styles (template injectStyles())
       const observer = new MutationObserver((mutations) => {
         for (const m of mutations) {
           for (const node of m.addedNodes) {
@@ -56,52 +61,47 @@ export function IframePreview({ width, height, children, className }: IframePrev
               if (!existingById) {
                 doc.head.appendChild(node.cloneNode(true));
               }
-            } else if (node instanceof HTMLLinkElement && node.rel === 'stylesheet') {
+            } else if (node instanceof HTMLLinkElement && (node as HTMLLinkElement).rel === 'stylesheet') {
               doc.head.appendChild(node.cloneNode(true));
             }
           }
         }
       });
       observer.observe(document.head, { childList: true });
-
-      // Store observer for cleanup
       (iframe as any).__styleObserver = observer;
     };
 
-    iframe.addEventListener('load', setup);
-    // Iframe may already be loaded
+    // Wait for iframe to be ready
     if (iframe.contentDocument?.readyState === 'complete') {
       setup();
+    } else {
+      iframe.addEventListener('load', setup);
     }
 
     return () => {
       iframe.removeEventListener('load', setup);
       const observer = (iframe as any).__styleObserver as MutationObserver | undefined;
       observer?.disconnect();
-      rootRef.current?.unmount();
-      rootRef.current = null;
+      mountRef.current = null;
+      setReady(false);
     };
   }, [width, height]);
 
-  // Re-render on content changes
-  useEffect(() => {
-    if (rootRef.current) {
-      rootRef.current.render(children);
-    }
-  }, [children]);
-
   return (
-    <iframe
-      ref={iframeRef}
-      className={className}
-      style={{
-        width: `${width}px`,
-        height: `${height}px`,
-        border: 'none',
-        borderRadius: '0 0 12px 12px',
-        display: 'block',
-      }}
-      title="Mobile Preview"
-    />
+    <>
+      <iframe
+        ref={iframeRef}
+        className={className}
+        style={{
+          width: `${width}px`,
+          height: `${height}px`,
+          border: 'none',
+          borderRadius: '0 0 12px 12px',
+          display: 'block',
+        }}
+        title="Mobile Preview"
+      />
+      {ready && mountRef.current && createPortal(children, mountRef.current)}
+    </>
   );
 }
