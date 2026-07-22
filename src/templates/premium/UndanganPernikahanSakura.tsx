@@ -9,14 +9,15 @@ import {
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
 
-/* ─── Colors ─── */
+/* ─── Colors — Rose-Plum Mono Family ─── */
 const SAKURA = '#D489A8';
-const SAKURA_LIGHT = '#E8B4C8';
+const SAKURA_LIGHT = '#E8C4D0';
 const PLUM = '#3D2352';
 const PLUM_LIGHT = '#5A3D6E';
-const GOLD = '#C99A6E';
-const CREAM = '#FDF6F5';
-const CREAM_DARK = '#F5E8E4';
+const ROSE_GOLD = '#C9A0A8';
+const BG_LIGHT = '#F8F0F2';
+const BG = '#F0E6EA';
+const BG_DARK = '#E8DAE0';
 const DARK_TEXT = '#2D1B36';
 const MUTED = '#8A7A8A';
 
@@ -98,8 +99,8 @@ function injectStyles() {
   s.id = 'sakura-inv';
   s.innerHTML = `
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,200..1000;1,9..40,200..1000&family=Petit+Formal+Script&display=swap');
-.font-title { font-family: 'Petit Formal Script', cursive; }
-.font-serif { font-family: 'Noto Serif JP', serif; }
+.font-script { font-family: 'Petit Formal Script', cursive; }
+.font-title { font-family: 'Noto Serif JP', serif; }
 .font-sans { font-family: 'DM Sans', sans-serif; }
 @keyframes sakura-blur { 0% { opacity:0; filter:blur(10px); transform:translateY(15px); } 100% { opacity:1; filter:blur(0); transform:translateY(0); } }
 @keyframes sakura-rise { 0% { opacity:0; transform:translateY(50px) scale(0.97); } 100% { opacity:1; transform:translateY(0) scale(1); } }
@@ -130,7 +131,7 @@ function SakuraBlossom({ className = "w-8 h-8", fill }: { className?: string; fi
       <path d="M50 20 Q60 5 50 35 Q40 5 50 20Z" opacity="0.8" />
       <path d="M50 20 Q75 10 60 32 Q70 15 50 20Z" opacity="0.6" />
       <path d="M50 20 Q25 10 40 32 Q30 15 50 20Z" opacity="0.6" />
-      <circle cx="50" cy="32" r="5" fill={GOLD} opacity="0.7" />
+      <circle cx="50" cy="32" r="5" fill={ROSE_GOLD} opacity="0.7" />
       <circle cx="50" cy="32" r="2.5" fill="white" opacity="0.4" />
       <path d="M50 30 Q55 40 58 45 Q52 42 50 45 Q48 42 42 45 Q45 40 50 30Z" fill={SAKURA_LIGHT} opacity="0.6" />
     </svg>
@@ -163,7 +164,7 @@ function FloatingPetals() {
             <path d="M10 3 Q13 0 10 6 Q7 0 10 3Z" />
             <path d="M10 6 Q16 8 13 12 Q14 7 10 6Z" opacity="0.8" />
             <path d="M10 6 Q4 8 7 12 Q6 7 10 6Z" opacity="0.8" />
-            <circle cx="10" cy="7" r="1.5" fill={GOLD} opacity="0.6" />
+            <circle cx="10" cy="7" r="1.5" fill={ROSE_GOLD} opacity="0.6" />
           </svg>
         </div>
       ))}
@@ -227,15 +228,15 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
             <div className="w-12 h-[1.5px] mx-auto rounded-full" style={{ background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
           </div>
           <div className="anim-blur space-y-4" style={{ animationDelay: '0.4s' }}>
-            <h1 className="font-title text-5xl leading-tight text-white">
-              {p1.nick} <span className="inline-block mx-1 text-2xl font-serif italic" style={{ color: SAKURA }}>&</span> {p2.nick}
+            <h1 className="font-script text-5xl leading-tight text-white">
+              {p1.nick} <span className="inline-block mx-1 text-2xl font-script italic" style={{ color: SAKURA }}>&</span> {p2.nick}
             </h1>
-            <p className="font-serif text-sm" style={{ color: `${SAKURA_LIGHT}CC` }}>{displayDate}</p>
+            <p className="font-title text-sm" style={{ color: `${SAKURA_LIGHT}CC` }}>{displayDate}</p>
           </div>
           <div className="anim-blur space-y-4 pt-2" style={{ animationDelay: '0.6s' }}>
             <p className="text-[9px] uppercase tracking-[0.3em] font-sans font-medium" style={{ color: `${MUTED}CC` }}>Kepada Yth.</p>
             <div className="inline-block rounded-2xl px-7 py-3 backdrop-blur-md" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: `1px solid ${SAKURA}40` }}>
-              <p className="font-serif text-base font-light text-white">{guestName}</p>
+              <p className="font-title text-base font-light text-white">{guestName}</p>
             </div>
           </div>
           <div className="pt-4 anim-blur" style={{ animationDelay: '0.8s' }}>
@@ -256,7 +257,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
 
   /* ── MAIN ── */
   return (
-    <div className="font-sans min-h-screen relative overflow-x-hidden" style={{ backgroundColor: CREAM, color: DARK_TEXT }}>
+    <div className="font-sans min-h-screen relative overflow-x-hidden" style={{ backgroundColor: BG_LIGHT, color: DARK_TEXT }}>
       <audio ref={audioRef} src={audio} loop />
       <FloatingPetals />
 
@@ -273,7 +274,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </button>
 
       {/* ═══ 1. HERO ═══ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(180deg, ${PLUM} 0%, ${PLUM_LIGHT} 50%, ${CREAM} 100%)` }}>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(180deg, ${PLUM} 0%, ${PLUM_LIGHT} 50%, ${BG_LIGHT} 100%)` }}>
         <div className="absolute inset-0 opacity-20">
           {isVideo(media.hero) ? <video src={media.hero} muted loop playsInline className="w-full h-full object-cover" /> : <img src={media.hero} alt="" className="w-full h-full object-cover" />}
         </div>
@@ -288,13 +289,13 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
             <div className="w-10 mx-auto rounded-full" style={{ height: 1.5, background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
           </div>
           <div className="anim-blur space-y-3 mt-6" style={{ animationDelay: '0.6s' }}>
-            <h1 className="font-title text-5xl leading-tight text-white">{p1.nick} <span className="text-2xl block mt-1 font-serif" style={{ color: SAKURA }}>&amp;</span> {p2.nick}</h1>
-            <p className="font-serif text-sm font-light" style={{ color: `${SAKURA_LIGHT}CC` }}>{displayDate}</p>
+            <h1 className="font-title text-5xl leading-tight text-white">{p1.nick} <span className="text-2xl block mt-1 font-title" style={{ color: SAKURA }}>&amp;</span> {p2.nick}</h1>
+            <p className="font-title text-sm font-light" style={{ color: `${SAKURA_LIGHT}CC` }}>{displayDate}</p>
             <p className="text-[10px] tracking-[0.25em] uppercase font-sans font-medium" style={{ color: `${SAKURA}CC` }}>{location}</p>
           </div>
           {guestName && (
             <div className="mt-8 anim-blur inline-block" style={{ animationDelay: '0.8s' }}>
-              <div className="px-5 py-2 rounded-full backdrop-blur-sm text-xs font-light" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: `1px solid ${SAKURA}40`, color: CREAM }}>
+              <div className="px-5 py-2 rounded-full backdrop-blur-sm text-xs font-light" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: `1px solid ${SAKURA}40`, color: '#F0E6EA' }}>
                 Kepada Yth. <span className="font-medium text-white">{guestName}</span>
               </div>
             </div>
@@ -307,19 +308,19 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </section>
 
       {/* ═══ 2. QUOTE ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
         <div className="max-w-xl mx-auto text-center">
           <BranchDivider />
-          <p className="font-serif text-4xl mb-4 leading-none" style={{ color: SAKURA }}>"</p>
+          <p className="font-title text-4xl mb-4 leading-none" style={{ color: SAKURA }}>"</p>
           <p className="font-sans text-base leading-relaxed px-4 font-light" style={{ color: `${DARK_TEXT}CC` }}>{quote.text}</p>
-          <p className="font-serif text-4xl mt-4 leading-none" style={{ color: SAKURA }}>"</p>
+          <p className="font-title text-4xl mt-4 leading-none" style={{ color: SAKURA }}>"</p>
           <div className="w-10 mx-auto my-5 rounded-full" style={{ height: 1.5, background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
           <p className="text-[10px] font-sans font-medium uppercase tracking-[0.25em]" style={{ color: MUTED }}>— {quote.source}</p>
         </div>
       </section></ScrollR>
 
       {/* ═══ 3. COUPLE ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM_DARK }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
         <div className="max-w-2xl mx-auto text-center">
           <BranchDivider />
           <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-2" style={{ color: MUTED }}>Kedua Mempelai</p>
@@ -331,10 +332,18 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
               { person: p2, img: media.p2, label: 'Mempelai Wanita', side: 'left' as const },
             ].map(({ person, img, label, side }) => (
               <div key={label} className="flex flex-col items-center group w-full max-w-[280px]">
-                <div className="relative mb-6 overflow-hidden"
-                  style={{ width: 180, height: 220, borderRadius: '60px 60px 30px 30px', border: `4px solid white`, boxShadow: `0 4px 20px ${PLUM}15` }}>
-                  <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  <div className="absolute bottom-0 left-0 right-0" style={{ height: 40, background: `linear-gradient(to top, white, transparent)` }} />
+                <div className="relative mb-4">
+                  <div className="relative overflow-hidden"
+                    style={{ width: 190, height: 230, borderRadius: '80px 80px 40px 40px', border: `4px solid white`, boxShadow: `0 8px 30px ${PLUM}20` }}>
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <div className="absolute bottom-0 left-0 right-0" style={{ height: 50, background: `linear-gradient(to top, white, transparent)` }} />
+                  </div>
+                  {/* Sakura blossom ornament under the photo */}
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-0 z-10">
+                    <SakuraBlossom className="w-6 h-6" fill={SAKURA_LIGHT} />
+                    <SakuraBlossom className="w-4 h-4" fill={SAKURA} />
+                    <SakuraBlossom className="w-6 h-6" fill={SAKURA_LIGHT} />
+                  </div>
                 </div>
                 <h3 className="font-title text-xl font-medium mb-1" style={{ color: PLUM }}>{person.full}</h3>
                 <p className="text-[9px] uppercase tracking-widest font-sans font-semibold mb-3" style={{ color: SAKURA }}>{label}</p>
@@ -349,7 +358,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </section></ScrollR>
 
       {/* ═══ 4. COUNTDOWN ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
         <div className="max-w-lg mx-auto text-center">
           <BranchDivider />
           <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-2" style={{ color: MUTED }}>Menuju Hari Bahagia</p>
@@ -381,7 +390,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </section></ScrollR>
 
       {/* ═══ 5. LOVE STORY ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM_DARK }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-14">
             <BranchDivider />
@@ -391,8 +400,8 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
           <div className="relative ml-4 space-y-10" style={{ borderLeft: `2px solid ${SAKURA}40` }}>
             {stories.length > 0 && stories.map((story, idx) => (
               <div key={idx} className="relative pl-8 group">
-                <div className="absolute -left-[12px] top-0 p-1 rounded-full group-hover:scale-110 transition-transform" style={{ backgroundColor: CREAM, border: `2px solid ${SAKURA}` }}>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: idx === 2 ? GOLD : SAKURA }} />
+                <div className="absolute -left-[12px] top-0 p-1 rounded-full group-hover:scale-110 transition-transform" style={{ backgroundColor: BG_LIGHT, border: `2px solid ${SAKURA}` }}>
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: idx === 2 ? ROSE_GOLD : SAKURA }} />
                 </div>
                 <div className="p-5 rounded-2xl transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.8)', border: `1px solid ${SAKURA}1A` }}>
                   <span className="inline-block text-[10px] font-bold px-3 py-1 rounded-lg mb-2.5" style={{ color: SAKURA, backgroundColor: `${SAKURA}14` }}>{story.year}</span>
@@ -406,7 +415,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </section></ScrollR>
 
       {/* ═══ 6. EVENT SCHEDULE ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
             <BranchDivider />
@@ -457,7 +466,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </section></ScrollR>
 
       {/* ═══ 7. GALLERY ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM_DARK }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
             <BranchDivider />
@@ -497,7 +506,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       )}
 
       {/* ═══ 8. RSVP / WISHES ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM }}>
+      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
             <BranchDivider />
@@ -517,19 +526,19 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
               <div className="grid grid-cols-2 gap-3">
                 <input name="name" placeholder="Nama" value={rsvpForm.name} onChange={(e) => setRsvpForm({ ...rsvpForm, name: e.target.value })}
                   className="w-full px-3.5 py-2.5 text-sm rounded-xl focus:outline-none transition-colors"
-                  style={{ backgroundColor: CREAM, border: `1px solid ${SAKURA}26` }}
+                  style={{ backgroundColor: BG_LIGHT, border: `1px solid ${SAKURA}26` }}
                   onFocus={(e) => e.target.style.borderColor = SAKURA}
                   onBlur={(e) => e.target.style.borderColor = `${SAKURA}26`} />
                 <select value={rsvpForm.attendance} onChange={(e) => setRsvpForm({ ...rsvpForm, attendance: e.target.value })}
                   className="flex-1 px-3 py-2.5 text-sm rounded-xl focus:outline-none transition-colors"
-                  style={{ backgroundColor: CREAM, border: `1px solid ${SAKURA}26` }}>
+                  style={{ backgroundColor: BG_LIGHT, border: `1px solid ${SAKURA}26` }}>
                   <option>Hadir</option>
                   <option>Tidak Hadir</option>
                 </select>
               </div>
               <textarea placeholder="Tulis ucapan & doa untuk kedua mempelai..." value={rsvpForm.message} onChange={(e) => setRsvpForm({ ...rsvpForm, message: e.target.value })}
                 className="w-full px-3.5 py-2.5 text-sm rounded-xl focus:outline-none transition-colors resize-none h-20"
-                style={{ backgroundColor: CREAM, border: `1px solid ${SAKURA}26` }}
+                style={{ backgroundColor: BG_LIGHT, border: `1px solid ${SAKURA}26` }}
                 onFocus={(e) => e.target.style.borderColor = SAKURA}
                 onBlur={(e) => e.target.style.borderColor = `${SAKURA}26`} />
               <button type="submit"
@@ -563,7 +572,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
 
       {/* ═══ 9. GIFT ═══ */}
       {content.gift?.enabled !== false && gifts.length > 0 && (
-        <ScrollR><section className="py-24 px-6" style={{ backgroundColor: CREAM_DARK }}>
+        <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
           <div className="max-w-xl mx-auto text-center">
             <BranchDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-1" style={{ color: MUTED }}>Tanda Kasih</p>
@@ -600,8 +609,8 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
         <div className="max-w-xl mx-auto relative z-10 space-y-8">
           <SakuraBlossom className="w-12 h-12 mx-auto opacity-60" />
           <BranchDivider />
-          <span className="text-[9px] uppercase tracking-[0.4em] font-sans font-semibold block" style={{ color: SAKURA }}>Terima Kasih</span>
-          <h2 className="font-title text-3xl font-light italic leading-snug" style={{ color: SAKURA_LIGHT }}>Suatu kehormatan & kebahagiaan yang tak terhingga apabila Bapak/Ibu/Saudara/i berkenan hadir memberikan restu.</h2>
+          <span className="text-[9px] uppercase tracking-[0.4em] font-title font-semibold block" style={{ color: SAKURA }}>Terima Kasih</span>
+          <h2 className="font-script text-3xl font-light italic leading-snug" style={{ color: SAKURA_LIGHT }}>Suatu kehormatan & kebahagiaan yang tak terhingga apabila Bapak/Ibu/Saudara/i berkenan hadir memberikan restu.</h2>
           <div className="w-16 mx-auto rounded-full" style={{ height: 1.5, background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
           <div className="space-y-2">
             <p className="text-[9px] uppercase tracking-[0.2em] font-sans" style={{ color: `${SAKURA}99` }}>Kami yang Berbahagia</p>

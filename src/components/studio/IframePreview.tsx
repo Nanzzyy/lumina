@@ -15,6 +15,11 @@ interface IframePreviewProps {
  * Uses createPortal so the React tree stays in the parent — state updates
  * propagate instantly (real-time preview), while CSS viewport units and
  * position:fixed are scoped to the iframe dimensions.
+ *
+ * Handles CSS sync reliably in both dev (inline <style>) and production
+ * (external <link>) by waiting for external stylesheets to load before
+ * activating the iframe. Fonts are injected as <link> elements directly
+ * into the iframe head (avoids fragile @import-in-clone issues).
  */
 export function IframePreview({ width, height, children, className }: IframePreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -25,35 +30,55 @@ export function IframePreview({ width, height, children, className }: IframePrev
     const iframe = iframeRef.current;
     if (!iframe) return;
 
-    const setup = () => {
+    let cancelled = false;
+    let observer: MutationObserver | null = null;
+
+    const setup = async () => {
       const doc = iframe.contentDocument;
       if (!doc) return;
 
-      // Viewport meta — sets the iframe's CSS viewport width
+      // 1. Viewport meta — sets the iframe's CSS viewport width
       const meta = doc.createElement('meta');
       meta.name = 'viewport';
       meta.content = `width=${width}, initial-scale=1.0, maximum-scale=1.0, user-scalable=no`;
       doc.head.appendChild(meta);
 
-      // Copy all parent stylesheets (Tailwind + injected styles)
-      const parentStyles = document.querySelectorAll('style, link[rel="stylesheet"]');
-      parentStyles.forEach((el) => {
-        doc.head.appendChild(el.cloneNode(true));
+      // 2. Copy parent <link rel="stylesheet"> — wait for them to load
+      const linkPromises: Promise<void>[] = [];
+      document.querySelectorAll('link[rel="stylesheet"]').forEach((el) => {
+        const clone = el.cloneNode(true) as HTMLLinkElement;
+        doc.head.appendChild(clone);
+        // Wait for external stylesheets to actually load
+        if (clone.href && !clone.href.startsWith('blob:')) {
+          linkPromises.push(new Promise((resolve) => {
+            if (clone.sheet) { resolve(); return; }
+            clone.onload = () => resolve();
+            clone.onerror = () => resolve(); // don't block on failure
+          }));
+        }
       });
 
-      // Reset body
+      // 3. Copy parent <style> elements (inline styles like globals.css)
+      document.querySelectorAll('style').forEach((el) => {
+        const clone = el.cloneNode(true) as HTMLStyleElement;
+        doc.head.appendChild(clone);
+      });
+
+      // 4. Wait for external CSS to finish loading
+      await Promise.all(linkPromises);
+      if (cancelled) return;
+
+      // 5. Reset body & create mount point
       doc.body.style.margin = '0';
       doc.body.style.padding = '0';
-
-      // Create mount point for the portal
       const mount = doc.createElement('div');
       doc.body.appendChild(mount);
       mountRef.current = mount;
 
       setReady(true);
 
-      // Sync dynamically added styles (template injectStyles())
-      const observer = new MutationObserver((mutations) => {
+      // 6. Sync dynamically added styles (template injectStyles(), ThemeProvider, etc.)
+      observer = new MutationObserver((mutations) => {
         for (const m of mutations) {
           for (const node of m.addedNodes) {
             if (node instanceof HTMLStyleElement) {
@@ -61,17 +86,15 @@ export function IframePreview({ width, height, children, className }: IframePrev
               if (!existingById) {
                 doc.head.appendChild(node.cloneNode(true));
               }
-            } else if (node instanceof HTMLLinkElement && (node as HTMLLinkElement).rel === 'stylesheet') {
+            } else if (node instanceof HTMLLinkElement && node.rel === 'stylesheet') {
               doc.head.appendChild(node.cloneNode(true));
             }
           }
         }
       });
       observer.observe(document.head, { childList: true });
-      (iframe as any).__styleObserver = observer;
     };
 
-    // Wait for iframe to be ready
     if (iframe.contentDocument?.readyState === 'complete') {
       setup();
     } else {
@@ -79,8 +102,8 @@ export function IframePreview({ width, height, children, className }: IframePrev
     }
 
     return () => {
+      cancelled = true;
       iframe.removeEventListener('load', setup);
-      const observer = (iframe as any).__styleObserver as MutationObserver | undefined;
       observer?.disconnect();
       mountRef.current = null;
       setReady(false);
