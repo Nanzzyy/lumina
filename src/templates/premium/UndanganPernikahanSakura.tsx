@@ -5,9 +5,29 @@ import type { MonolithicTemplateProps } from '@/lib/template/types';
 import type { InvitationContent } from '@/lib/content/types';
 import {
   Heart, Calendar, Clock, MapPin, Send, Gift, Copy, Check, ChevronLeft, ChevronRight,
-  Volume2, VolumeX, MessageSquare, Map,
+  Volume2, VolumeX, Map,
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
+import { motion, type Variants } from 'framer-motion';
+
+/* ─── Design Constants ─── */
+const EASE: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
+const DUR = 0.6;
+
+const scrollReveal: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: DUR, ease: EASE } },
+};
+
+const staggerContainer: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } },
+};
+
+const staggerItem: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: DUR, ease: EASE } },
+};
 
 /* ─── Colors — Rose-Plum Mono Family ─── */
 const SAKURA = '#D489A8';
@@ -17,7 +37,6 @@ const PLUM_LIGHT = '#5A3D6E';
 const ROSE_GOLD = '#C9A0A8';
 const BG_LIGHT = '#F8F0F2';
 const BG = '#F0E6EA';
-const BG_DARK = '#E8DAE0';
 const DARK_TEXT = '#2D1B36';
 const MUTED = '#8A7A8A';
 
@@ -56,7 +75,6 @@ const DEFAULTS = {
   p2: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600',
 };
 
-/* ─── deriveData ─── */
 function deriveData(content: InvitationContent) {
   const c = content.couple;
   const p1 = {
@@ -92,7 +110,6 @@ function deriveData(content: InvitationContent) {
   return { p1, p2, isoDate, displayDate, location, events, stories, gallery, gifts, quote, audio, media };
 }
 
-/* ─── injectStyles ─── */
 function injectStyles() {
   if (typeof window === 'undefined' || document.getElementById('sakura-inv')) return;
   const s = document.createElement('style');
@@ -102,22 +119,6 @@ function injectStyles() {
 .font-script { font-family: 'Petit Formal Script', cursive; }
 .font-title { font-family: 'Noto Serif JP', serif; }
 .font-sans { font-family: 'DM Sans', sans-serif; }
-@keyframes sakura-blur { 0% { opacity:0; filter:blur(10px); transform:translateY(15px); } 100% { opacity:1; filter:blur(0); transform:translateY(0); } }
-@keyframes sakura-rise { 0% { opacity:0; transform:translateY(50px) scale(0.97); } 100% { opacity:1; transform:translateY(0) scale(1); } }
-@keyframes sakura-petal { 0% { transform:translateY(-30px) rotate(0deg) scale(1); opacity:0; } 10% { opacity:0.5; } 90% { opacity:0.2; } 100% { transform:translateY(calc(100vh + 30px)) rotate(360deg) scale(0.4); opacity:0; } }
-@keyframes sakura-drift { 0%,100% { transform:translateX(0) rotate(0deg); } 33% { transform:translateX(-6px) rotate(2deg); } 66% { transform:translateX(6px) rotate(-2deg); } }
-@keyframes sakura-glow { 0%,100% { box-shadow:0 0 0 0 rgba(212,137,168,0.2); } 50% { box-shadow:0 0 0 14px rgba(212,137,168,0); } }
-@keyframes sakura-shimmer { 0% { background-position:-200% center; } 100% { background-position:200% center; } }
-@keyframes sakura-wave { 0%,100% { transform:translateY(0) scaleY(1); } 50% { transform:translateY(-6px) scaleY(1.05); } }
-.anim-blur { animation: sakura-blur 0.9s cubic-bezier(0.16,1,0.3,1) both; }
-.anim-rise { animation: sakura-rise 0.8s cubic-bezier(0.16,1,0.3,1) both; }
-.anim-petal { animation: sakura-petal var(--dur,7s) linear infinite; }
-.anim-drift { animation: sakura-drift 5s ease-in-out infinite; }
-.anim-glow { animation: sakura-glow 2s ease-in-out infinite; }
-.anim-shimmer { background-size:200% 100%; animation: sakura-shimmer 3s ease-in-out infinite; }
-.anim-wave { animation: sakura-wave 3s ease-in-out infinite; }
-.scroll-r { opacity:0; transform:translateY(35px); transition:all 0.8s cubic-bezier(0.16,1,0.3,1); }
-.scroll-r.revealed { opacity:1; transform:translateY(0); }
 .no-scrollbar::-webkit-scrollbar { display:none; }
 .no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
 `;
@@ -138,12 +139,12 @@ function SakuraBlossom({ className = "w-8 h-8", fill }: { className?: string; fi
   );
 }
 
-function BranchDivider({ className = "" }: { className?: string }) {
+function OrnateDivider({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex items-center justify-center gap-2.5 my-5 ${className}`}>
-      <span className="h-[1.5px] w-10 opacity-40 rounded-full" style={{ background: `linear-gradient(to left, ${SAKURA}, transparent)` }} />
-      <SakuraBlossom className="w-5 h-5" />
-      <span className="h-[1.5px] w-10 opacity-40 rounded-full" style={{ background: `linear-gradient(to right, ${SAKURA}, transparent)` }} />
+    <div className={`flex items-center justify-center gap-3 my-6 ${className}`}>
+      <span className="h-px w-8 rounded-full" style={{ background: `linear-gradient(to left, ${SAKURA}60, transparent)` }} />
+      <span style={{ color: `${SAKURA}80`, fontSize: 14 }}>✦</span>
+      <span className="h-px w-8 rounded-full" style={{ background: `linear-gradient(to right, ${SAKURA}60, transparent)` }} />
     </div>
   );
 }
@@ -152,36 +153,21 @@ function FloatingPetals() {
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
       {[...Array(8)].map((_, i) => (
-        <div key={i} className="absolute anim-petal"
-          style={{
-            left: `${5 + (i * 13) % 90}%`,
-            top: `${-5 - i * 8}%`,
-            animationDelay: `${i * 1.2}s`,
-            animationDuration: `${6 + i * 1.5}s`,
-            opacity: 0.15,
-          }}>
+        <motion.div key={i} className="absolute"
+          initial={{ y: -30, x: `${5 + (i * 13) % 90}%`, opacity: 0, rotate: 0 }}
+          animate={{ y: '100vh', opacity: [0, 0.5, 0.2, 0], rotate: 360 }}
+          transition={{ duration: 7 + i * 1.5, delay: i * 1.2, repeat: Infinity, ease: 'linear' }}
+          style={{ left: `${5 + (i * 13) % 90}%` }}>
           <svg width={`${12 + i % 2 * 6}`} height={`${14 + i % 2 * 6}`} viewBox="0 0 20 24" fill={SAKURA}>
             <path d="M10 3 Q13 0 10 6 Q7 0 10 3Z" />
             <path d="M10 6 Q16 8 13 12 Q14 7 10 6Z" opacity="0.8" />
             <path d="M10 6 Q4 8 7 12 Q6 7 10 6Z" opacity="0.8" />
             <circle cx="10" cy="7" r="1.5" fill={ROSE_GOLD} opacity="0.6" />
           </svg>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
-}
-
-function ScrollR({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) e.target.classList.add('revealed'); }, { threshold: 0.12 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return <div ref={ref} className={`scroll-r ${className}`}>{children}</div>;
 }
 
 /* ─── Main Component ─── */
@@ -212,44 +198,44 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-between overflow-hidden"
         style={{ background: `linear-gradient(160deg, ${PLUM} 0%, ${PLUM_LIGHT} 40%, ${PLUM} 100%)` }}>
         <FloatingPetals />
-        <div className="absolute inset-0 opacity-[0.03]">
-          <div className="w-full h-full" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white'%3E%3Ccircle cx='30' cy='30' r='3' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E")` }} />
-        </div>
-        <div className="absolute inset-3 border border-white/10 pointer-events-none rounded-[32px] z-10"></div>
-        <div className="absolute inset-6 border border-white/5 pointer-events-none rounded-[24px] z-10"></div>
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white'%3E%3Ccircle cx='30' cy='30' r='3' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E")` }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}14 0%, transparent 60%)` }} />
+        <div className="absolute inset-3 border border-white/10 pointer-events-none rounded-[32px] z-10" />
+        <div className="absolute inset-6 border border-white/5 pointer-events-none rounded-[24px] z-10" />
 
-        <div className="pt-8 z-20 anim-blur">
+        <motion.div className="pt-8 z-20" variants={staggerItem} initial="hidden" animate="visible">
           <SakuraBlossom className="w-16 h-16 mx-auto" fill={SAKURA} />
-        </div>
+        </motion.div>
 
-        <div className="my-auto z-20 space-y-8 px-6 max-w-sm w-full text-center">
-          <div className="anim-blur space-y-3" style={{ animationDelay: '0.2s' }}>
+        <motion.div className="my-auto z-20 space-y-8 px-6 max-w-sm w-full text-center"
+          variants={staggerContainer} initial="hidden" animate="visible">
+          <motion.div variants={staggerItem} className="space-y-3">
             <span className="text-[10px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: SAKURA }}>The Wedding of</span>
             <div className="w-12 h-[1.5px] mx-auto rounded-full" style={{ background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
-          </div>
-          <div className="anim-blur space-y-4" style={{ animationDelay: '0.4s' }}>
+          </motion.div>
+          <motion.div variants={staggerItem} className="space-y-4">
             <h1 className="font-script text-5xl leading-tight text-white">
               {p1.nick} <span className="inline-block mx-1 text-2xl font-script italic" style={{ color: SAKURA }}>&</span> {p2.nick}
             </h1>
             <p className="font-title text-sm" style={{ color: `${SAKURA_LIGHT}CC` }}>{displayDate}</p>
-          </div>
-          <div className="anim-blur space-y-4 pt-2" style={{ animationDelay: '0.6s' }}>
+          </motion.div>
+          <motion.div variants={staggerItem} className="space-y-4 pt-2">
             <p className="text-[9px] uppercase tracking-[0.3em] font-sans font-medium" style={{ color: `${MUTED}CC` }}>Kepada Yth.</p>
             <div className="inline-block rounded-2xl px-7 py-3 backdrop-blur-md" style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: `1px solid ${SAKURA}40` }}>
               <p className="font-title text-base font-light text-white">{guestName}</p>
             </div>
-          </div>
-          <div className="pt-4 anim-blur" style={{ animationDelay: '0.8s' }}>
+          </motion.div>
+          <motion.div variants={staggerItem} className="pt-4">
             <button onClick={open}
               className="group relative px-10 py-3.5 text-white rounded-full transition-all duration-500 text-xs uppercase tracking-[0.25em] font-medium overflow-hidden"
               style={{ backgroundColor: SAKURA }}>
               <span className="relative z-10 flex items-center gap-2">
                 <Heart className="w-3.5 h-3.5 fill-current" /> Buka Undangan
               </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent anim-shimmer" />
+              <span className="absolute inset-0" style={{ background: `linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent)`, backgroundSize: '200% 100%', animation: 'shimmer 3s ease-in-out infinite' }} />
             </button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
         <p className="text-[7px] tracking-[0.35em] uppercase mb-6 z-20" style={{ color: `${SAKURA}66` }}>#{p1.nick}{p2.nick}Sakura</p>
       </div>
     );
@@ -263,7 +249,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
 
       {/* Music toggle */}
       <button onClick={toggleMusic}
-        className="fixed bottom-6 right-6 z-40 p-3.5 rounded-full shadow-xl hover:scale-110 transition-all duration-300"
+        className="fixed bottom-6 right-6 z-50 flex h-11 w-11 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 shadow-xl"
         style={{ backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', border: `1px solid ${SAKURA}33` }}>
         {isPlaying ? (
           <span className="relative flex items-center justify-center">
@@ -274,55 +260,69 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
       </button>
 
       {/* ═══ 1. HERO ═══ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(180deg, ${PLUM} 0%, ${PLUM_LIGHT} 50%, ${BG_LIGHT} 100%)` }}>
+      <motion.section className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        style={{ background: `linear-gradient(180deg, ${PLUM} 0%, ${PLUM_LIGHT} 50%, ${BG_LIGHT} 100%)` }}>
         <div className="absolute inset-0 opacity-20">
           {isVideo(media.hero) ? <video src={media.hero} muted loop playsInline className="w-full h-full object-cover" /> : <img src={media.hero} alt="" className="w-full h-full object-cover" />}
         </div>
         <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, ${PLUM}99, transparent, ${PLUM}CC)` }} />
-        <div className="absolute top-6 left-6 anim-drift"><SakuraBlossom className="w-10 h-10" /></div>
-        <div className="absolute top-6 right-6 anim-drift" style={{ animationDelay: '1.5s' }}><SakuraBlossom className="w-8 h-8" /></div>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}1A 0%, transparent 50%)` }} />
+        <motion.div className="absolute top-6 left-6" animate={{ x: [-6, 6, -6] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}>
+          <SakuraBlossom className="w-10 h-10" />
+        </motion.div>
+        <motion.div className="absolute top-6 right-6" animate={{ x: [6, -6, 6] }} transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}>
+          <SakuraBlossom className="w-8 h-8" />
+        </motion.div>
 
         <div className="relative z-10 text-center px-6 max-w-lg mx-auto">
-          <div className="anim-blur" style={{ animationDelay: '0.2s' }}><SakuraBlossom className="w-12 h-12 mx-auto mb-6" /></div>
-          <div className="anim-blur space-y-3" style={{ animationDelay: '0.4s' }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR, ease: EASE, delay: 0.2 }}>
+            <SakuraBlossom className="w-12 h-12 mx-auto mb-6" />
+          </motion.div>
+          <motion.div className="space-y-3" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR, ease: EASE, delay: 0.4 }}>
             <p className="text-[10px] uppercase tracking-[0.4em] font-sans font-medium" style={{ color: SAKURA }}>Undangan Pernikahan</p>
             <div className="w-10 mx-auto rounded-full" style={{ height: 1.5, background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
-          </div>
-          <div className="anim-blur space-y-3 mt-6" style={{ animationDelay: '0.6s' }}>
-            <h1 className="font-title text-5xl leading-tight text-white">{p1.nick} <span className="text-2xl block mt-1 font-title" style={{ color: SAKURA }}>&amp;</span> {p2.nick}</h1>
+          </motion.div>
+          <motion.div className="space-y-3 mt-6" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR, ease: EASE, delay: 0.6 }}>
+            <h1 className="font-script text-5xl leading-tight text-white">{p1.nick} <span className="text-2xl block mt-1" style={{ color: SAKURA }}>&amp;</span> {p2.nick}</h1>
             <p className="font-title text-sm font-light" style={{ color: `${SAKURA_LIGHT}CC` }}>{displayDate}</p>
             <p className="text-[10px] tracking-[0.25em] uppercase font-sans font-medium" style={{ color: `${SAKURA}CC` }}>{location}</p>
-          </div>
+          </motion.div>
           {guestName && (
-            <div className="mt-8 anim-blur inline-block" style={{ animationDelay: '0.8s' }}>
-              <div className="px-5 py-2 rounded-full backdrop-blur-sm text-xs font-light" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: `1px solid ${SAKURA}40`, color: '#F0E6EA' }}>
+            <motion.div className="mt-8 inline-block" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DUR, ease: EASE, delay: 0.8 }}>
+              <div className="px-5 py-2 rounded-full backdrop-blur-sm text-xs font-light" style={{ backgroundColor: 'rgba(255,255,255,0.08)', border: `1px solid ${SAKURA}40` }}>
                 Kepada Yth. <span className="font-medium text-white">{guestName}</span>
               </div>
-            </div>
+            </motion.div>
           )}
-          <div className="mt-16 anim-wave">
+          <motion.div className="mt-16" animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
             <p className="text-[8px] uppercase tracking-widest" style={{ color: `${SAKURA}99` }}>Scroll</p>
             <div className="mx-auto mt-2 w-[1px] h-8" style={{ background: `linear-gradient(to bottom, ${SAKURA}, transparent)` }} />
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* ═══ 2. QUOTE ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
-        <div className="max-w-xl mx-auto text-center">
-          <BranchDivider />
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG_LIGHT }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}0A 0%, transparent 50%)` }} />
+        <div className="max-w-xl mx-auto text-center relative z-10">
+          <OrnateDivider />
           <p className="font-title text-4xl mb-4 leading-none" style={{ color: SAKURA }}>"</p>
           <p className="font-sans text-base leading-relaxed px-4 font-light" style={{ color: `${DARK_TEXT}CC` }}>{quote.text}</p>
           <p className="font-title text-4xl mt-4 leading-none" style={{ color: SAKURA }}>"</p>
           <div className="w-10 mx-auto my-5 rounded-full" style={{ height: 1.5, background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
           <p className="text-[10px] font-sans font-medium uppercase tracking-[0.25em]" style={{ color: MUTED }}>— {quote.source}</p>
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* ═══ 3. COUPLE ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
-        <div className="max-w-2xl mx-auto text-center">
-          <BranchDivider />
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${ROSE_GOLD}0A 0%, transparent 50%)` }} />
+        <div className="max-w-2xl mx-auto text-center relative z-10">
+          <OrnateDivider />
           <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-2" style={{ color: MUTED }}>Kedua Mempelai</p>
           <h2 className="font-title text-3xl mb-4" style={{ color: PLUM }}>Dengan Cinta & Restu Keluarga</h2>
           <p className="text-xs max-w-md mx-auto mb-16" style={{ color: MUTED }}>Dengan memohon rahmat dan ridha Tuhan, kami bermaksud menyelenggarakan pernikahan yang akan mempersatukan:</p>
@@ -330,110 +330,128 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
             {[
               { person: p1, img: media.p1, label: 'Mempelai Pria', side: 'right' as const },
               { person: p2, img: media.p2, label: 'Mempelai Wanita', side: 'left' as const },
-            ].map(({ person, img, label, side }) => (
-              <div key={label} className="flex flex-col items-center group w-full max-w-[280px]">
+            ].map(({ person, img, label }, idx) => (
+              <motion.div key={label} className="flex flex-col items-center group w-full max-w-[280px]"
+                initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: idx * 0.15 }}>
                 <div className="relative mb-4">
                   <div className="relative overflow-hidden"
                     style={{ width: 190, height: 230, borderRadius: '80px 80px 40px 40px', border: `4px solid white`, boxShadow: `0 8px 30px ${PLUM}20` }}>
                     <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     <div className="absolute bottom-0 left-0 right-0" style={{ height: 50, background: `linear-gradient(to top, white, transparent)` }} />
                   </div>
-                  {/* Sakura blossom ornament under the photo */}
                   <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-0 z-10">
                     <SakuraBlossom className="w-6 h-6" fill={SAKURA_LIGHT} />
                     <SakuraBlossom className="w-4 h-4" fill={SAKURA} />
                     <SakuraBlossom className="w-6 h-6" fill={SAKURA_LIGHT} />
                   </div>
                 </div>
-                <h3 className="font-title text-xl font-medium mb-1" style={{ color: PLUM }}>{person.full}</h3>
-                <p className="text-[9px] uppercase tracking-widest font-sans font-semibold mb-3" style={{ color: SAKURA }}>{label}</p>
+                <h3 className="font-script text-lg font-normal mb-1" style={{ color: DARK_TEXT }}>{person.full}</h3>
+                <p className="text-[9px] uppercase tracking-widest font-title font-semibold mb-3" style={{ color: SAKURA }}>{label}</p>
                 <p className="text-sm leading-relaxed mb-3" style={{ color: `${DARK_TEXT}BB` }}>{person.desc}</p>
                 <p className="text-xs" style={{ color: MUTED }}>
                   Putra/i dari: <span className="font-semibold" style={{ color: PLUM }}>{person.father}</span> & {person.mother}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* ═══ 4. COUNTDOWN ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
-        <div className="max-w-lg mx-auto text-center">
-          <BranchDivider />
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG_LIGHT }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}0A 0%, transparent 50%)` }} />
+        <div className="max-w-lg mx-auto text-center relative z-10">
+          <OrnateDivider />
           <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-2" style={{ color: MUTED }}>Menuju Hari Bahagia</p>
-          <h2 className="font-title text-2xl mb-10" style={{ color: PLUM }}>Detik Cinta</h2>
-          <div className="grid grid-cols-4 gap-3">
+          <h2 className="font-script text-3xl mb-10" style={{ color: PLUM }}>Detik Cinta</h2>
+          <div className="flex items-center justify-center gap-4">
             {[
               { label: 'Hari', val: countdown.days },
               { label: 'Jam', val: countdown.hours },
               { label: 'Menit', val: countdown.minutes },
               { label: 'Detik', val: countdown.seconds, accent: true as const },
             ].map((item, idx) => (
-              <div key={idx} className="p-4 rounded-2xl shadow-sm flex flex-col items-center anim-rise" style={{ animationDelay: `${idx * 0.1}s`, backgroundColor: 'white', border: `1px solid ${SAKURA}1A` }}>
-                <span className={`font-title text-2xl font-light`} style={{ color: item.accent ? SAKURA : PLUM }}>
-                  {String(item.val).padStart(2, '0')}
-                </span>
-                <span className="text-[8px] uppercase tracking-widest mt-1.5" style={{ color: MUTED }}>{item.label}</span>
-              </div>
+              <motion.div key={idx} className="flex flex-col items-center" style={{ minWidth: 72 }}
+                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: idx * 0.1 }}>
+                <div className="p-4 rounded-2xl w-full flex flex-col items-center"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: `1px solid ${SAKURA}1A` }}>
+                  <span className="font-sans text-2xl tabular-nums" style={{ color: item.accent ? SAKURA : PLUM }}>
+                    {String(item.val).padStart(2, '0')}
+                  </span>
+                  <span className="text-[8px] uppercase tracking-widest mt-1.5" style={{ color: MUTED }}>{item.label}</span>
+                </div>
+              </motion.div>
             ))}
           </div>
           <div className="mt-8">
             <a href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+${p1.nick}+%26+${p2.nick}&dates=${isoDate.replace(/[-:]/g,'').replace(/T/,'').slice(0,8)}T090000Z/${isoDate.replace(/[-:]/g,'').replace(/T/,'').slice(0,8)}T160000Z`}
               target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-full text-[10px] uppercase tracking-widest font-sans font-medium transition-all duration-300 shadow-md hover:shadow-lg"
+              className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-white text-[10px] uppercase tracking-widest font-sans font-medium transition-all duration-200"
               style={{ backgroundColor: SAKURA }}>
               <Calendar className="w-3.5 h-3.5" /> Simpan Tanggal
             </a>
           </div>
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* ═══ 5. LOVE STORY ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-14">
-            <BranchDivider />
+            <OrnateDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium" style={{ color: MUTED }}>Perjalanan Cinta</p>
-            <h2 className="font-title text-2xl mt-1" style={{ color: PLUM }}>Cerita Kami</h2>
+            <h2 className="font-script text-3xl mt-1" style={{ color: PLUM }}>Cerita Kami</h2>
           </div>
           <div className="relative ml-4 space-y-10" style={{ borderLeft: `2px solid ${SAKURA}40` }}>
             {stories.length > 0 && stories.map((story, idx) => (
-              <div key={idx} className="relative pl-8 group">
-                <div className="absolute -left-[12px] top-0 p-1 rounded-full group-hover:scale-110 transition-transform" style={{ backgroundColor: BG_LIGHT, border: `2px solid ${SAKURA}` }}>
+              <motion.div key={idx} className="relative pl-8 group"
+                initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: idx * 0.15 }}>
+                <div className="absolute -left-[12px] top-0 p-1 rounded-full group-hover:scale-110 transition-transform"
+                  style={{ backgroundColor: BG_LIGHT, border: `2px solid ${SAKURA}` }}>
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: idx === 2 ? ROSE_GOLD : SAKURA }} />
                 </div>
-                <div className="p-5 rounded-2xl transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.8)', border: `1px solid ${SAKURA}1A` }}>
+                <div className="p-5 rounded-2xl transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: `1px solid ${SAKURA}1A` }}>
                   <span className="inline-block text-[10px] font-bold px-3 py-1 rounded-lg mb-2.5" style={{ color: SAKURA, backgroundColor: `${SAKURA}14` }}>{story.year}</span>
                   <h4 className="font-title text-base font-medium mb-1.5" style={{ color: PLUM }}>{story.title}</h4>
                   <p className="text-xs leading-relaxed" style={{ color: `${DARK_TEXT}AA` }}>{story.desc}</p>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* ═══ 6. EVENT SCHEDULE ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG_LIGHT }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
-            <BranchDivider />
+            <OrnateDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium" style={{ color: MUTED }}>Informasi Acara</p>
-            <h2 className="font-title text-2xl mt-1" style={{ color: PLUM }}>Waktu & Lokasi</h2>
+            <h2 className="font-script text-3xl mt-1" style={{ color: PLUM }}>Waktu & Lokasi</h2>
           </div>
           <div className="flex justify-center gap-2 mb-8 flex-wrap">
             {events.map((evt, idx) => (
               <button key={idx} onClick={() => setActiveTab(idx)}
-                className="px-5 py-2 rounded-full text-[10px] font-sans font-medium uppercase tracking-wider transition-all duration-300"
+                className="px-5 py-2 rounded-full text-[10px] font-sans font-medium uppercase tracking-wider transition-all duration-200"
                 style={activeTab === idx
-                  ? { backgroundColor: SAKURA, color: 'white', boxShadow: '0 2px 8px rgba(212,137,168,0.3)' }
-                  : { backgroundColor: 'white', color: MUTED, border: `1px solid ${SAKURA}26` }}>
+                  ? { backgroundColor: SAKURA, color: 'white', boxShadow: '0 2px 12px rgba(212,137,168,0.3)' }
+                  : { backgroundColor: 'rgba(255,255,255,0.8)', color: MUTED, border: `1px solid ${SAKURA}26` }}>
                 {evt.title}
               </button>
             ))}
           </div>
-          <div className="p-6 rounded-2xl transition-all duration-300" style={{ backgroundColor: 'white', border: `1px solid ${SAKURA}1A`, minHeight: 180 }}>
+          <motion.div className="p-6 rounded-2xl transition-all duration-300"
+            style={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: `1px solid ${SAKURA}1A`, minHeight: 180 }}
+            key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: EASE }}>
             <div className="flex flex-col sm:flex-row gap-6">
               <div className="flex-shrink-0">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: `${SAKURA}14` }}>
@@ -461,30 +479,34 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* ═══ 7. GALLERY ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
         <div className="max-w-xl mx-auto">
           <div className="text-center mb-12">
-            <BranchDivider />
+            <OrnateDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium" style={{ color: MUTED }}>Galeri Foto</p>
-            <h2 className="font-title text-2xl mt-1" style={{ color: PLUM }}>Kenangan Indah</h2>
+            <h2 className="font-script text-3xl mt-1" style={{ color: PLUM }}>Kenangan Indah</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
             {gallery.slice(0, 6).map((url, idx) => (
-              <div key={idx} onClick={() => setLightboxIndex(idx)}
+              <motion.div key={idx} onClick={() => setLightboxIndex(idx)}
                 className="relative group cursor-pointer overflow-hidden rounded-2xl"
-                style={idx === 0 ? { gridColumn: 'span 2', gridRow: 'span 2' } : { aspectRatio: '1' }}>
-                <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                style={idx === 0 ? { gridColumn: 'span 2', gridRow: 'span 2' } : { aspectRatio: '1' }}
+                initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: idx * 0.08 }}>
+                <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `linear-gradient(to top, ${PLUM}66, transparent)` }} />
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
@@ -495,34 +517,39 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
             className="absolute left-4 z-10 p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all"><ChevronLeft className="w-5 h-5" /></button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex < gallery.length - 1 ? lightboxIndex + 1 : 0); }}
             className="absolute right-4 z-10 p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-all"><ChevronRight className="w-5 h-5" /></button>
-          <div className="max-w-[90vw] max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <motion.div className="max-w-[90vw] max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3, ease: EASE }}>
             {isVideo(gallery[lightboxIndex]) ? (
               <video src={gallery[lightboxIndex]} controls autoPlay className="max-h-[85vh] max-w-full" />
             ) : (
               <img src={gallery[lightboxIndex]} alt="" className="max-h-[85vh] max-w-full object-contain" />
             )}
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* ═══ 8. RSVP / WISHES ═══ */}
-      <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG_LIGHT }}>
-        <div className="max-w-xl mx-auto">
+      <motion.section className="relative px-6 py-24 overflow-hidden"
+        style={{ backgroundColor: BG_LIGHT }}
+        initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}0A 0%, transparent 50%)` }} />
+        <div className="max-w-xl mx-auto relative z-10">
           <div className="text-center mb-12">
-            <BranchDivider />
+            <OrnateDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-1" style={{ color: MUTED }}>Doa & Ucapan</p>
-            <h2 className="font-title text-2xl" style={{ color: PLUM }}>Kirim Ucapan</h2>
+            <h2 className="font-script text-3xl" style={{ color: PLUM }}>Kirim Ucapan</h2>
           </div>
 
           {isSubmitted ? (
-            <div className="p-8 rounded-2xl text-center" style={{ backgroundColor: 'white', border: `1px solid ${SAKURA}1A` }}>
+            <motion.div className="p-8 rounded-2xl text-center" style={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: `1px solid ${SAKURA}1A` }}
+              initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: DUR, ease: EASE }}>
               <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: `${SAKURA}14` }}>
                 <Check className="w-6 h-6" style={{ color: SAKURA }} />
               </div>
               <p className="font-sans text-sm font-medium" style={{ color: PLUM }}>Terima kasih atas doa & ucapannya!</p>
-            </div>
+            </motion.div>
           ) : (
-            <form onSubmit={submit} className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'white', border: `1px solid ${SAKURA}1A` }}>
+            <form onSubmit={submit} className="p-6 rounded-2xl space-y-4" style={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: `1px solid ${SAKURA}1A` }}>
               <div className="grid grid-cols-2 gap-3">
                 <input name="name" placeholder="Nama" value={rsvpForm.name} onChange={(e) => setRsvpForm({ ...rsvpForm, name: e.target.value })}
                   className="w-full px-3.5 py-2.5 text-sm rounded-xl focus:outline-none transition-colors"
@@ -542,10 +569,8 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
                 onFocus={(e) => e.target.style.borderColor = SAKURA}
                 onBlur={(e) => e.target.style.borderColor = `${SAKURA}26`} />
               <button type="submit"
-                className="w-full py-3 text-white rounded-xl text-xs uppercase tracking-widest font-sans font-medium transition-all duration-300 flex items-center justify-center gap-2"
-                style={{ backgroundColor: SAKURA }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = SAKURA_LIGHT}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = SAKURA}>
+                className="w-full flex items-center justify-center gap-2 py-3 text-white rounded-xl text-xs uppercase tracking-widest font-sans font-medium transition-all duration-200"
+                style={{ backgroundColor: SAKURA }}>
                 <Send className="w-3.5 h-3.5" /> Kirim Ucapan
               </button>
             </form>
@@ -568,19 +593,24 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
             </div>
           )}
         </div>
-      </section></ScrollR>
+      </motion.section>
 
       {/* ═══ 9. GIFT ═══ */}
       {content.gift?.enabled !== false && gifts.length > 0 && (
-        <ScrollR><section className="py-24 px-6" style={{ backgroundColor: BG }}>
+        <motion.section className="relative px-6 py-24 overflow-hidden"
+          style={{ backgroundColor: BG }}
+          initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} variants={scrollReveal}>
           <div className="max-w-xl mx-auto text-center">
-            <BranchDivider />
+            <OrnateDivider />
             <p className="text-[9px] uppercase tracking-[0.35em] font-sans font-medium mb-1" style={{ color: MUTED }}>Tanda Kasih</p>
-            <h2 className="font-title text-2xl mb-3" style={{ color: PLUM }}>Kado Digital</h2>
+            <h2 className="font-script text-3xl mb-3" style={{ color: PLUM }}>Kado Digital</h2>
             <p className="text-xs mb-10 max-w-sm mx-auto" style={{ color: MUTED }}>Doa restu Anda adalah kado terindah. Jika ingin memberi tanda kasih nontunai, silakan salin rekening di bawah.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
               {gifts.map((g, idx) => (
-                <div key={idx} className="p-5 rounded-2xl transition-all" style={{ backgroundColor: 'white', border: `1px solid ${SAKURA}1A` }}>
+                <motion.div key={idx} className="p-5 rounded-2xl transition-all"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(4px)', border: `1px solid ${SAKURA}1A` }}
+                  initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: idx * 0.1 }}>
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${SAKURA}14` }}>
                       <Gift className="w-4 h-4" style={{ color: SAKURA }} />
@@ -594,29 +624,33 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
                     style={{ color: SAKURA }}>
                     {copiedIdx === idx ? <><Check className="w-3 h-3" /> Tersalin</> : <><Copy className="w-3 h-3" /> Salin</>}
                   </button>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
-        </section></ScrollR>
+        </motion.section>
       )}
 
       {/* ═══ 10. FOOTER ═══ */}
-      <footer className="py-24 px-6 text-center relative overflow-hidden" style={{ background: `linear-gradient(160deg, ${PLUM} 0%, ${PLUM_LIGHT} 50%, ${PLUM} 100%)` }}>
-        <div className="absolute inset-0 opacity-[0.02]">
-          <div className="w-full h-full" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white'%3E%3Ccircle cx='30' cy='30' r='3' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E")` }} />
-        </div>
+      <footer className="relative px-6 py-24 text-center overflow-hidden"
+        style={{ background: `linear-gradient(160deg, ${PLUM} 0%, ${PLUM_LIGHT} 50%, ${PLUM} 100%)` }}>
+        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='white'%3E%3Ccircle cx='30' cy='30' r='3' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E")` }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${SAKURA}14 0%, transparent 50%)` }} />
         <div className="max-w-xl mx-auto relative z-10 space-y-8">
-          <SakuraBlossom className="w-12 h-12 mx-auto opacity-60" />
-          <BranchDivider />
-          <span className="text-[9px] uppercase tracking-[0.4em] font-title font-semibold block" style={{ color: SAKURA }}>Terima Kasih</span>
-          <h2 className="font-script text-3xl font-light italic leading-snug" style={{ color: SAKURA_LIGHT }}>Suatu kehormatan & kebahagiaan yang tak terhingga apabila Bapak/Ibu/Saudara/i berkenan hadir memberikan restu.</h2>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: DUR, ease: EASE }}>
+            <SakuraBlossom className="w-12 h-12 mx-auto opacity-60" />
+          </motion.div>
+          <OrnateDivider />
+          <motion.div className="space-y-4" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: 0.15 }}>
+            <span className="text-[9px] uppercase tracking-[0.4em] font-title font-semibold block" style={{ color: SAKURA }}>Terima Kasih</span>
+            <h2 className="font-script text-3xl font-light italic leading-snug" style={{ color: SAKURA_LIGHT }}>Suatu kehormatan & kebahagiaan yang tak terhingga apabila Bapak/Ibu/Saudara/i berkenan hadir memberikan restu.</h2>
+          </motion.div>
           <div className="w-16 mx-auto rounded-full" style={{ height: 1.5, background: `linear-gradient(to right, transparent, ${SAKURA}, transparent)` }} />
-          <div className="space-y-2">
+          <motion.div className="space-y-2" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: 0.3 }}>
             <p className="text-[9px] uppercase tracking-[0.2em] font-sans" style={{ color: `${SAKURA}99` }}>Kami yang Berbahagia</p>
-            <h4 className="font-title text-3xl" style={{ color: SAKURA_LIGHT }}>{p1.nick} & {p2.nick}</h4>
+            <h4 className="font-script text-3xl" style={{ color: SAKURA_LIGHT }}>{p1.nick} & {p2.nick}</h4>
             <p className="text-[9px] uppercase tracking-widest" style={{ color: `${SAKURA}66` }}>Beserta Seluruh Keluarga Besar</p>
-          </div>
+          </motion.div>
         </div>
         <div className="border-t border-white/5 mt-16 pt-8 text-center">
           <p className="text-[8px] uppercase tracking-widest" style={{ color: `${SAKURA}44` }}>© 2027 {p1.nick} & {p2.nick}. Sakura Series.</p>
