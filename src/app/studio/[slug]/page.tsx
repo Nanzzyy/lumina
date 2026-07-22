@@ -889,164 +889,66 @@ export default function StudioEditorPage() {
         </div>
       )}
 
-      {/* Tab nav */}
-      <div className="flex gap-1 mb-6 p-1 bg-zinc-100 rounded-lg w-fit">
-        {tabs.map((t) => (
-          <button key={t.id} onClick={() => setTab(t.id)}
-            className={cn('px-4 py-2 text-sm rounded-md transition-all',
-              tab === t.id ? 'bg-white text-zinc-900 shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700')}>
-            {t.label}
-          </button>
-        ))}
-      </div>{/* close tab nav */}
-
-      {/* Content Tab */}
-      {tab === 'content' && (
-        <div className="space-y-8">
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Couple</h2>
-            <CoupleEditor content={content} onChange={handleChange} isSolo={template?.mode === 'solo'} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Partisipan (acara multi orang)</h2>
-            <PartnersEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Media (Gambar)</h2>
-            <MediaEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Event</h2>
-            <EventEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          {!isMonolithic && (
-            <>
-              <section>
-                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Story</h2>
-                <StoryEditor content={content} onChange={handleChange} />
-              </section>
-
-              <div className="border-t border-zinc-200" />
-            </>
-          )}
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Love Story Timeline</h2>
-            <StoriesEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Gallery</h2>
-            <GalleryEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Schedule</h2>
-            <ScheduleEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">RSVP, Gift &amp; Guest Book</h2>
-            <RSVPGuestBookGiftEditor content={content} onChange={handleChange} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Daftar Tamu &amp; Link</h2>
-            <GuestListEditor content={content} onChange={handleChange} slug={slug} />
-          </section>
-
-          <div className="border-t border-zinc-200" />
-
-          <section>
-            <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Quote &amp; Footer</h2>
-            <QuoteFooterEditor content={content} onChange={handleChange} />
-          </section>
-
-          {!isMonolithic && (
-            <>
-              <div className="border-t border-zinc-200" />
-
-              <section>
-                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Section Backgrounds</h2>
-                <SectionBackgroundEditor content={content} onChange={handleChange} />
-              </section>
-
-              <div className="border-t border-zinc-200" />
-
-              <section>
-                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Ornaments</h2>
-                <OrnamentEditor content={content} onChange={handleChange} />
-              </section>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Theme Tab */}
-      {tab === 'theme' && (
-        <div>
-          <p className="text-sm text-zinc-500 mb-6">Customize colors for this invitation. These override the template defaults.</p>
-          <ThemePanel overrides={themeOverrides} onChange={handleThemeChange} />
-
-          {/* Mini preview */}
-          <div className="mt-8 p-6 border border-zinc-200 rounded-xl">
-            <h3 className="text-sm font-semibold text-zinc-700 mb-4">Color Preview</h3>
-            <div className="flex flex-wrap gap-3">
-              {['primary', 'secondary', 'accent', 'background', 'text', 'text-secondary'].map((key) => {
-                const colors = mergedTheme.colors as Record<string, string> || {};
-                const val = colors[key];
-                return (
-                  <div key={key} className="text-center">
-                    <div className="w-12 h-12 rounded-lg border border-zinc-200 mb-1" style={{ background: val || '#ccc' }} />
-                    <span className="text-[10px] text-zinc-400">{key}</span>
-                  </div>
-                );
-              })}
-            </div>
+      {/* ── Monolithic: side-by-side layout (form left, preview right) ── */}
+      {isMonolithic ? (
+        <div className="flex gap-6 min-h-0">
+          {/* Left: Content form */}
+          <div className="w-[480px] flex-shrink-0 overflow-y-auto max-h-[calc(100vh-180px)] space-y-8 pr-2">
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Couple</h2>
+              <CoupleEditor content={content} onChange={handleChange} isSolo={template?.mode === 'solo'} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Partisipan (acara multi orang)</h2>
+              <PartnersEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Media (Gambar)</h2>
+              <MediaEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Event</h2>
+              <EventEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Love Story Timeline</h2>
+              <StoriesEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Gallery</h2>
+              <GalleryEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Schedule</h2>
+              <ScheduleEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">RSVP, Gift &amp; Guest Book</h2>
+              <RSVPGuestBookGiftEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Daftar Tamu &amp; Link</h2>
+              <GuestListEditor content={content} onChange={handleChange} slug={slug} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Quote &amp; Footer</h2>
+              <QuoteFooterEditor content={content} onChange={handleChange} />
+            </section>
           </div>
-        </div>
-      )}
 
-      {/* Layout Tab */}
-      {tab === 'layout' && layout && (
-        <LayoutTab
-          invitation={invitation}
-          content={content}
-          layout={layout}
-          onLayoutChange={(newLayoutId) => {
-            update(slug, { layoutId: newLayoutId });
-            setSaved(true);
-          }}
-        />
-      )}
-
-      {/* Preview Tab */}
-      {tab === 'preview' && (
-        <div>
-          {/* Sticky toolbar */}
-          <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-zinc-200 -mx-6 sm:-mx-8 px-6 sm:px-8 py-3 mb-0 flex items-center justify-between gap-4 shadow-sm">
-            <p className="text-sm text-zinc-500 truncate">Live preview{editOrnaments ? ' — editing ornaments' : ''}</p>
-            <div className="flex items-center gap-2">
+          {/* Right: Live preview */}
+          <div className="flex-1 sticky top-0">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-zinc-500">Live Preview</p>
               <div className="flex gap-1 p-1 bg-zinc-100 rounded-lg">
                 {(['mobile', 'tablet', 'desktop'] as const).map((d) => (
                   <button key={d} onClick={() => setDevice(d)}
@@ -1065,72 +967,254 @@ export default function StudioEditorPage() {
                   </button>
                 ))}
               </div>
-              {!isMonolithic && (
-                <button onClick={() => setEditOrnaments(!editOrnaments)}
-                  className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
-                    editOrnaments ? 'bg-[var(--colors-primary)] text-white shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700 bg-zinc-100')}>
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
-                  {editOrnaments ? 'Done' : 'Ornaments'}
-                </button>
+            </div>
+            <div className="flex justify-center">
+              {device !== 'desktop' ? (
+                <div className="shadow-xl" style={{ width: device === 'mobile' ? 384 : 768 }}>
+                  <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2 rounded-t-xl">
+                    <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                    <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                    <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                    <span className="ml-2 text-[10px]">
+                      {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : 'Tablet (768×1024)'}
+                    </span>
+                  </div>
+                  <IframePreview
+                    width={device === 'mobile' ? 384 : 768}
+                    height={device === 'mobile' ? 728 : 1024}
+                  >
+                    <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                    </ThemeProvider>
+                  </IframePreview>
+                </div>
+              ) : (
+                <div className="border border-zinc-200 rounded-xl overflow-hidden w-full h-[80vh]"
+                  style={{ transform: 'translateZ(0)' }}>
+                  <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
+                    <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                    <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                    <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                    <span className="ml-2 text-[10px]">
+                      {template.name} &middot; Desktop
+                    </span>
+                  </div>
+                  <div className="bg-white h-full overflow-y-auto" data-lumina-scroll>
+                    <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                    </ThemeProvider>
+                  </div>
+                </div>
               )}
             </div>
           </div>
-          <div className="flex justify-center">
-            {/* Use iframe for mobile/tablet to properly isolate viewport (position:fixed, vh units, etc.) */}
-            {!editOrnaments && device !== 'desktop' ? (
-              <div className="shadow-xl" style={{ width: device === 'mobile' ? 384 : 768 }}>
-                <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2 rounded-t-xl">
-                  <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                  <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                  <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                  <span className="ml-2 text-[10px]">
-                    Preview &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : 'Tablet (768×1024)'}
-                  </span>
-                </div>
-                <IframePreview
-                  width={device === 'mobile' ? 384 : 768}
-                  height={device === 'mobile' ? 728 : 1024}
-                >
-                  <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                    <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                  </ThemeProvider>
-                </IframePreview>
-              </div>
-            ) : (
-              <div className={cn(
-                'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
-                device === 'desktop' ? 'w-full' : 'shadow-xl',
-                editOrnaments && 'border-[var(--colors-primary)]/30',
-                isMonolithic && 'h-[80vh]',
-              )}
-                style={{
-                  ...(device !== 'desktop' ? { maxWidth: device === 'mobile' ? 384 : 768 } : {}),
-                  ...(isMonolithic ? { transform: 'translateZ(0)' } : {}),
-                }}
-              >
-                <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
-                  <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                  <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                  <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                  <span className="ml-2 text-[10px]">
-                    {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
-                  </span>
-                </div>
-                <div className={cn('bg-white', isMonolithic && 'h-full overflow-y-auto')} data-lumina-scroll>
-                  <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                    <OrnamentCanvas
-                      ornaments={content.ornaments || []}
-                      onChange={(ornaments) => handleChange({ ...content, ornaments })}
-                      readOnly={!editOrnaments}
-                    >
-                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                    </OrnamentCanvas>
-                  </ThemeProvider>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
+      ) : (
+        <>
+          {/* ── Composed templates: tab-based layout ── */}
+          <div className="flex gap-1 mb-6 p-1 bg-zinc-100 rounded-lg w-fit">
+            {tabs.map((t) => (
+              <button key={t.id} onClick={() => setTab(t.id)}
+                className={cn('px-4 py-2 text-sm rounded-md transition-all',
+                  tab === t.id ? 'bg-white text-zinc-900 shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700')}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Content Tab */}
+          {tab === 'content' && (
+            <div className="space-y-8">
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Couple</h2>
+                <CoupleEditor content={content} onChange={handleChange} isSolo={template?.mode === 'solo'} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Partisipan (acara multi orang)</h2>
+                <PartnersEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Media (Gambar)</h2>
+                <MediaEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Event</h2>
+                <EventEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Story</h2>
+                <StoryEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Love Story Timeline</h2>
+                <StoriesEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Gallery</h2>
+                <GalleryEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Schedule</h2>
+                <ScheduleEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">RSVP, Gift &amp; Guest Book</h2>
+                <RSVPGuestBookGiftEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Daftar Tamu &amp; Link</h2>
+                <GuestListEditor content={content} onChange={handleChange} slug={slug} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Quote &amp; Footer</h2>
+                <QuoteFooterEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Section Backgrounds</h2>
+                <SectionBackgroundEditor content={content} onChange={handleChange} />
+              </section>
+              <div className="border-t border-zinc-200" />
+              <section>
+                <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Ornaments</h2>
+                <OrnamentEditor content={content} onChange={handleChange} />
+              </section>
+            </div>
+          )}
+
+          {/* Theme Tab */}
+          {tab === 'theme' && (
+            <div>
+              <p className="text-sm text-zinc-500 mb-6">Customize colors for this invitation. These override the template defaults.</p>
+              <ThemePanel overrides={themeOverrides} onChange={handleThemeChange} />
+              <div className="mt-8 p-6 border border-zinc-200 rounded-xl">
+                <h3 className="text-sm font-semibold text-zinc-700 mb-4">Color Preview</h3>
+                <div className="flex flex-wrap gap-3">
+                  {['primary', 'secondary', 'accent', 'background', 'text', 'text-secondary'].map((key) => {
+                    const colors = mergedTheme.colors as Record<string, string> || {};
+                    const val = colors[key];
+                    return (
+                      <div key={key} className="text-center">
+                        <div className="w-12 h-12 rounded-lg border border-zinc-200 mb-1" style={{ background: val || '#ccc' }} />
+                        <span className="text-[10px] text-zinc-400">{key}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Layout Tab */}
+          {tab === 'layout' && layout && (
+            <LayoutTab
+              invitation={invitation}
+              content={content}
+              layout={layout}
+              onLayoutChange={(newLayoutId) => {
+                update(slug, { layoutId: newLayoutId });
+                setSaved(true);
+              }}
+            />
+          )}
+
+          {/* Preview Tab */}
+          {tab === 'preview' && (
+            <div>
+              <div className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-zinc-200 -mx-6 sm:-mx-8 px-6 sm:px-8 py-3 mb-0 flex items-center justify-between gap-4 shadow-sm">
+                <p className="text-sm text-zinc-500 truncate">Live preview{editOrnaments ? ' — editing ornaments' : ''}</p>
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1 p-1 bg-zinc-100 rounded-lg">
+                    {(['mobile', 'tablet', 'desktop'] as const).map((d) => (
+                      <button key={d} onClick={() => setDevice(d)}
+                        className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
+                          device === d ? 'bg-white text-zinc-900 shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700')}>
+                        {d === 'mobile' && (
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
+                        )}
+                        {d === 'tablet' && (
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" /><line x1="12" y1="18" x2="12" y2="18" /></svg>
+                        )}
+                        {d === 'desktop' && (
+                          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>
+                        )}
+                        {d === 'mobile' ? 'M' : d === 'tablet' ? 'T' : 'D'}
+                      </button>
+                    ))}
+                  </div>
+                  <button onClick={() => setEditOrnaments(!editOrnaments)}
+                    className={cn('px-3 py-1.5 text-xs rounded-md transition-all flex items-center gap-1.5',
+                      editOrnaments ? 'bg-[var(--colors-primary)] text-white shadow-sm font-medium' : 'text-zinc-500 hover:text-zinc-700 bg-zinc-100')}>
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+                    {editOrnaments ? 'Done' : 'Ornaments'}
+                  </button>
+                </div>
+              </div>
+              <div className="flex justify-center mt-4">
+                {!editOrnaments && device !== 'desktop' ? (
+                  <div className="shadow-xl" style={{ width: device === 'mobile' ? 384 : 768 }}>
+                    <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2 rounded-t-xl">
+                      <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                      <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                      <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                      <span className="ml-2 text-[10px]">
+                        Preview &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : 'Tablet (768×1024)'}
+                      </span>
+                    </div>
+                    <IframePreview
+                      width={device === 'mobile' ? 384 : 768}
+                      height={device === 'mobile' ? 728 : 1024}
+                    >
+                      <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                        <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                      </ThemeProvider>
+                    </IframePreview>
+                  </div>
+                ) : (
+                  <div className={cn(
+                    'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
+                    device === 'desktop' ? 'w-full' : 'shadow-xl',
+                    editOrnaments && 'border-[var(--colors-primary)]/30',
+                  )}
+                    style={{
+                      ...(device !== 'desktop' ? { maxWidth: device === 'mobile' ? 384 : 768 } : {}),
+                    }}
+                  >
+                    <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
+                      <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                      <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                      <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                      <span className="ml-2 text-[10px]">
+                        {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
+                      </span>
+                    </div>
+                    <div className="bg-white" data-lumina-scroll>
+                      <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                        <OrnamentCanvas
+                          ornaments={content.ornaments || []}
+                          onChange={(ornaments) => handleChange({ ...content, ornaments })}
+                          readOnly={!editOrnaments}
+                        >
+                          <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                        </OrnamentCanvas>
+                      </ThemeProvider>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
