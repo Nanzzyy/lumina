@@ -971,43 +971,26 @@ export default function StudioEditorPage() {
               </div>
             </div>
             <div className="flex justify-center">
-              {device !== 'desktop' ? (
-                <div className="shadow-xl" style={{ width: device === 'mobile' ? 384 : 768 }}>
-                  <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2 rounded-t-xl">
-                    <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <span className="ml-2 text-[10px]">
-                      {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : 'Tablet (768×1024)'}
-                    </span>
-                  </div>
-                  <IframePreview
-                    width={device === 'mobile' ? 384 : 768}
-                    height={device === 'mobile' ? 728 : 1024}
-                  >
-                    <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                    </ThemeProvider>
-                  </IframePreview>
+              <div className="border border-zinc-200 rounded-xl overflow-hidden shadow-xl"
+                style={{
+                  width: device === 'mobile' ? 384 : device === 'tablet' ? 768 : '100%',
+                  height: device === 'mobile' ? 728 : device === 'tablet' ? 1024 : '80vh',
+                  transform: 'translateZ(0)',
+                }}>
+                <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
+                  <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <span className="ml-2 text-[10px]">
+                    {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : device === 'tablet' ? 'Tablet (768×1024)' : 'Desktop'}
+                  </span>
                 </div>
-              ) : (
-                <div className="border border-zinc-200 rounded-xl overflow-hidden w-full h-[80vh]"
-                  style={{ transform: 'translateZ(0)' }}>
-                  <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
-                    <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <span className="ml-2 text-[10px]">
-                      {template.name} &middot; Desktop
-                    </span>
-                  </div>
-                  <div className="bg-white h-full overflow-y-auto" data-lumina-scroll>
-                    <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                    </ThemeProvider>
-                  </div>
+                <div className="bg-white h-[calc(100%-28px)] overflow-y-auto" data-lumina-scroll>
+                  <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                    <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                  </ThemeProvider>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
