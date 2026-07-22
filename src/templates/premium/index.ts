@@ -9,6 +9,7 @@ import { UndanganBirthdayWish } from './UndanganBirthdayWish';
 import { UndanganPernikahanFlora } from './UndanganPernikahanFlora';
 import { UndanganPernikahanHana } from './UndanganPernikahanHana';
 import { UndanganPernikahanSakura } from './UndanganPernikahanSakura';
+import { UndanganPernikahanKaze } from './UndanganPernikahanKaze';
 
 /**
  * Monolithic premium templates — a single self-contained component renders the
@@ -96,5 +97,14 @@ export const sakuraWeddingTemplate: TemplateDefinition = {
   kind: 'monolithic',
   category: 'mobile',
   component: UndanganPernikahanSakura,
+};
+
+export const kazeWeddingTemplate: TemplateDefinition = {
+  id: 'kaze',
+  name: 'Kaze 風',
+  description: 'Indigo storm — paper & indigo, vermillion accent, gold wave ornament, font Cormorant Garamond + Inter, Japanese grid aesthetic.',
+  kind: 'monolithic',
+  category: 'mobile',
+  component: UndanganPernikahanKaze,
 };
 

@@ -26,7 +26,7 @@ import {
   veronaTemplate, noirTemplate, premiumWeddingTemplate, terracottaWeddingTemplate,
   luxuryWeddingTemplate, metatahBaliTemplate, birthdayGalaTemplate,
   birthdayWishTemplate, mobileCanvasTemplate, floraWeddingTemplate,
-  hanaWeddingTemplate, sakuraWeddingTemplate,
+  hanaWeddingTemplate, sakuraWeddingTemplate, kazeWeddingTemplate,
 } from '@/templates/all-templates';
 import {
   defaultLayout, modernLayout, adatBaliLayout,
@@ -68,6 +68,7 @@ export function registerAllTemplates() {
   registerTemplate(floraWeddingTemplate);
   registerTemplate(hanaWeddingTemplate);
   registerTemplate(sakuraWeddingTemplate);
+  registerTemplate(kazeWeddingTemplate);
   registerTemplate(mobileCanvasTemplate);
 }
 

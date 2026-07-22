@@ -174,18 +174,18 @@ function FloatingPetals() {
 function BgOrnaments() {
   const ornaments = [
     // Large accent blossoms
-    { style: { top: '5%', left: '3%' }, size: 'w-12 h-12', delay: 0, dur: 5, fill: SAKURA_LIGHT, opacity: 0.1 },
-    { style: { top: '12%', right: '6%' }, size: 'w-7 h-7', delay: 1.5, dur: 4, fill: SAKURA, opacity: 0.08 },
-    { style: { bottom: '8%', right: '4%' }, size: 'w-14 h-14', delay: 0.8, dur: 6, fill: ROSE_GOLD, opacity: 0.07 },
+    { style: { top: '5%', left: '3%' }, size: 'w-12 h-12', delay: 0, dur: 5, fill: SAKURA_LIGHT, opacity: 0.35 },
+    { style: { top: '12%', right: '6%' }, size: 'w-7 h-7', delay: 1.5, dur: 4, fill: SAKURA, opacity: 0.3 },
+    { style: { bottom: '8%', right: '4%' }, size: 'w-14 h-14', delay: 0.8, dur: 6, fill: ROSE_GOLD, opacity: 0.25 },
     // Medium scattered
-    { style: { top: '35%', left: '8%' }, size: 'w-6 h-6', delay: 2, dur: 4.5, fill: SAKURA_LIGHT, opacity: 0.09 },
-    { style: { top: '55%', right: '2%' }, size: 'w-8 h-8', delay: 1, dur: 5.5, fill: SAKURA, opacity: 0.08 },
-    { style: { top: '75%', left: '12%' }, size: 'w-5 h-5', delay: 2.5, dur: 4, fill: ROSE_GOLD, opacity: 0.1 },
+    { style: { top: '35%', left: '8%' }, size: 'w-6 h-6', delay: 2, dur: 4.5, fill: SAKURA_LIGHT, opacity: 0.35 },
+    { style: { top: '55%', right: '2%' }, size: 'w-8 h-8', delay: 1, dur: 5.5, fill: SAKURA, opacity: 0.3 },
+    { style: { top: '75%', left: '12%' }, size: 'w-5 h-5', delay: 2.5, dur: 4, fill: ROSE_GOLD, opacity: 0.35 },
     // Small accent dots (petal clusters)
-    { style: { top: '20%', left: '25%' }, size: 'w-3 h-3', delay: 0.5, dur: 3.5, fill: SAKURA, opacity: 0.12 },
-    { style: { top: '45%', right: '15%' }, size: 'w-4 h-4', delay: 1.8, dur: 4, fill: SAKURA_LIGHT, opacity: 0.1 },
-    { style: { bottom: '25%', left: '5%' }, size: 'w-3.5 h-3.5', delay: 3, dur: 3.8, fill: ROSE_GOLD, opacity: 0.08 },
-    { style: { bottom: '40%', right: '10%' }, size: 'w-5 h-5', delay: 0.3, dur: 5, fill: SAKURA, opacity: 0.07 },
+    { style: { top: '20%', left: '25%' }, size: 'w-3 h-3', delay: 0.5, dur: 3.5, fill: SAKURA, opacity: 0.45 },
+    { style: { top: '45%', right: '15%' }, size: 'w-4 h-4', delay: 1.8, dur: 4, fill: SAKURA_LIGHT, opacity: 0.4 },
+    { style: { bottom: '25%', left: '5%' }, size: 'w-3.5 h-3.5', delay: 3, dur: 3.8, fill: ROSE_GOLD, opacity: 0.35 },
+    { style: { bottom: '40%', right: '10%' }, size: 'w-5 h-5', delay: 0.3, dur: 5, fill: SAKURA, opacity: 0.3 },
   ];
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">

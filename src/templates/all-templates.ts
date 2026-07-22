@@ -169,6 +169,7 @@ export {
   floraWeddingTemplate,
   hanaWeddingTemplate,
   sakuraWeddingTemplate,
+  kazeWeddingTemplate,
 } from "./premium";
 
 // Mobile-canvas meta-template.
