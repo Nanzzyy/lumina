@@ -268,7 +268,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
             <p className="font-body text-sm font-light" style={{ color: `${GOLD_LIGHT}CC` }}>{displayDate}</p>
             <p className="text-[10px] tracking-[0.25em] uppercase font-medium" style={{ color: `${GOLD_LIGHT}99` }}>{location}</p>
           </div>
-          {guestName && guestName !== 'Tamu Undangan' && (
+          {guestName && (
             <div className="mt-8 anim-fade-up inline-block" style={{ animationDelay: '0.8s' }}>
               <div className="px-5 py-2 rounded-full backdrop-blur-sm text-xs font-light" style={{ backgroundColor: `${IVORY}1A`, border: `1px solid ${GOLD}4D`, color: IVORY }}>
                 Kepada Yth. <span className="font-medium text-white">{guestName}</span>
@@ -344,7 +344,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
             ))}
           </div>
           <div className="mt-8">
-            <a href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+${p1.nick}+%26+${p2.nick}&dates=20270515T090000Z/20270515T160000Z`}
+            <a href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+${p1.nick}+%26+${p2.nick}&dates=${isoDate.replace(/[-:]/g,'').replace(/T/,'').slice(0,8)}T090000Z/${isoDate.replace(/[-:]/g,'').replace(/T/,'').slice(0,8)}T160000Z`}
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 text-white rounded-full text-[10px] uppercase tracking-widest font-medium transition-all duration-300 shadow-md"
               style={{ backgroundColor: GOLD }}

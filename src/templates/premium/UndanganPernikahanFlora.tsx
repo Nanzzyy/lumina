@@ -333,8 +333,8 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
             <p className="font-serif text-sm italic text-[#E8C4C0]">{displayDate}</p>
             <p className="text-xs tracking-[0.25em] uppercase text-[#D4A574] font-medium">{events[0]?.address?.split(',').pop()?.trim() || 'Bali'}</p>
           </div>
-          {guestName && guestName !== 'Tamu Undangan' && (
-            <div className="mt-8 anim-blur" style={{ animationDelay: '0.9s' }}>
+          {guestName && (
+            <div className="mt-8 anim-fade-up inline-block" style={{ animationDelay: '0.9s' }}>
               <div className="px-5 py-2 mx-auto inline-block rounded-full text-xs font-light"
                 style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(212,165,116,0.3)', color: '#FDF8F4' }}>
                 Kepada Yth. <span className="font-medium text-white">{guestName}</span>
@@ -383,7 +383,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
             ))}
           </div>
           <div className="mt-10">
-            <a href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+${p1.nick}+%26+${p2.nick}&dates=20270515T090000Z/20270515T160000Z`}
+            <a href={`https://calendar.google.com/calendar/render?action=TEMPLATE&text=Pernikahan+${p1.nick}+%26+${p2.nick}&dates=${isoDate.replace(/[-:]/g,'').replace(/T/,'').slice(0,8)}T090000Z/${isoDate.replace(/[-:]/g,'').replace(/T/,'').slice(0,8)}T160000Z`}
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#D4A574] hover:bg-dark text-white rounded-full text-[10px] uppercase tracking-widest font-semibold transition-all duration-300 shadow-md">
               <Calendar className="w-3.5 h-3.5" /> Simpan Tanggal

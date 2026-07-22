@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useStudioStore } from '@/lib/studio/store';
 import { getTemplate, TemplateRenderer } from '@/lib/template';
-import { ArrowLeft, Save, Smartphone, Heart, Calendar, MapPin, Clock, Image, Music, Quote, Gift, MessageSquare, Star, Sparkles, Globe } from 'lucide-react';
+import { ArrowLeft, Save, Smartphone, Heart, Calendar, MapPin, Clock, Image, Music, Quote, Gift, MessageSquare, Star, Sparkles, Globe, Upload } from 'lucide-react';
 import type { InvitationContent, StoryMoment, ScheduleItem, GiftItem } from '@/lib/content/types';
 
 export default function MobileEditorPage() {
@@ -167,6 +167,36 @@ function Inp({ value, onChange, placeholder = "", multiline = false, rows = 2 }:
   return <input className={cls} value={value || ''} onChange={e => onChange(e.target.value)} placeholder={placeholder} />;
 }
 
+/* ─── Upload Button ─── */
+function UploadBtn({ onUploaded, label = 'Upload' }: { onUploaded: (url: string) => void; label?: string }) {
+  const [loading, setLoading] = useState(false);
+  const ref = useRef<HTMLInputElement>(null);
+  const handle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLoading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+      if (!res.ok) return;
+      const data = await res.json();
+      onUploaded(data.url);
+    } catch {}
+    setLoading(false);
+    e.target.value = '';
+  };
+  return (
+    <>
+      <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handle} />
+      <button type="button" onClick={() => ref.current?.click()} disabled={loading}
+        className="text-[10px] text-[var(--colors-primary)] hover:underline flex items-center gap-1">
+        <Upload className="w-3 h-3" /> {loading ? '...' : label}
+      </button>
+    </>
+  );
+}
+
 /* ─── Guest Name Form ─── */
 function GuestNameForm({ content, setContent }: { content: InvitationContent; setContent: (p: Partial<InvitationContent>) => void }) {
   return (
@@ -183,20 +213,41 @@ function GuestNameForm({ content, setContent }: { content: InvitationContent; se
 function CoupleForm({ content, setContent }: { content: InvitationContent; setContent: (p: Partial<InvitationContent>) => void }) {
   const c = content.couple;
   const set = (k: string, v: string) => setContent({ couple: { ...c, [k]: v } });
+  const media = content.media || {};
+  const setMedia = (k: string, v: string) => setContent({ media: { ...media, [k]: v } });
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <Field label="Mempelai 1"><Inp value={c.partner1} onChange={v => set('partner1', v)} placeholder="Raka" /></Field>
-      <Field label="Mempelai 2"><Inp value={c.partner2} onChange={v => set('partner2', v)} placeholder="Dewi" /></Field>
-      <Field label="Title 1"><Inp value={c.partner1Title || ''} onChange={v => set('partner1Title', v)} placeholder="Raka Pramana" /></Field>
-      <Field label="Title 2"><Inp value={c.partner2Title || ''} onChange={v => set('partner2Title', v)} placeholder="Dewi Ayu" /></Field>
-      <Field label="Ayah 1"><Inp value={c.partner1Father || ''} onChange={v => set('partner1Father', v)} placeholder="Bpk. Wayan" /></Field>
-      <Field label="Ayah 2"><Inp value={c.partner2Father || ''} onChange={v => set('partner2Father', v)} placeholder="Bpk. Ketut" /></Field>
-      <Field label="Ibu 1"><Inp value={c.partner1Mother || ''} onChange={v => set('partner1Mother', v)} placeholder="Ibu Putu" /></Field>
-      <Field label="Ibu 2"><Inp value={c.partner2Mother || ''} onChange={v => set('partner2Mother', v)} placeholder="Ibu Made" /></Field>
-      <Field label="Instagram 1"><Inp value={c.partner1Instagram || ''} onChange={v => set('partner1Instagram', v)} placeholder="@rakapramana" /></Field>
-      <Field label="Instagram 2"><Inp value={c.partner2Instagram || ''} onChange={v => set('partner2Instagram', v)} placeholder="@dewiayusaras" /></Field>
-      <Field label="Bio 1"><Inp value={c.partner1Desc || ''} onChange={v => set('partner1Desc', v)} placeholder="Bio singkat..." multiline rows={2} /></Field>
-      <Field label="Bio 2"><Inp value={c.partner2Desc || ''} onChange={v => set('partner2Desc', v)} placeholder="Bio singkat..." multiline rows={2} /></Field>
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Mempelai 1"><Inp value={c.partner1} onChange={v => set('partner1', v)} placeholder="Raka" /></Field>
+        <Field label="Mempelai 2"><Inp value={c.partner2} onChange={v => set('partner2', v)} placeholder="Dewi" /></Field>
+        <Field label="Title 1"><Inp value={c.partner1Title || ''} onChange={v => set('partner1Title', v)} placeholder="Raka Pramana" /></Field>
+        <Field label="Title 2"><Inp value={c.partner2Title || ''} onChange={v => set('partner2Title', v)} placeholder="Dewi Ayu" /></Field>
+        <Field label="Ayah 1"><Inp value={c.partner1Father || ''} onChange={v => set('partner1Father', v)} placeholder="Bpk. Wayan" /></Field>
+        <Field label="Ayah 2"><Inp value={c.partner2Father || ''} onChange={v => set('partner2Father', v)} placeholder="Bpk. Ketut" /></Field>
+        <Field label="Ibu 1"><Inp value={c.partner1Mother || ''} onChange={v => set('partner1Mother', v)} placeholder="Ibu Putu" /></Field>
+        <Field label="Ibu 2"><Inp value={c.partner2Mother || ''} onChange={v => set('partner2Mother', v)} placeholder="Ibu Made" /></Field>
+        <Field label="Instagram 1"><Inp value={c.partner1Instagram || ''} onChange={v => set('partner1Instagram', v)} placeholder="@rakapramana" /></Field>
+        <Field label="Instagram 2"><Inp value={c.partner2Instagram || ''} onChange={v => set('partner2Instagram', v)} placeholder="@dewiayusaras" /></Field>
+        <Field label="Bio 1"><Inp value={c.partner1Desc || ''} onChange={v => set('partner1Desc', v)} placeholder="Bio singkat..." multiline rows={2} /></Field>
+        <Field label="Bio 2"><Inp value={c.partner2Desc || ''} onChange={v => set('partner2Desc', v)} placeholder="Bio singkat..." multiline rows={2} /></Field>
+      </div>
+      <div className="space-y-2 pt-2 border-t border-zinc-100">
+        <p className="text-[9px] font-semibold text-zinc-500 uppercase tracking-wider">Foto Pasangan</p>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Foto Mempelai 1">
+            <div className="flex items-center gap-2">
+              <Inp value={media.partner1Photo || ''} onChange={v => setMedia('partner1Photo', v)} placeholder="URL foto pria" />
+              <UploadBtn onUploaded={url => setMedia('partner1Photo', url)} />
+            </div>
+          </Field>
+          <Field label="Foto Mempelai 2">
+            <div className="flex items-center gap-2">
+              <Inp value={media.partner2Photo || ''} onChange={v => setMedia('partner2Photo', v)} placeholder="URL foto wanita" />
+              <UploadBtn onUploaded={url => setMedia('partner2Photo', url)} />
+            </div>
+          </Field>
+        </div>
+      </div>
     </div>
   );
 }
@@ -296,6 +347,7 @@ function GalleryForm({ content, setContent }: { content: InvitationContent; setC
       {images.map((img, i) => (
         <div key={i} className="flex items-center gap-2">
           <Inp value={img} onChange={v => upd(i, v)} placeholder="https://images.unsplash.com/photo-..." />
+          <UploadBtn onUploaded={url => upd(i, url)} label="" />
           <button onClick={() => del(i)} className="text-zinc-300 hover:text-red-400 text-sm px-1">&times;</button>
         </div>
       ))}
