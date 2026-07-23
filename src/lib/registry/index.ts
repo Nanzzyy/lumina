@@ -27,6 +27,10 @@ import {
   luxuryWeddingTemplate, metatahBaliTemplate, birthdayGalaTemplate,
   birthdayWishTemplate, mobileCanvasTemplate, floraWeddingTemplate,
   hanaWeddingTemplate, sakuraWeddingTemplate, kazeWeddingTemplate,
+  lianaWeddingTemplate, soraWeddingTemplate, matahariWeddingTemplate,
+  yukiWeddingTemplate, pasirWeddingTemplate, cintaWeddingTemplate,
+  bumiWeddingTemplate, awanWeddingTemplate, ratuWeddingTemplate,
+  lautWeddingTemplate, hutanWeddingTemplate,
 } from '@/templates/all-templates';
 import {
   defaultLayout, modernLayout, adatBaliLayout,
@@ -69,6 +73,17 @@ export function registerAllTemplates() {
   registerTemplate(hanaWeddingTemplate);
   registerTemplate(sakuraWeddingTemplate);
   registerTemplate(kazeWeddingTemplate);
+  registerTemplate(lianaWeddingTemplate);
+  registerTemplate(soraWeddingTemplate);
+  registerTemplate(matahariWeddingTemplate);
+  registerTemplate(yukiWeddingTemplate);
+  registerTemplate(pasirWeddingTemplate);
+  registerTemplate(cintaWeddingTemplate);
+  registerTemplate(bumiWeddingTemplate);
+  registerTemplate(awanWeddingTemplate);
+  registerTemplate(ratuWeddingTemplate);
+  registerTemplate(lautWeddingTemplate);
+  registerTemplate(hutanWeddingTemplate);
   registerTemplate(mobileCanvasTemplate);
 }
 

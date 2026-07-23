@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useStudioStore, exportInvitationJSON } from '@/lib/studio/store';
 import { getTemplate, TemplateRenderer } from '@/lib/template';
+import { initializeRegistries } from '@/lib/registry';
 import { getLayout, getAllLayouts } from '@/lib/layout';
 import { defaultTheme, ThemeProvider } from '@/lib/theme';
 import type { InvitationContent, OrnamentConfig } from '@/lib/content/types';
@@ -781,9 +782,16 @@ export default function StudioEditorPage() {
   const { get, update, remove } = useStudioStore();
   const slug = params.slug as string;
 
+  // Ensure the template/layout registries are populated on cold load before resolving.
+  // Without regReady, the memos below would run before initializeRegistries() (called in
+  // the layout's useEffect) finishes, leaving getTemplate() null and the editor stuck on a
+  // fallback with no device preview. Idempotent — safe alongside the layout's own init.
+  const [regReady, setRegReady] = useState(false);
+  useEffect(() => { initializeRegistries(); setRegReady(true); }, []);
+
   const invitation = useMemo(() => get(slug), [slug, get]);
-  const template = useMemo(() => invitation ? getTemplate(invitation.templateId) : null, [invitation]);
-  const layout = useMemo(() => invitation ? getLayout(invitation.layoutId || 'default') : null, [invitation]);
+  const template = useMemo(() => invitation ? getTemplate(invitation.templateId) : null, [invitation, regReady]);
+  const layout = useMemo(() => invitation ? getLayout(invitation.layoutId || 'default') : null, [invitation, regReady]);
 
   const [tab, setTab] = useState<EditorTab>('content');
   const [content, setContent] = useState<InvitationContent | null>(null);

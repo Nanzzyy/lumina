@@ -170,6 +170,17 @@ export {
   hanaWeddingTemplate,
   sakuraWeddingTemplate,
   kazeWeddingTemplate,
+  lianaWeddingTemplate,
+  soraWeddingTemplate,
+  matahariWeddingTemplate,
+  yukiWeddingTemplate,
+  pasirWeddingTemplate,
+  cintaWeddingTemplate,
+  bumiWeddingTemplate,
+  awanWeddingTemplate,
+  ratuWeddingTemplate,
+  lautWeddingTemplate,
+  hutanWeddingTemplate,
 } from "./premium";
 
 // Mobile-canvas meta-template.
