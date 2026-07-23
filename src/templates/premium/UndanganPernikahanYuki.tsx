@@ -366,7 +366,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
               <motion.div key={label} className="flex flex-col items-center max-w-[280px]"
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: DUR, ease: EASE, delay: idx * 0.18 }}>
-                <div className="relative mb-7" style={{ width: 200, height: 200 }}>
+                <div className="relative mb-12" style={{ width: 200, height: 200 }}>
                   {/* outer frost halo (rotated) */}
                   <motion.div className="absolute" style={{ inset: -16, transform: 'rotate(45deg)', border: `1px solid ${FROST}55` }}
                     initial={{ scale: 0.6, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}
@@ -376,7 +376,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
                     transition={{ duration: 1, delay: idx * 0.25 + 0.1, ease: EASE }} />
                   {/* diamond frame */}
                   <div className="absolute inset-0 overflow-hidden" style={{ transform: 'rotate(45deg)', border: `2px solid ${ICE}`, boxShadow: `0 20px 50px -18px ${SLATE}66`, backgroundColor: ICE }}>
-                    <img src={img} alt={person.nick} className="w-full h-full object-cover" style={{ transform: 'rotate(-45deg) scale(1.42)' }} />
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" style={{ transform: 'rotate(-45deg) scale(1.42)' }} />
                   </div>
                   {/* crystal accent at tip */}
                   <motion.div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-10"

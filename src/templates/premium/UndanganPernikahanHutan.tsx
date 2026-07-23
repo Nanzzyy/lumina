@@ -367,7 +367,7 @@ export function UndanganPernikahanHutan({ content, slug, preview }: MonolithicTe
                 transition={{ duration: DUR, ease: EASE, delay: idx * 0.1 }}>
                 <motion.div className="relative overflow-hidden" style={{ aspectRatio: '4/5', border: `1px solid ${AMBER}33`, boxShadow: `0 0 40px ${AMBER}55, 0 20px 50px -20px ${INK}` }}
                   variants={vGlow}>
-                  <img src={img} alt={person.nick} className="w-full h-full object-cover" />
+                  <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" />
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${FOREST}99, transparent 55%)` }} />
                   {/* glow ring throbs */}
                   {!reduce && (

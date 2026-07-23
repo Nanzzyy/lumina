@@ -362,7 +362,7 @@ export function UndanganPernikahanLiana({ content, slug, preview }: MonolithicTe
                     initial={{ scale: 0.6, opacity: 0 }} whileInView={{ scale: 1.12, opacity: 1 }} viewport={{ once: true }}
                     transition={{ duration: 1, delay: idx * 0.2, ease: EASE }} />
                   <div className="relative overflow-hidden rounded-full" style={{ width: 190, height: 190, border: `3px solid ${CREAM}`, boxShadow: `0 18px 40px -16px ${PINE}66` }}>
-                    <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                   </div>
                   <motion.div className="absolute -bottom-1 left-1/2 -translate-x-1/2"
                     initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: idx * 0.25, ease: EASE }}>

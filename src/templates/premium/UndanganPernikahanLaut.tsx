@@ -374,7 +374,7 @@ export function UndanganPernikahanLaut({ content, slug, preview }: MonolithicTem
                     initial={{ scale: 0.7, opacity: 0 }} whileInView={{ scale: 1.12, opacity: 1 }} viewport={{ once: true }}
                     transition={{ duration: 1, delay: idx * 0.2, ease: EASE }} />
                   <div className="relative overflow-hidden" style={{ width: 220, height: 270, borderRadius: '130px 130px 20px 20px', border: `3px solid ${WHITE}`, boxShadow: `0 22px 50px -18px ${TEAL}66` }}>
-                    <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                   </div>
                   <motion.div className="absolute -bottom-3 left-1/2 -translate-x-1/2"
                     initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: idx * 0.25, ease: EASE }}>

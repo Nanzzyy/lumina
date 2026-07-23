@@ -395,10 +395,10 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
               <motion.div key={label} className={`grid md:grid-cols-2 gap-8 items-center ${flip ? 'md:[&>*:first-child]:order-2' : ''}`}
                 initial={{ opacity: 0, y: 36 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: DUR, ease: EASE, delay: idx * 0.1 }}>
-                <motion.div className="relative" style={{ aspectRatio: '3/4' }} variants={vReveal}>
+                <motion.div className="relative isolate" style={{ aspectRatio: '3/4' }} variants={vReveal}>
                   {/* adobe arch: rounded top */}
                   <div className="absolute inset-0 overflow-hidden" style={{ border: `2px solid ${ADOBE}`, borderRadius: '50% 50% 6px 6px / 38% 38% 6px 6px', backgroundColor: SAND }}>
-                    <img src={img} alt={person.nick} className="w-full h-full object-cover" />
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" />
                   </div>
                   {/* offset shadow block — southwestern stacking */}
                   <div className="absolute inset-0 pointer-events-none" style={{ border: `2px solid ${ADOBE2}`, borderRadius: '50% 50% 6px 6px / 38% 38% 6px 6px', transform: 'translate(8px, 8px)', zIndex: -1, backgroundColor: ADOBE2 }} />

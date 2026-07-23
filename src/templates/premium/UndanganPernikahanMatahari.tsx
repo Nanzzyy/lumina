@@ -373,7 +373,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
                 initial={{ opacity: 0, y: 36, scale: 0.92 }} whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }} transition={{ ...SPRING_SOFT, delay: idx * 0.16 }}>
                 <div className="relative overflow-hidden rounded-t-[140px] rounded-b-3xl" style={{ aspectRatio: '4/5' }}>
-                  <img src={img} alt={person.nick} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" />
+                  <img src={img} alt={person.nick} className="w-full h-full object-cover object-top transition-transform duration-700 hover:scale-105" />
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${INK}55, transparent 55%)` }} />
                   <div className="absolute top-3 right-3"><Hibiscus className="w-9 h-9" color={CORAL} center={GOLD} /></div>
                 </div>

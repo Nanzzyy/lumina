@@ -400,7 +400,7 @@ export function UndanganPernikahanRatu({ content, slug, preview }: MonolithicTem
                   {/* octagon photo */}
                   <div className="absolute inset-0 overflow-hidden" style={{ clipPath: OCTAGON, backgroundColor: GOLD }}>
                     <div className="absolute inset-[3px] overflow-hidden" style={{ clipPath: OCTAGON }}>
-                      <img src={img} alt={person.nick} className="w-full h-full object-cover" />
+                      <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" />
                     </div>
                   </div>
                 </motion.div>

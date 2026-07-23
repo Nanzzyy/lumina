@@ -373,7 +373,7 @@ export function UndanganPernikahanCinta({ content, slug, preview }: MonolithicTe
                     initial={{ scale: 0.7, opacity: 0 }} whileInView={{ scale: 1.12, opacity: 1 }} viewport={{ once: true }}
                     transition={{ duration: 1.1, delay: idx * 0.22, ease: EASE }} />
                   <div className="relative overflow-hidden group" style={{ width: 210, height: 250, borderRadius: '50% 50% 48% 48% / 62% 62% 40% 40%', border: `3px solid ${CHAMPAGNE}`, boxShadow: `0 24px 50px -18px ${WINE}77` }}>
-                    <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                   </div>
                   <motion.div className="absolute -bottom-2 left-1/2 -translate-x-1/2"
                     initial={{ scale: 0 }} whileInView={{ scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: idx * 0.28, ease: EASE }}>

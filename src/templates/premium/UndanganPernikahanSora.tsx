@@ -342,11 +342,11 @@ export function UndanganPernikahanSora({ content, slug, preview }: MonolithicTem
                 style={glass(12)}
                 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: DUR, ease: EASE, delay: idx * 0.15 }}>
-                <motion.div className="relative mb-5 overflow-hidden rounded-2xl"
+                <motion.div className="relative mb-9 overflow-hidden rounded-2xl"
                   style={{ width: 180, height: 180, border: `1px solid ${AURORA}55`, boxShadow: `0 18px 40px -16px ${AURORA}44` }}
                   initial={reduce ? false : { scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}
                   transition={{ duration: DUR, delay: idx * 0.2, ease: EASE }}>
-                  <img src={img} alt={person.nick} className="w-full h-full object-cover" />
+                  <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" />
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${SKY}55, transparent 60%)` }} />
                 </motion.div>
                 <p className="text-[10px] uppercase tracking-[0.4em] font-body font-semibold mb-2" style={{ color: AURORA }}>{label}</p>

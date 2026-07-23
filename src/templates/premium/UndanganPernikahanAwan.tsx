@@ -371,7 +371,7 @@ export function UndanganPernikahanAwan({ content, slug, preview }: MonolithicTem
                   <motion.div className="relative overflow-hidden rounded-full"
                     style={{ width: 200, height: 200, border: `4px solid ${CLOUD}`, boxShadow: `0 18px 40px -14px ${PERI}88` }}
                     animate={reduce ? {} : { y: [0, -6, 0] }} transition={{ duration: 4.5 + idx, repeat: Infinity, ease: EASE_FLOAT }}>
-                    <img src={img} alt={person.nick} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                    <img src={img} alt={person.nick} className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700" />
                   </motion.div>
                   {/* cloud the photo rests on */}
                   <motion.div className="absolute -bottom-5 left-1/2 -translate-x-1/2"

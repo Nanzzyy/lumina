@@ -330,7 +330,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
                 transition={{ duration: DUR, ease: EASE, delay: idx * 0.1 }}>
                 <motion.div className="relative overflow-hidden" style={{ aspectRatio: '4/5' }}
                   variants={vInkH}>
-                  <img src={img} alt={person.nick} className="w-full h-full object-cover" />
+                  <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" />
                   <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${INK}55, transparent 50%)` }} />
                 </motion.div>
                 <div className={flip ? 'md:text-left md:pl-4' : 'md:text-right md:pr-4'}>

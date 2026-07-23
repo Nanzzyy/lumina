@@ -348,7 +348,7 @@ export function UndanganPernikahanBumi({ content, slug, preview }: MonolithicTem
                 viewport={{ once: true, margin: '-60px' }} transition={{ type: 'spring', stiffness: 240, damping: 18, delay: idx * 0.12 }}>
                 <motion.div className="relative overflow-hidden" style={{ width: 220, height: 220, borderRadius: radius, backgroundColor: CREAM, boxShadow: `0 22px 44px -18px ${INK}55` }}
                   whileHover={{ scale: 1.03 }}>
-                  <img src={img} alt={person.nick} className="w-full h-full object-cover" />
+                  <img src={img} alt={person.nick} className="w-full h-full object-cover object-top" />
                 </motion.div>
                 <p className="text-[10px] uppercase tracking-[0.35em] font-body font-bold mt-6 mb-1" style={{ color: CLAY2 }}>{label}</p>
                 <h3 className="font-display text-2xl font-semibold tracking-tight" style={{ color: INK }}>{person.full}</h3>
