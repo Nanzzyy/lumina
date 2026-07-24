@@ -84,7 +84,8 @@ export function proxy(req: NextRequest) {
     pathname === '/api/rsvp' || pathname === '/api/wishes' ||
     (pathname.startsWith('/api/invitations') && req.method === 'GET') ||
     (pathname.startsWith('/api/layouts') && req.method === 'GET') ||
-    (pathname.startsWith('/api/widgets') && req.method === 'GET')
+    (pathname.startsWith('/api/widgets') && req.method === 'GET') ||
+    (pathname === '/api/templates' && req.method === 'GET')
   ) {
     const response = NextResponse.next();
     addSecurityHeaders(response, false);

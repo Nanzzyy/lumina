@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { getInvitation } from '@/lib/db';
 import { initializeRegistries } from '@/lib/registry';
+import { loadExternalTemplates } from '@/lib/registry/server-init';
 import { InvitationClient } from './client';
 
 initializeRegistries();
+loadExternalTemplates();
 
 async function getBaseUrl() {
   const h = await headers();
@@ -54,13 +56,37 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function InvitationPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const inv = getInvitation(slug);
-  const data = inv ? {
-    published: !!inv.published,
-    templateId: inv.templateId,
-    layoutId: inv.layoutId,
-    content: inv.content,
-    themeOverrides: inv.themeOverrides,
-  } : null;
+
+  // Snapshot-backed: if the invitation has a published snapshot, render the
+  // frozen data so live edits don't affect published invites.
+  let data: {
+    published: boolean;
+    templateId: string;
+    layoutId?: string;
+    content: any;
+    themeOverrides?: any;
+  } | null = null;
+
+  if (inv) {
+    if (inv.publishedSnapshot) {
+      const snap = inv.publishedSnapshot;
+      data = {
+        published: true,
+        templateId: snap.template_id,
+        layoutId: snap.layout_id,
+        content: snap.content,
+        themeOverrides: snap.theme_overrides,
+      };
+    } else {
+      data = {
+        published: !!inv.published,
+        templateId: inv.templateId,
+        layoutId: inv.layoutId,
+        content: inv.content,
+        themeOverrides: inv.themeOverrides,
+      };
+    }
+  }
 
   return <InvitationClient slug={slug} data={data} />;
 }

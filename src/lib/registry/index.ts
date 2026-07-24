@@ -101,8 +101,14 @@ export function initializeRegistries() {
   registerAllSections();
   registerAllTemplates();
   registerAllLayouts();
+
+  // External template packages are loaded server-side — see server-init.ts.
+  // On the client, only built-in templates are available for editing/preview.
+  // This keeps the client bundle free of fs-dependent code.
+
   // Sync any custom layouts from DB into memory registry
   syncLayoutsFromDB().catch(() => {});
+
   // Initialize plugin host with builtin plugins (P7)
   initBuiltinPlugins().catch(() => {});
 }

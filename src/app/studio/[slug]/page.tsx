@@ -1260,15 +1260,32 @@ export default function StudioEditorPage() {
   );
 }
 
-/** Publish toggle with copy-link button. */
+/** Publish toggle with snapshot-based publish/unpublish and copy-link button. */
 function PublishToggle({ slug, published, onToggle }: { slug: string; published?: boolean; onToggle: (val: boolean) => void }) {
   const [pub, setPub] = useState(published ?? false);
   const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const toggle = () => {
-    const next = !pub;
-    setPub(next);
-    onToggle(next);
+  const toggle = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      if (!pub) {
+        // Publish — snapshots the current data
+        await fetch(`/api/invitations/${slug}/publish`, { method: 'POST' });
+        setPub(true);
+        onToggle(true);
+      } else {
+        // Unpublish — clears snapshot
+        await fetch(`/api/invitations/${slug}/publish`, { method: 'DELETE' });
+        setPub(false);
+        onToggle(false);
+      }
+    } catch {
+      // Silently fail; user can retry
+    } finally {
+      setLoading(false);
+    }
   };
 
   const copyLink = () => {
@@ -1287,10 +1304,10 @@ function PublishToggle({ slug, published, onToggle }: { slug: string; published?
           {copied ? 'Copied!' : 'Copy Link'}
         </button>
       )}
-      <button onClick={toggle}
-        className={cn('px-3 py-1.5 text-xs rounded-md transition-colors font-medium',
+      <button onClick={toggle} disabled={loading}
+        className={cn('px-3 py-1.5 text-xs rounded-md transition-colors font-medium disabled:opacity-50',
           pub ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200')}>
-        {pub ? 'Published' : 'Draft'}
+        {loading ? '...' : pub ? 'Published' : 'Draft'}
       </button>
     </div>
   );

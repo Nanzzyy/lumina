@@ -1,0 +1,42 @@
+{
+  "id": "azure-skies",
+  "name": "Azure Skies",
+  "description": "Sky blue gradient — fresh, modern outdoor wedding",
+  "kind": "composed",
+  "category": "wedding",
+  "mode": "couple",
+  "colors": {
+    "primary": "#4a90d9",
+    "primary-hover": "#3a7bc8",
+    "primary-light": "#e8f0fe",
+    "secondary": "#7ab8e0",
+    "secondary-hover": "#6aa8d0",
+    "accent": "#f0c040",
+    "background": "#f5f9ff",
+    "background-alt": "#eef4fa",
+    "surface": "#ffffff",
+    "text": "#1a2a3a",
+    "text-secondary": "#5a7a8a",
+    "text-muted": "#98b0c0",
+    "border": "#d0e4f0",
+    "border-light": "#e0eef4"
+  },
+  "fonts": {
+    "heading": "'Georgia', 'Times New Roman', serif",
+    "body": "'Inter', system-ui, sans-serif",
+    "accent": "'Georgia', 'Times New Roman', serif"
+  },
+  "decorations": [
+    {
+      "id": "azure-clouds",
+      "type": "floral-decoration",
+      "layer": "behind",
+      "anchor": "global",
+      "props": {
+        "position": "top-right",
+        "color": "#4a90d9",
+        "opacity": 0.06
+      }
+    }
+  ]
+}

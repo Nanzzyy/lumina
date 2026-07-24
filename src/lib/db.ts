@@ -32,6 +32,8 @@ function initSchema() {
       content TEXT NOT NULL DEFAULT '{}',
       theme_overrides TEXT NOT NULL DEFAULT '{}',
       published INTEGER NOT NULL DEFAULT 0,
+      published_snapshot TEXT,
+      published_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
@@ -224,6 +226,8 @@ function migrate() {
     ['nodes', 'TEXT'],
     ['theme_id', 'TEXT'],
     ['asset_refs', "TEXT NOT NULL DEFAULT '[]'"],
+    ['published_snapshot', 'TEXT'],
+    ['published_at', 'TEXT'],
   ] as [string, string][]) {
     if (!cols.some((c) => c.name === col)) {
       d.exec(`ALTER TABLE invitations ADD COLUMN ${col} ${type}`);
@@ -410,6 +414,8 @@ export interface InvitationRow {
   content: string;
   theme_overrides: string;
   published: number;
+  published_snapshot: string | null;
+  published_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -456,6 +462,8 @@ export function getInvitation(slug: string) {
     ...inv,
     content: JSON.parse(inv.content),
     themeOverrides: JSON.parse(inv.theme_overrides),
+    publishedSnapshot: inv.published_snapshot ? JSON.parse(inv.published_snapshot) : null,
+    publishedAt: inv.published_at,
     templateId: inv.template_id,
     layoutId: inv.layout_id,
     createdAt: inv.created_at,
@@ -512,6 +520,47 @@ export function updateInvitation(slug: string, data: {
 
 export function deleteInvitation(slug: string) {
   getDb().prepare('DELETE FROM invitations WHERE slug = ?').run(slug);
+}
+
+/** Snapshot the invitation's current state into published_snapshot and mark as published. */
+export function publishInvitation(slug: string) {
+  const inv = getDb().prepare('SELECT * FROM invitations WHERE slug = ?').get(slug) as InvitationRow | undefined;
+  if (!inv) return null;
+
+  // inv.content and inv.theme_overrides are raw DB strings (JSON).
+  // Parse them so the snapshot stores proper objects.
+  let content: unknown;
+  let themeOverrides: unknown;
+  try { content = JSON.parse(inv.content); } catch { content = {}; }
+  try { themeOverrides = JSON.parse(inv.theme_overrides); } catch { themeOverrides = {}; }
+
+  const snapshot = JSON.stringify({
+    title: inv.title,
+    template_id: inv.template_id,
+    layout_id: inv.layout_id,
+    content,
+    theme_overrides: themeOverrides,
+  });
+
+  getDb().prepare(`
+    UPDATE invitations SET published = 1, published_snapshot = ?, published_at = datetime('now'), updated_at = datetime('now')
+    WHERE slug = ?
+  `).run(snapshot, slug);
+
+  return getInvitation(slug);
+}
+
+/** Mark as draft and clear the snapshot. */
+export function unpublishInvitation(slug: string) {
+  const inv = getDb().prepare('SELECT * FROM invitations WHERE slug = ?').get(slug) as InvitationRow | undefined;
+  if (!inv) return null;
+
+  getDb().prepare(`
+    UPDATE invitations SET published = 0, published_at = NULL, updated_at = datetime('now')
+    WHERE slug = ?
+  `).run(slug);
+
+  return getInvitation(slug);
 }
 
 // Layout CRUD
