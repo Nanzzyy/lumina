@@ -349,7 +349,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed px-2" style={{ color: INK }} variants={vUp}>{quote.text}</motion.p>
           <p className="font-display text-6xl mt-1 leading-none" style={{ color: `${CORAL}55` }}>"</p>
           <SunDivider color={CORAL} />
-          <p className="font-body text-sm font-semibold tracking-wide" style={{ color: CORAL }}>— {quote.source}</p>
+          <p className="font-body text-sm font-semibold tracking-wide" style={{ color: CORAL }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

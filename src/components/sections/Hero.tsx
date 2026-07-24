@@ -4,7 +4,12 @@ import { motion } from 'framer-motion';
 import { useCountdown } from '@/hooks';
 import { Icon, Container } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
+import { parseFlexibleDate } from '@/lib/utils/date';
 import type { SectionComponentProps } from '@/lib/template';
+
+/** English long-date display; falls back to the raw string if unparseable. */
+const fmtEN = (s: string) =>
+  parseFlexibleDate(s)?.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) || s;
 
 function HeroCountdown({ date, dense }: { date: string; dense?: boolean }) {
   const timeLeft = useCountdown(date);
@@ -158,7 +163,7 @@ function NoirHero({ content }: { content: SectionComponentProps['content'] }) {
             <motion.div variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }} className="text-2xl sm:text-4xl md:text-5xl font-[var(--typography-font-heading)] text-[var(--colors-primary)] my-2 sm:my-4">&amp;</motion.div>
             <motion.h2 variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }} className="text-3xl sm:text-6xl md:text-7xl font-bold font-[var(--typography-font-heading)] leading-tight text-[var(--colors-text)] mb-6 sm:mb-8">{content.couple.partner2}</motion.h2>
             <motion.div variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0 } }} className="space-y-3 mb-10 text-[var(--colors-text-secondary)] text-sm">
-              <div className="flex items-center gap-3"><Icon name="calendar" size={14} className="text-[var(--colors-primary)]" />{new Date(content.event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+              <div className="flex items-center gap-3"><Icon name="calendar" size={14} className="text-[var(--colors-primary)]" />{fmtEN(content.event.date)}</div>
               <div className="flex items-center gap-3"><Icon name="clock" size={14} className="text-[var(--colors-primary)]" />{content.event.time}</div>
               <div className="flex items-center gap-3"><Icon name="map-pin" size={14} className="text-[var(--colors-primary)]" />{content.event.location}</div>
             </motion.div>

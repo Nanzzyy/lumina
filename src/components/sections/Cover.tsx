@@ -3,7 +3,12 @@
 import { motion } from 'framer-motion';
 import { Icon } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
+import { parseFlexibleDate } from '@/lib/utils/date';
 import type { SectionComponentProps } from '@/lib/template';
+
+/** Indonesian date display; falls back to the raw string if unparseable. */
+const fmtID = (s: string) =>
+  parseFlexibleDate(s)?.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) || s;
 
 // ─── Variant: aurora/royal (Luxury Dark Gold) ───
 function LuxuryCover({ content }: { content: SectionComponentProps['content'] }) {
@@ -40,7 +45,7 @@ function LuxuryCover({ content }: { content: SectionComponentProps['content'] })
 
         <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
           className="mt-10 text-[var(--colors-text-secondary)] text-sm sm:text-base tracking-widest">
-          {new Date(content.event.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {fmtID(content.event.date)}
           {' · '}{content.event.time}
         </motion.p>
 
@@ -93,7 +98,7 @@ function RomanticCover({ content }: { content: SectionComponentProps['content'] 
 
         <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           className="text-[var(--colors-text-secondary)] text-sm tracking-wide">
-          {new Date(content.event.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {fmtID(content.event.date)}
         </motion.p>
 
         <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
@@ -143,7 +148,7 @@ function MinimalCover({ content }: { content: SectionComponentProps['content'] }
 
         <motion.p variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
           className="mt-12 text-[var(--colors-text-secondary)] text-sm font-medium tracking-[0.2em]">
-          {new Date(content.event.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {fmtID(content.event.date)}
           {' — '}{content.event.location}
         </motion.p>
 
@@ -191,7 +196,7 @@ function LunaCover({ content }: { content: SectionComponentProps['content'] }) {
 
         <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           className="mt-10 text-white/40 text-xs uppercase tracking-[0.4em]">
-          {new Date(content.event.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {fmtID(content.event.date)}
         </motion.p>
 
         <motion.div variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="mt-14">
@@ -238,7 +243,7 @@ function CelesteCover({ content }: { content: SectionComponentProps['content'] }
 
         <motion.p variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           className="text-[var(--colors-text-secondary)] text-sm">
-          {new Date(content.event.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+          {fmtID(content.event.date)}
         </motion.p>
 
         <motion.div variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }} className="mt-12">

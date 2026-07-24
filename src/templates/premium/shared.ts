@@ -98,12 +98,18 @@ export function useRsvpWishes(slug?: string) {
   return { wishes, rsvpForm, setRsvpForm, isSubmitted, submit };
 }
 
-/** Countdown to an ISO date. */
+/** Date parser (ISO / English / Indonesian). Logic in @/lib/utils/date. */
+import { parseFlexibleDate } from '@/lib/utils/date';
+export { parseFlexibleDate };
+
+
+
+/** Countdown to an event date (ISO / English / Indonesian). */
 export function useCountdown(isoDate: string) {
   const [t, setT] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   useEffect(() => {
-    const target = new Date(isoDate).getTime();
-    if (isNaN(target)) return;
+    const target = parseFlexibleDate(isoDate)?.getTime();
+    if (!target || isNaN(target)) return;
     const tick = () => {
       const diff = target - Date.now();
       if (diff <= 0) return setT({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -133,8 +139,8 @@ export function useGuestName(contentGuestName?: string, fallback = 'Tamu Undanga
 }
 
 export function displayDateFrom(iso: string, fallback?: string): string {
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return fallback || iso;
+  const d = parseFlexibleDate(iso);
+  if (!d) return fallback || iso;
   return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 

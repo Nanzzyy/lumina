@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils/cn';
 
 export function Quote(props: SectionComponentProps) {
   const { content, variant } = props;
-  const { text, source } = content.quote;
+  const { text, source } = content.quote || {};
   if (!text) return null;
 
   if (variant === 'noir') {

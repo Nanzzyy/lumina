@@ -341,7 +341,7 @@ export function UndanganPernikahanHutan({ content, slug, preview }: MonolithicTe
           <div className="max-w-[180px] mx-auto mb-8"><PineDivider color={MOSS2} /></div>
           <motion.p variants={vUp} className="font-display text-xl md:text-2xl leading-relaxed font-light italic" style={{ color: MIST }}>{quote.text}</motion.p>
           <div className="max-w-[180px] mx-auto mt-8"><PineDivider color={MOSS2} /></div>
-          <p className="font-display text-sm mt-5 tracking-wide italic" style={{ color: AMBER }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-5 tracking-wide italic" style={{ color: AMBER }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

@@ -305,7 +305,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
           <div className="max-w-[140px] mx-auto mb-8"><BrushStroke color={VERMILLION} /></div>
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-light italic" style={{ color: INK }} variants={vUp}>{quote.text}</motion.p>
           <div className="max-w-[140px] mx-auto mt-8"><BrushStroke color={INK} /></div>
-          <p className="font-display text-sm mt-5 tracking-wide" style={{ color: VERMILLION }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-5 tracking-wide" style={{ color: VERMILLION }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

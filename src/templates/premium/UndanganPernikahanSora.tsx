@@ -318,7 +318,7 @@ export function UndanganPernikahanSora({ content, slug, preview }: MonolithicTem
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-light italic" style={{ color: SILVER }} variants={vBlur}>{quote.text}</motion.p>
           <motion.p className="font-display text-5xl mt-2 leading-none font-light" style={{ color: `${AURORA}88` }}>"</motion.p>
           <div className="max-w-[160px] mx-auto mt-6 mb-5 h-px" style={{ background: `linear-gradient(to right, transparent, ${VIOLET}, transparent)` }} />
-          <p className="font-display text-sm mt-3 tracking-wide" style={{ color: AURORA }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-3 tracking-wide" style={{ color: AURORA }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

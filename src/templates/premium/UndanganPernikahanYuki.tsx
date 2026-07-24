@@ -346,7 +346,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
           <FrostDivider color={LAVENDER} />
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-light italic" style={{ color: SLATE }} variants={vUp}>{quote.text}</motion.p>
           <FrostDivider color={FROST} />
-          <p className="font-display text-sm mt-5 tracking-wide" style={{ color: LAVENDER }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-5 tracking-wide" style={{ color: LAVENDER }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

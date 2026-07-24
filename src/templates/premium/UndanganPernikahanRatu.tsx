@@ -369,7 +369,7 @@ export function UndanganPernikahanRatu({ content, slug, preview }: MonolithicTem
             variants={vWipeCV}>{quote.text}</motion.p>
           <motion.p className="font-display text-5xl leading-none font-normal" style={{ color: `${GOLD}88` }} variants={vFade}>&rdquo;</motion.p>
           <DecoDivider color={GOLD} />
-          <p className="font-display text-sm mt-5" style={{ color: GOLD, letterSpacing: '0.25em' }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-5" style={{ color: GOLD, letterSpacing: '0.25em' }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

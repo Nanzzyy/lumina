@@ -324,7 +324,7 @@ export function UndanganPernikahanBumi({ content, slug, preview }: MonolithicTem
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-medium" style={{ color: INK }} variants={vUp}>{quote.text}</motion.p>
           <motion.span className="font-display text-6xl font-semibold leading-none block mt-2" style={{ color: `${CLAY}66` }} variants={vPop}>"</motion.span>
           <div className="flex justify-center mt-6"><Squiggle className="w-28 h-3" color={OLIVE} /></div>
-          <p className="font-display text-sm mt-4 font-semibold tracking-wide" style={{ color: CLAY2 }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-4 font-semibold tracking-wide" style={{ color: CLAY2 }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

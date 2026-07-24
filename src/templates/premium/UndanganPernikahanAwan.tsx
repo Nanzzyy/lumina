@@ -340,7 +340,7 @@ export function UndanganPernikahanAwan({ content, slug, preview }: MonolithicTem
           <motion.p className="font-display text-xl md:text-2xl leading-relaxed font-medium" style={{ color: INK }} variants={vFade}>{quote.text}</motion.p>
           <p className="font-display text-5xl mt-2 leading-none font-medium" style={{ color: `${PERI}88` }}>&rdquo;</p>
           <CloudDivider color={PERI} />
-          <p className="font-display text-sm font-semibold tracking-wide" style={{ color: PERI }}>— {quote.source}</p>
+          <p className="font-display text-sm font-semibold tracking-wide" style={{ color: PERI }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

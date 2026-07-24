@@ -290,7 +290,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
           <p className="font-body text-base leading-relaxed px-4 font-light" style={{ color: WARM }}>{quote.text}</p>
           <p className="font-title text-4xl mt-4 leading-none" style={{ color: GOLD }}>"</p>
           <div className="w-10 mx-auto my-5" style={{ height: 1, backgroundColor: `${GOLD}40` }} />
-          <p className="text-[10px] font-medium uppercase tracking-[0.25em]" style={{ color: MUTED }}>— {quote.source}</p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.25em]" style={{ color: MUTED }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </section></ScrollR>
 

@@ -5,6 +5,7 @@ import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle } from '@/components/primitives';
 import { useCountdown } from '@/hooks';
 import { cn } from '@/lib/utils/cn';
+import { parseFlexibleDate } from '@/lib/utils/date';
 
 function CountdownDisplay({ targetDate, variant }: { targetDate: string; variant?: string }) {
   const timeLeft = useCountdown(targetDate);
@@ -41,10 +42,15 @@ export function CountdownSection(props: SectionComponentProps) {
       <SectionTitle title={isNoir ? 'The Countdown' : 'Counting Down'}
         subtitle={isNoir ? 'Until we say I do' : "We can't wait to celebrate with you"} accent />
       <CountdownDisplay targetDate={content.event.date} variant={variant} />
-      <p className={cn('text-center text-sm mt-6', isNoir ? 'text-[var(--colors-text-muted)]' : 'text-[var(--colors-text-muted)]')}>
-        {new Date(content.event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-        {' at '}{content.event.time}
-      </p>
+      {(() => {
+        const d = parseFlexibleDate(content.event.date);
+        const when = d ? d.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : content.event.date;
+        return (
+          <p className={cn('text-center text-sm mt-6', isNoir ? 'text-[var(--colors-text-muted)]' : 'text-[var(--colors-text-muted)]')}>
+            {when}{content.event.time ? ` at ${content.event.time}` : ''}
+          </p>
+        );
+      })()}
     </Container>
   );
 }

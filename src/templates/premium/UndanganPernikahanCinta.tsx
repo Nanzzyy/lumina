@@ -345,7 +345,7 @@ export function UndanganPernikahanCinta({ content, slug, preview }: MonolithicTe
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-light italic" style={{ color: INK }} variants={vUp}>{quote.text}</motion.p>
           <p className="font-display text-6xl mt-2 leading-none font-light" style={{ color: `${BLUSH}88` }}>&rdquo;</p>
           <div className="max-w-[160px] mx-auto my-6"><WineSwirl color={WINE} /></div>
-          <p className="font-display text-sm tracking-wide" style={{ color: WINE }}>— {quote.source}</p>
+          <p className="font-display text-sm tracking-wide" style={{ color: WINE }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

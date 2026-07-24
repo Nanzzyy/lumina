@@ -372,7 +372,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
           <SunDivider color={ADOBE} />
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-medium italic" style={{ color: INK }} variants={vUp}>{quote.text}</motion.p>
           <SunDivider color={ADOBE} />
-          <p className="font-display text-sm mt-3 tracking-wide font-bold uppercase" style={{ color: ADOBE }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-3 tracking-wide font-bold uppercase" style={{ color: ADOBE }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 

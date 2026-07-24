@@ -358,7 +358,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
           <p className="font-body text-lg italic leading-relaxed text-[#5A4240] px-4 font-light">{quote.text}</p>
           <div className="font-serif text-3xl text-[#D4A574] mt-4 leading-none">"</div>
           <div className="w-12 h-[1px] bg-[#D4A574]/30 mx-auto my-6"></div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8B6F5E]">— {quote.source}</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8B6F5E]">{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </section></ScrollR>
 

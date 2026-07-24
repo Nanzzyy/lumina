@@ -336,7 +336,7 @@ export function UndanganPernikahanLiana({ content, slug, preview }: MonolithicTe
             variants={vFade}>{quote.text}</motion.p>
           <p className="font-display text-5xl mt-3 leading-none font-light" style={{ color: `${CLAY}88` }}>"</p>
           <LeafDivider color={SAGE} />
-          <p className="font-script text-xl" style={{ color: MUTED }}>{quote.source}</p>
+          {quote.source && <p className="font-script text-xl" style={{ color: MUTED }}>{quote.source}</p>}
         </div>
       </motion.section>
 

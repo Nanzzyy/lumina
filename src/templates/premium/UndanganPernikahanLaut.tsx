@@ -346,7 +346,7 @@ export function UndanganPernikahanLaut({ content, slug, preview }: MonolithicTem
           <div className="max-w-[180px] mx-auto mb-8"><Wave color={TEAL} /></div>
           <motion.p className="font-display text-2xl md:text-3xl leading-relaxed font-light italic" style={{ color: INK }} variants={vUp}>{quote.text}</motion.p>
           <div className="max-w-[180px] mx-auto mt-8"><Wave color={CORAL} /></div>
-          <p className="font-display text-sm mt-5 italic" style={{ color: CORAL }}>— {quote.source}</p>
+          <p className="font-display text-sm mt-5 italic" style={{ color: CORAL }}>{quote.source ? '— ' + quote.source : ''}</p>
         </div>
       </motion.section>
 
