@@ -30,7 +30,7 @@ import {
   lianaWeddingTemplate, soraWeddingTemplate, matahariWeddingTemplate,
   yukiWeddingTemplate, pasirWeddingTemplate, cintaWeddingTemplate,
   bumiWeddingTemplate, awanWeddingTemplate, ratuWeddingTemplate,
-  lautWeddingTemplate, hutanWeddingTemplate,
+  lautWeddingTemplate, hutanWeddingTemplate, melatiWeddingTemplate, vinoWeddingTemplate,
 } from '@/templates/all-templates';
 import {
   defaultLayout, modernLayout, adatBaliLayout,
@@ -84,6 +84,8 @@ export function registerAllTemplates() {
   registerTemplate(ratuWeddingTemplate);
   registerTemplate(lautWeddingTemplate);
   registerTemplate(hutanWeddingTemplate);
+  registerTemplate(melatiWeddingTemplate);
+registerTemplate(vinoWeddingTemplate);
   registerTemplate(mobileCanvasTemplate);
 }
 

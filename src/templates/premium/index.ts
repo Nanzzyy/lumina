@@ -21,6 +21,8 @@ import { UndanganPernikahanAwan } from './UndanganPernikahanAwan';
 import { UndanganPernikahanRatu } from './UndanganPernikahanRatu';
 import { UndanganPernikahanLaut } from './UndanganPernikahanLaut';
 import { UndanganPernikahanHutan } from './UndanganPernikahanHutan';
+import { UndanganPernikahanMelati } from './UndanganPernikahanMelati';
+import { UndanganPernikahanVino } from './UndanganPernikahanVino';
 
 /**
  * Monolithic premium templates — a single self-contained component renders the
@@ -186,5 +188,17 @@ export const hutanWeddingTemplate: TemplateDefinition = {
   id: 'hutan', name: 'Hutan',
   description: 'Moody Enchanted Forest — deep forest, copper & amber glow, firefly/pine-sprig ornaments, amber-glow-ring photos, firefly pulse & glow throb, Prata + Manrope.',
   kind: 'monolithic', category: 'mobile', component: UndanganPernikahanHutan,
+};
+
+export const melatiWeddingTemplate: TemplateDefinition = {
+  id: 'melati', name: 'Melati',
+  description: 'Floral Luxury Editorial — ivory, antique-gold filigree, sage & dusty rose, original botanical SVG ornaments + butterflies, gold-frame photos, story carousel, gallery lightbox, video, dresscode, rundown. Cormorant Upright + Ovo.',
+  kind: 'monolithic', category: 'mobile', component: UndanganPernikahanMelati,
+};
+
+export const vinoWeddingTemplate: TemplateDefinition = {
+  id: 'vino', name: 'Vino & Ivelle',
+  description: '1:1 port of vinoandivelle.katsudoto.id — exact HTML structure with all original CSS, JS plugins (AOS, Slick, LightGallery), editable text/images via content props.',
+  kind: 'monolithic', category: 'mobile', component: UndanganPernikahanVino,
 };
 

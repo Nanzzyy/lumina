@@ -181,6 +181,8 @@ export {
   ratuWeddingTemplate,
   lautWeddingTemplate,
   hutanWeddingTemplate,
+  melatiWeddingTemplate,
+  vinoWeddingTemplate,
 } from "./premium";
 
 // Mobile-canvas meta-template.

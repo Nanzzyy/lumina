@@ -218,6 +218,16 @@ export interface InvitationContent {
   /** Guest name override — shown on cover (fallback: ?to= URL param). */
   guestName?: string;
 
+  // ─── Rich-template extras (Melati & similar) ─────────────────
+  /** Pre-wedding cinematic video (YouTube). Renders the "Captured in Motion" section. */
+  video?: { youtubeId?: string; title?: string };
+  /** Dress-code guidance with optional palette swatches. */
+  dresscode?: { intro?: string; men?: string; women?: string; palette?: string[] };
+  /** Live-stream link (YouTube/other) for remote guests. */
+  liveStream?: { url?: string; label?: string };
+  /** In-event rundown timeline (distinct from schedule = the ceremony cards). */
+  rundown?: { title?: string; items?: { time: string; label: string }[] };
+
   // ─── Mobile-canvas builder fields ────────────────────────────
   /** Positioned elements on the mobile canvas (Canva-like builder). */
   canvasElements?: CanvasElement[];
