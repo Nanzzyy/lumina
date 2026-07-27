@@ -72,7 +72,7 @@ function NodeView({
   // Leaf section: hand off to SectionRegistry (guard so unresolved types never throw).
   // SectionRegistry is populated once at app init (initializeRegistries), so get() returns a
   // stable component identity across renders — no remount. Safe to look up during render.
-  // eslint-disable-next-line react-hooks/static-components
+   
   const SectionComponent = node.type && SectionRegistry.has(node.type as never) ? SectionRegistry.get(node.type as never) : null;
 
   return (

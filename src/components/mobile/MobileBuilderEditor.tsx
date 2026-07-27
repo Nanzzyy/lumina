@@ -13,7 +13,7 @@ import {
 
 /* ─── Helpers ─── */
 
-let uid = () => Math.random().toString(36).slice(2, 9);
+const uid = () => Math.random().toString(36).slice(2, 9);
 
 interface EditorProps {
   content: InvitationContent;

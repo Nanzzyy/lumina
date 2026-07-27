@@ -55,7 +55,7 @@ export default function EditorPage() {
   // E1: load saved doc from localStorage; else the sample invitation (real 6-node
   // content). `benchmark` id loads the 1000-node golden fixture for perf checks.
   // ponytail: real DB-backed project loader (read projects/pages/frames).
-  // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks/exhaustive-deps
+   
   useEffect(() => {
     const key = `lumina:doc:${projectId}`;
     const saved = typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;

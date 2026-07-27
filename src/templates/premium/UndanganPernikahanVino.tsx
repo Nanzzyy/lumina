@@ -2,11 +2,39 @@
 
 import { useEffect, useRef } from 'react';
 import type { MonolithicTemplateProps } from '@/lib/template/types';
-import type { InvitationContent } from '@/lib/content/types';
+import type { InvitationContent, ScheduleItem, MediaContent } from '@/lib/content/types';
 
-function deriveData(content: InvitationContent) {
+interface VinoEventItem extends ScheduleItem {
+  note?: string;
+}
+
+type VinoContent = InvitationContent & {
+  media?: MediaContent & {
+    coverPhoto?: string;
+    heroPhoto?: string;
+    logoPhoto?: string;
+    loadingLogo?: string;
+    storyImages?: string[];
+    filterImage?: string;
+  };
+  video?: { youtubeId?: string; enabled?: boolean; title?: string };
+  liveStream?: { youtubeId?: string; enabled?: boolean; url?: string; label?: string };
+  instagramFilter?: { enabled?: boolean };
+  giftAddress?: string;
+  /** Override gift type with address field. */
+  gift?: InvitationContent['gift'] & { address?: string };
+  rundown?: {
+    enabled?: boolean;
+    title?: string;
+    items?: { time: string; label: string }[];
+  };
+  gallery?: { enabled?: boolean; images?: string[] };
+  quote?: { enabled?: boolean; text?: string; source?: string };
+};
+
+function deriveData(content: VinoContent) {
   const c = content.couple;
-  const m = (content as any).media || {};
+  const m = content.media || {};
   const p1 = {
     nick: c.partner1 || 'Vino',
     full: c.partner1Title || c.partner1 || 'Vino Laurent',
@@ -32,23 +60,23 @@ function deriveData(content: InvitationContent) {
   const quoteText = content.quote?.text || 'Love does not consist in gazing at each other, but in looking outward together in the same direction.';
   const quoteSource = content.quote?.source || 'Antoine de Saint-Exupéry';
   const guestName = content.guestName || 'Dear,';
-  const videoId = (content as any).video?.youtubeId || 'nrXs4pyjtfs';
-  const liveId = (content as any).liveStream?.youtubeId || 'AGcTCvn-a6g';
-  const events: any[] = content.schedule?.items?.length ? content.schedule.items : [
+  const videoId = content.video?.youtubeId || 'nrXs4pyjtfs';
+  const liveId = content.liveStream?.youtubeId || 'AGcTCvn-a6g';
+  const events: VinoEventItem[] = content.schedule.items.length ? content.schedule.items as VinoEventItem[] : [
     { title: 'The Vows', time: '09:00 - 10:00', venue: 'Cathedral of Our Lady of the Assumption', address: 'Jl. Katedral No.7B, Ps. Baru, Sawah Besar, Jakarta 10710', note: 'Kota Jakarta Pusat', mapsUrl: '' },
     { title: 'Garden Celebration', time: '17:00 - 21:00', venue: 'Taman Kajoe', address: 'Jl. Melati No.57 58, Cilandak Tim., Ps. Minggu, Jakarta 12560', note: 'Kota Jakarta Selatan', mapsUrl: '' },
   ];
   const stories = content.stories?.length ? content.stories : [];
   const galleryImages = content.gallery?.images?.length ? content.gallery.images : [];
-  const storyImages = (m.storyImages as string[]) || [];
+  const storyImages = m.storyImages || [];
   const filterImage = m.filterImage || '';
   const gifts = content.gift?.items?.length ? content.gift.items : [
     { bank: 'BANK BCA (014)', number: '332265410', owner: 'Ivelle Rosalie' },
     { bank: 'BANK CIMB NIAGA (022)', number: '65500001241', owner: 'Vino Laurent' },
   ];
-  const giftAddress = (content as any).giftAddress || (content as any).gift?.address || 'Vino & Ivelle\n08114656441\nKomplek Cendrawasih, Blok T1 No 63 Sidoarjo 001214';
+  const giftAddress = content.giftAddress || content.gift?.address || 'Vino & Ivelle\n08114656441\nKomplek Cendrawasih, Blok T1 No 63 Sidoarjo 001214';
   const dresscode = content.dresscode || { men: 'Garden', women: 'Garden Party', intro: 'Join us in celebrating amidst timeless beauty by wearing refined, elegant attire in soft and harmonious tones.' };
-  const rundown = (content as any).rundown?.items?.length ? (content as any).rundown.items : [
+  const rundown = content.rundown?.items?.length ? content.rundown.items : [
     { time: '5:00 PM', label: 'Guest Arrival' },
     { time: '5:30 PM', label: 'The Celebration Begins' },
     { time: '6:00 PM', label: 'Dining & Cherished Moments' },
@@ -58,19 +86,19 @@ function deriveData(content: InvitationContent) {
   ];
   const sections: Record<string, boolean> = {
     story: content.stories ? (content.stories.length > 0) : true,
-    gallery: (content as any).gallery?.enabled !== false,
-    video: (content as any).video?.enabled !== false,
-    liveStream: (content as any).liveStream?.enabled !== false,
-    rundown: (content as any).rundown?.enabled !== false,
-    instagramFilter: (content as any).instagramFilter?.enabled !== false,
-    gift: (content as any).gift?.enabled !== false,
-    quote: (content as any).quote?.enabled !== false,
+    gallery: content.gallery?.enabled !== false,
+    video: content.video?.enabled !== false,
+    liveStream: content.liveStream?.enabled !== false,
+    rundown: content.rundown?.enabled !== false,
+    instagramFilter: content.instagramFilter?.enabled !== false,
+    gift: content.gift?.enabled !== false,
+    quote: content.quote?.enabled !== false,
   };
   return { p1, p2, coverPhoto, heroPhoto, logoPhoto, loadingLogo, date, intro, quoteText, quoteSource, guestName, videoId, liveId, events, stories, galleryImages, storyImages, filterImage, gifts, giftAddress, dresscode, rundown, sections };
 }
 
-export function UndanganPernikahanVino({ content, slug, preview }: MonolithicTemplateProps) {
-  const data = deriveData(content);
+export function UndanganPernikahanVino({ content }: MonolithicTemplateProps) {
+  const data = deriveData(content as VinoContent);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const cachedHtml = useRef<string>('');
 
@@ -272,7 +300,7 @@ export function UndanganPernikahanVino({ content, slug, preview }: MonolithicTem
       }
 
       // === RUNDOWN ===
-      data.rundown.forEach((item: any, i: number) => {
+      data.rundown.forEach((item: { time: string; label: string }, i: number) => {
         if (i === 0) {
           body = body.replace(/>Guest Arrival</g, `>${item.label}</`);
           body = body.replace(/>5:00 PM</g, `>${item.time}</`);

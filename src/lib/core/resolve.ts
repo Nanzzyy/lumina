@@ -86,7 +86,7 @@ export function resolverStep1(input: VarScopeInput, _ctx: ResolveContext): VarSc
 export function resolverStep2(
   doc: { project: { pages: { frames: { nodes: Node[] }[] }[] } },
   ctx: ResolveContext,
-): Record<string, unknown>[][] { // eslint-disable-line @typescript-eslint/no-explicit-any
+): Record<string, unknown>[][] {  
   return doc.project.pages[0].frames.map((frame) =>
     frame.nodes.map((node) => resolveProps(ctx.variables, node.props ?? {}))
   );

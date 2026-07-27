@@ -168,7 +168,7 @@ function buildGlobalStyles(page: RenderPage): string {
 }
 
 function nodeToCss(node: RenderNode): string {
-  let css = '';
+  const css = '';
   const childrenCss = node.children?.map((c) => nodeToCss(c)).join('\n') ?? '';
   return css + childrenCss;
 }

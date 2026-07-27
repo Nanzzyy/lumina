@@ -181,7 +181,7 @@ export function GridCanvas({ nodes, mode = 'basic', selectedId, selectedChildId,
     }
     syncContent(nodes);
     syncingRef.current = false;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [nodes]);
 
 

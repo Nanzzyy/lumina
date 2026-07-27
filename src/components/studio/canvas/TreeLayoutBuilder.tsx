@@ -65,7 +65,7 @@ export function TreeLayoutBuilder({ initialNodes, initialName, initialDescriptio
     if (initialNodes && initialNodes.length > 0 && nodesLength === 0) {
       setNodes(initialNodes);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [initialNodes, nodesLength]);
 
   const addSection = useCallback((type: SectionType) => {
