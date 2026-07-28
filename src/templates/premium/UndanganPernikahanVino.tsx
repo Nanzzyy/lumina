@@ -126,6 +126,8 @@ export function UndanganPernikahanVino({ content }: MonolithicTemplateProps) {
       body = body.replace(/<script>[\s\S]*?<\/script>/g, '');
       body = body.replace(/<noscript>[\s\S]*?<\/noscript>/g, '');
       body = body.replace(/<iframe[^>]*><\/iframe>/g, '');
+      // Drop dead third-party katsudoto scripts (the fork doesn't host them).
+      body = body.replace(/<script[^>]*katsudoto[^>]*><\/script>/g, '');
 
       // Fix paths
       body = body.replace(/src="images\//g, 'src="/vino/images/');
@@ -142,6 +144,14 @@ export function UndanganPernikahanVino({ content }: MonolithicTemplateProps) {
       // === TEXT REPLACEMENTS ===
       body = body.replace(/Vino Laurent/g, data.p1.full);
       body = body.replace(/Ivelle Rosalie/g, data.p2.full);
+      // First-name couple displays (hero title, footnote) — the full-name swap
+      // above leaves these standalone tokens. Also the couple hashtag + the
+      // URL-encoded calendar event title.
+      body = body.replace(/Vino(\s*)<br>/g, `${data.p1.nick}$1<br>`);
+      body = body.replace(/<br>(\s*)Ivelle/g, `<br>$1${data.p2.nick}`);
+      body = body.replace(/Vino & Ivelle/g, `${data.p1.nick} & ${data.p2.nick}`);
+      body = body.replace(/VowsofViVelle/g, `${data.p1.nick}${data.p2.nick}`);
+      body = body.replace(/Vino\+%26\+Ivelle/g, `${encodeURIComponent(data.p1.nick)}+%26+${encodeURIComponent(data.p2.nick)}`);
       body = body.replace(/Mr\. Fredly Mahesa/g, data.p1.father);
       body = body.replace(/Mrs\. Jennie Grace/g, data.p1.mother);
       body = body.replace(/Mr\. Calio Den/g, data.p2.father);
@@ -274,8 +284,12 @@ export function UndanganPernikahanVino({ content }: MonolithicTemplateProps) {
       }
 
       // === VIDEO IDs ===
-      body = body.replace(/data-video-id="nrXs4pyjtfs"/g, `data-video-id="${data.videoId}"`);
-      body = body.replace(/data-video-id="AGcTCvn-a6g"/g, `data-video-id="${data.liveId}"`);
+      // Swap every occurrence of the demo YouTube IDs (data-url on the autoplay
+      // preview box, data-video-id on the play buttons, href/embed URLs in the
+      // live-stream section). Function-form replacement so any '$' in the user
+      // ID isn't interpreted as a backreference.
+      body = body.replace(/nrXs4pyjtfs/g, () => data.videoId);
+      body = body.replace(/AGcTCvn-a6g/g, () => data.liveId);
 
       // === COUNTDOWN DATE ===
       body = body.replace(/new Date\('2026-06-20T09:00:00'\)/g, `new Date('${data.date}')`);
@@ -385,10 +399,31 @@ body.ivana.original {
 <script src="/vino/js/aos.js"></script>
 <script src="/vino/js/slick.min.js"></script>
 <script src="/vino/js/lightgallery.min.js"></script>
-<script src="/vino/js/Youtube.min.js"></script>
 <script src="/vino/js/video.min.js"></script>
+<script src="/vino/js/Youtube.min.js"></script>
 <script>
-AOS.init({ duration: 1000, once: false });
+// Lumina: wire music widget via event delegation. Runs FIRST because AOS.init
+// below throws on this stripped DOM and would abort the rest of the script.
+// Behavior: AUTOPLAY on open (first user gesture if browser blocks), music-box
+// click = pause/resume.
+(function(){
+  var audio=new Audio('https://media.katsudoto.id/media/public/70/69311/assets/love-me-like-that-instrumental-1779274541-a6ae8c36a825e1b6498f2a6a.mp3');
+  audio.loop=true; audio.preload='auto';
+  function box(){return document.getElementById('music-box');}
+  function setUI(on){ var b=box(); if(b){ on?b.classList.add('playing'):b.classList.remove('playing'); } }
+  function play(){ return audio.play().then(function(){setUI(true)}); }
+  function pause(){ audio.pause(); setUI(false); }
+  function toggle(){ audio.paused ? play().catch(function(){}) : pause(); }
+  document.addEventListener('click',function(e){ var t=e.target; if(t&&t.closest&&t.closest('#music-box')){ e.preventDefault(); toggle(); } });
+  document.addEventListener('keydown',function(e){ var t=e.target; if((e.key==='Enter'||e.key===' ')&&t&&t.closest&&t.closest('#music-box')){ e.preventDefault(); toggle(); } });
+  // Autoplay on open. Try now; if blocked by autoplay policy, play on first gesture.
+  window.startMusic = function(){ play().catch(function(){}); };
+  play().catch(function(){
+    function g(){ document.removeEventListener('click',g);document.removeEventListener('touchstart',g);document.removeEventListener('keydown',g);document.removeEventListener('scroll',g); play().catch(function(){}); }
+    document.addEventListener('click',g);document.addEventListener('touchstart',g);document.addEventListener('keydown',g);document.addEventListener('scroll',g);
+  });
+})();
+try { AOS.init({ duration: 1000, once: false }); } catch(e) {}
 $(document).ready(function(){
   $('.story-chitra__slider-for').slick({slidesToShow:1,slidesToScroll:1,arrows:false,fade:true,asNavFor:'.story-chitra__slider-nav'});
   $('.story-chitra__slider-nav').slick({slidesToShow:3,slidesToScroll:1,asNavFor:'.story-chitra__slider-for',dots:false,focusOnSelect:true});
@@ -407,10 +442,12 @@ $(document).ready(function(){
     $('.top-cover').addClass('hide');
     $('.loading-page-container').css('pointer-events','none').css('opacity','0');
     setTimeout(function(){$('.loading-page-container').remove()},700);
+    if(window.startMusic)window.startMusic();
   });
   $('.loading-page-container button').click(function(){
     $('.loading-page-container').css('pointer-events','none').css('opacity','0');
     setTimeout(function(){$('.loading-page-container').remove()},700);
+    if(window.startMusic)window.startMusic();
   });
   (function(){
     var target=new Date('${data.date}').getTime();

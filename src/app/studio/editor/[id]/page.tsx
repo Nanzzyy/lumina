@@ -171,8 +171,11 @@ export default function EditorPage() {
   return (
     <div className="h-screen flex flex-col bg-zinc-50">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-200 bg-white text-xs text-zinc-600">
-        <span className="font-medium text-zinc-800 mr-2">Lumina Studio</span>
+      <div className="flex items-center gap-2 px-4 h-12 border-b border-zinc-200 bg-white text-xs text-zinc-500">
+        <span className="flex items-center gap-1.5 mr-2 text-zinc-900 font-medium">
+          <span className="w-4 h-4 rounded bg-[var(--colors-primary)]" />
+          Lumina
+        </span>
         <ToolBtn active={tool === 'select'} onClick={() => setTool('select')}>Select</ToolBtn>
         <ToolBtn active={tool === 'pan'} onClick={() => setTool('pan')}>Pan</ToolBtn>
         <div className="w-px h-4 bg-zinc-200 mx-1" />
@@ -180,7 +183,7 @@ export default function EditorPage() {
           <button
             key={def.id}
             onClick={() => addNode(createNodeFromDef(def))}
-            className="px-2 py-1 rounded hover:bg-zinc-100"
+            className="px-2 py-1 rounded-md text-zinc-500 hover:bg-zinc-900/[0.05] hover:text-zinc-900 transition-colors"
           >
             + {def.name}
           </button>
@@ -208,14 +211,14 @@ export default function EditorPage() {
             <div className="w-px h-4 bg-zinc-200 mx-1" />
           </>
         )}
-        <button onClick={undo} disabled={past === 0} className="px-2 py-1 rounded hover:bg-zinc-100 disabled:opacity-30">↩</button>
-        <button onClick={redo} disabled={future === 0} className="px-2 py-1 rounded hover:bg-zinc-100 disabled:opacity-30">↪</button>
+        <button onClick={undo} disabled={past === 0} className="px-2 py-1 rounded-md hover:bg-zinc-900/[0.05] hover:text-zinc-900 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-500 transition-colors">↩</button>
+        <button onClick={redo} disabled={future === 0} className="px-2 py-1 rounded-md hover:bg-zinc-900/[0.05] hover:text-zinc-900 disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-zinc-500 transition-colors">↪</button>
         <div className="w-px h-4 bg-zinc-200 mx-1" />
         {/* ADR-019: Device switcher */}
         <select
           value={currentDevice}
           onChange={(e) => setCurrentDevice(e.target.value as DeviceKey)}
-          className="px-2 py-1 rounded border border-zinc-300 text-xs"
+          className="px-2 py-1 rounded-md border border-zinc-200 text-xs text-zinc-600 bg-white"
         >
           {Object.entries(DEVICE_VIEWPORTS).map(([key, dv]) => (
             <option key={key} value={key}>{dv.label} ({dv.w}×{dv.h})</option>
@@ -228,11 +231,11 @@ export default function EditorPage() {
         <span className="text-zinc-400">{selection.size} selected</span>
         <div className="flex-1" />
         <button onClick={handleSave} disabled={saving}
-          className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 text-xs">
+          className="px-3.5 py-1.5 rounded-full border border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 disabled:opacity-40 text-xs transition-colors">
           {saving ? 'Saving…' : 'Save'}
         </button>
         <button onClick={handlePublish} disabled={publishing}
-          className="px-3 py-1 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-40 text-xs">
+          className="px-3.5 py-1.5 rounded-full bg-[var(--colors-primary)] text-white hover:bg-[var(--colors-primary-hover)] shadow-[0_4px_12px_-2px_rgba(219,39,119,0.35)] disabled:opacity-40 text-xs transition-all">
           {publishing ? 'Publishing…' : 'Publish'}
         </button>
         {publishStatus && <span className="text-[10px] text-zinc-400">{publishStatus}</span>}
@@ -301,7 +304,7 @@ function ToolBtn({ active, onClick, children }: { active: boolean; onClick: () =
   return (
     <button
       onClick={onClick}
-      className={`px-2 py-1 rounded text-xs ${active ? 'bg-blue-100 text-blue-700 font-medium' : 'hover:bg-zinc-100'}`}
+      className={`px-2 py-1 rounded-md text-xs transition-colors ${active ? 'bg-zinc-900/[0.06] text-zinc-900 font-medium' : 'text-zinc-500 hover:bg-zinc-900/[0.05] hover:text-zinc-900'}`}
     >
       {children}
     </button>
@@ -313,7 +316,7 @@ function ArrangeBtn({ title, onClick, children }: { title: string; onClick: () =
     <button
       title={title}
       onClick={onClick}
-      className="px-1.5 py-1 rounded hover:bg-zinc-100 text-xs text-zinc-600"
+      className="px-1.5 py-1 rounded-md hover:bg-zinc-900/[0.05] hover:text-zinc-900 text-xs text-zinc-500 transition-colors"
     >
       {children}
     </button>

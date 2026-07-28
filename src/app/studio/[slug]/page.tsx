@@ -237,6 +237,34 @@ function MediaEditor({ content, onChange }: { content: InvitationContent; onChan
   );
 }
 
+function VideoEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
+  const video = content.video || {};
+  const live = content.liveStream || {};
+  const setVideo = (k: 'youtubeId' | 'title', v: string) => onChange({ ...content, video: { ...video, [k]: v } });
+  const setLive = (k: 'youtubeId' | 'label', v: string) => onChange({ ...content, liveStream: { ...live, [k]: v } });
+  // Accept either a raw ID or a full watch/embed/shorts URL — extract the ID.
+  const toId = (v: string) => {
+    const m = v.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([A-Za-z0-9_-]{6,})/);
+    return m ? m[1] : v.trim();
+  };
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Field label="Video YouTube (ID atau URL)">
+        <Input value={video.youtubeId || ''} onChange={(v) => setVideo('youtubeId', toId(v))} placeholder="nrXs4pyjtfs atau https://youtu.be/..." />
+      </Field>
+      <Field label="Video Title">
+        <Input value={video.title || ''} onChange={(v) => setVideo('title', v)} placeholder="Forever in Frames" />
+      </Field>
+      <Field label="Live Stream YouTube (ID atau URL)">
+        <Input value={live.youtubeId || ''} onChange={(v) => setLive('youtubeId', toId(v))} placeholder="AGcTCvn-a6g atau https://youtu.be/..." />
+      </Field>
+      <Field label="Live Stream Label">
+        <Input value={live.label || ''} onChange={(v) => setLive('label', v)} placeholder="Watch Live" />
+      </Field>
+    </div>
+  );
+}
+
 function StoriesEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
   const stories = content.stories || [];
   const update = (i: number, k: 'year' | 'title' | 'desc', v: string) => {
@@ -952,6 +980,11 @@ export default function StudioEditorPage() {
             <section>
               <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Gallery</h2>
               <GalleryEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Video &amp; Live Stream (YouTube)</h2>
+              <VideoEditor content={content} onChange={handleChange} />
             </section>
             <div className="border-t border-zinc-200" />
             <section>

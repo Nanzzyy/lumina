@@ -8,6 +8,7 @@ import {
   Volume2, VolumeX, MessageSquare, Map,
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
+import { useAutoplayMusic } from './_music';
 
 /* ─── Colors ─── */
 const PEACH = '#D4A574';
@@ -240,6 +241,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  useAutoplayMusic(audioRef, setIsPlaying);
 
   useEffect(() => { injectStyles(); }, []);
 

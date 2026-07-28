@@ -8,6 +8,7 @@ import {
   Camera, Users, MessageSquare, Award, Map,
 } from 'lucide-react';
 import { isVideo, useRsvpWishes, useCountdown, useGuestName, displayDateFrom, pickMedia } from './shared';
+import { useAutoplayMusic } from './_music';
 
 type Mode = 'metatah' | 'birthday';
 
@@ -232,6 +233,7 @@ export function UndanganCelebrationPremium({ content, slug, mode }: MonolithicTe
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  useAutoplayMusic(audioRef, setIsPlaying);
 
   useEffect(() => { injectStyles(); }, []);
 

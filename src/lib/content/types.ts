@@ -224,7 +224,7 @@ export interface InvitationContent {
   /** Dress-code guidance with optional palette swatches. */
   dresscode?: { intro?: string; men?: string; women?: string; palette?: string[] };
   /** Live-stream link (YouTube/other) for remote guests. */
-  liveStream?: { url?: string; label?: string };
+  liveStream?: { url?: string; youtubeId?: string; label?: string };
   /** In-event rundown timeline (distinct from schedule = the ceremony cards). */
   rundown?: { title?: string; items?: { time: string; label: string }[] };
 

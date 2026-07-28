@@ -8,6 +8,7 @@ import {
   Camera, Users, MessageSquare, Map,
 } from 'lucide-react';
 import { isVideo, useRsvpWishes, useCountdown, useGuestName, displayDateFrom, pickMedia } from './shared';
+import { useAutoplayMusic } from './_music';
 
 const GOLD = '#D4AF37';
 const DEFAULTS = {
@@ -119,6 +120,7 @@ export function UndanganPernikahanLuxury({ content, slug }: MonolithicTemplatePr
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  useAutoplayMusic(audioRef, setIsPlaying);
 
   useEffect(() => { injectStyles(); }, []);
 

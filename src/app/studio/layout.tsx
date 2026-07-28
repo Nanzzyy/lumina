@@ -11,7 +11,7 @@ const navItems = [
   { href: '/studio/layouts', label: 'Layouts', icon: 'layout' },
   { href: '/studio/widgets', label: 'Widgets', icon: 'widget' },
   { href: '/studio/mobile-builder', label: 'Mobile Builder', icon: 'smartphone' },
-  { href: '/studio/new', label: 'New Invitation', icon: 'plus', highlight: true },
+  { href: '/studio/new', label: 'New Invitation', icon: 'plus' },
 ];
 
 function NavIcon({ name }: { name: string }) {
@@ -72,14 +72,17 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
 
   const sidebar = (
     <>
-      <div className="p-5 border-b border-zinc-100">
-        <button onClick={() => navigate('/studio')} className="text-lg font-bold font-[var(--typography-font-heading)] text-[var(--colors-primary)] tracking-tight">
-          Lumina Studio
+      <div className="px-5 h-14 flex items-center border-b border-zinc-100">
+        <button onClick={() => navigate('/studio')} className="flex items-center gap-2 text-sm font-medium tracking-tight">
+          <span className="w-5 h-5 rounded-md bg-[var(--colors-primary)] flex items-center justify-center">
+            <span className="w-1.5 h-1.5 rounded-full bg-white" />
+          </span>
+          <span className="text-zinc-900">Lumina</span>
+          <span className="text-zinc-400">Studio</span>
         </button>
-        <p className="text-xs text-zinc-400 mt-0.5">Invitation Builder</p>
       </div>
 
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-3 space-y-0.5">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/studio' && pathname.startsWith(item.href));
           return (
@@ -87,13 +90,15 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
               key={item.href}
               onClick={() => navigate(item.href)}
               className={cn(
-                'w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2.5',
+                'relative w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors flex items-center gap-2.5',
                 isActive
                   ? 'bg-[var(--colors-primary-light)] text-[var(--colors-primary)] font-medium'
-                  : 'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900',
-                item.highlight && !isActive && 'border border-[var(--colors-primary)]/20',
+                  : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/[0.03]',
               )}
             >
+              {isActive && (
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 rounded-full bg-[var(--colors-primary)]" />
+              )}
               <NavIcon name={item.icon} />
               {item.label}
             </button>
@@ -131,8 +136,10 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <button onClick={() => router.push('/studio')} className="font-bold font-[var(--typography-font-heading)] text-[var(--colors-primary)] text-base">
-          Lumina
+        <button onClick={() => router.push('/studio')} className="flex items-center gap-1.5 text-sm font-medium tracking-tight">
+          <span className="w-4 h-4 rounded bg-[var(--colors-primary)]" />
+          <span className="text-zinc-900">Lumina</span>
+          <span className="text-zinc-400">Studio</span>
         </button>
       </div>
 

@@ -57,6 +57,28 @@ export function UndanganBirthdayWish({ content, slug }: MonolithicTemplateProps)
 
   useEffect(() => { injectStyles(); }, []);
 
+  // Autoplay on open: try immediately; if the browser blocks autoplay (no user
+  // gesture yet), start on the first interaction anywhere on the page.
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const start = () => { a.play().then(() => setIsPlaying(true)).catch(() => {}); };
+    const onGesture = () => {
+      start();
+      document.removeEventListener('click', onGesture);
+      document.removeEventListener('touchstart', onGesture);
+      document.removeEventListener('keydown', onGesture);
+      document.removeEventListener('scroll', onGesture);
+    };
+    a.play().then(() => setIsPlaying(true)).catch(() => {
+      document.addEventListener('click', onGesture);
+      document.addEventListener('touchstart', onGesture);
+      document.addEventListener('keydown', onGesture);
+      document.addEventListener('scroll', onGesture);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const toggleMusic = () => {
     if (!audioRef.current) return;
     if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {});

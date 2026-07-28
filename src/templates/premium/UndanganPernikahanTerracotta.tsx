@@ -8,6 +8,7 @@ import {
   ChevronLeft, ChevronRight, Volume2, VolumeX, Gift, MessageSquare, Info, Map,
 } from 'lucide-react';
 import { isVideo, useRsvpWishes, useCountdown, useGuestName, displayDateFrom, pickMedia } from './shared';
+import { useAutoplayMusic } from './_music';
 
 const DEFAULTS = {
   couple: {
@@ -115,6 +116,7 @@ export function UndanganPernikahanTerracotta({ content, slug }: MonolithicTempla
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  useAutoplayMusic(audioRef, setIsPlaying);
 
   useEffect(() => { injectStyles(); }, []);
 

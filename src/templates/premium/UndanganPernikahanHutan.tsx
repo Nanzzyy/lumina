@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { useAutoplayMusic } from './_music';
 
 /* ─── Motion Tokens ─── */
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -222,6 +223,7 @@ export function UndanganPernikahanHutan({ content, slug, preview }: MonolithicTe
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const reduce = useReducedMotion();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  useAutoplayMusic(audioRef, setIsPlaying);
 
   useEffect(() => { injectStyles(); }, []);
 

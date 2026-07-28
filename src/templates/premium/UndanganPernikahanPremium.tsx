@@ -1,6 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, type FormEvent } from 'react';
+import {
+  useState, useEffect, useRef, type FormEvent
+} from 'react';
+import { useAutoplayMusic } from './_music';
 import { motion, type Variants } from 'framer-motion';
 import type { MonolithicTemplateProps } from '@/lib/template/types';
 import type { InvitationContent } from '@/lib/content/types';
@@ -227,6 +230,7 @@ export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateP
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  useAutoplayMusic(audioRef, setIsPlaying);
 
   // Fonts (Cormorant + Montserrat) injected client-side
   useEffect(() => { injectFonts(); }, []);
