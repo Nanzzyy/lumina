@@ -38,7 +38,7 @@ const IS_DEV = process.env.NODE_ENV !== 'production';
 const SCRIPT_SRC = `'self' 'unsafe-inline'${IS_DEV ? " 'unsafe-eval'" : ''}`;
 const CSP_VALUE = [
   "default-src 'self'",
-  `script-src ${SCRIPT_SRC}`,
+  `script-src ${SCRIPT_SRC} https://static.cloudflareinsights.com`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: https: blob:",
   "font-src 'self' https://fonts.gstatic.com https:",
