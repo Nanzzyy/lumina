@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createWish, listWishes } from '@/lib/db';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 export async function POST(req: NextRequest) {
+  // Guest-facing → public, but rate-limited per IP to stop spam/flooding.
+  if (rateLimit(`wish:${clientIp(req)}`, 20)) {
+    return NextResponse.json({ error: 'Too many submissions. Please wait a moment.' }, { status: 429 });
+  }
   try {
     const { slug, name, message } = await req.json();
     if (!slug || !name || !message) {

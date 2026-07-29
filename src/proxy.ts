@@ -15,12 +15,29 @@ const CSP_VALUE = [
   "base-uri 'self'",
 ].join('; ');
 
-export function middleware(req: NextRequest) {
+/**
+ * Edge proxy (Next 16 rename of `middleware`). Two jobs:
+ *  1. Auth-gate `/studio/*` — redirect to /login if no session cookie. Signed
+ *     JWT verification happens at the API write layer (verifySession); the proxy
+ *     closes the open-access hole to the studio UI itself. Runs on Edge (no
+ *     jsonwebtoken import) so it stays fast and runtime-stable.
+ *  2. CSP + security headers for published pages.
+ */
+export function proxy(req: NextRequest) {
+  const { pathname, search } = req.nextUrl;
+
+  if (pathname.startsWith('/studio')) {
+    const session = req.cookies.get('lumina_session')?.value;
+    if (!session) {
+      const loginUrl = req.nextUrl.clone();
+      loginUrl.pathname = '/login';
+      loginUrl.search = `?redirect=${encodeURIComponent(pathname + search)}`;
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
   const response = NextResponse.next();
 
-  const { pathname } = req.nextUrl;
-
-  // CSP for published invitation pages
   const isPublishedPage =
     pathname.startsWith('/') &&
     !pathname.startsWith('/studio') &&
@@ -34,7 +51,6 @@ export function middleware(req: NextRequest) {
     response.headers.set('Content-Security-Policy', CSP_VALUE);
   }
 
-  // Override Next.js default s-maxage=31536000 on HTML pages
   response.headers.set('Cache-Control', 'public, no-cache, must-revalidate');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'DENY');

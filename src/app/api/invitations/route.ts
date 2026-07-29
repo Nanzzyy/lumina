@@ -3,7 +3,8 @@ import { listInvitations, createInvitation } from '@/lib/db';
 import { createInvitationSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!verifySession(req)) return unauthorized();
   try {
     const list = listInvitations();
     return NextResponse.json(list.map((r: any) => ({

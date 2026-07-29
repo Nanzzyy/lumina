@@ -2,35 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getJwtSecret } from '@/lib/auth';
+import { rateLimit, clientIp } from '@/lib/rate-limit';
 
 const JWT_EXPIRY = '24h';
 const PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
 const PLAIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 
-// ─── Login rate limit (per-IP, in-memory) ──────────────────────────
-// Single-instance limiter. ponytail: move to Redis/shared store when multi-node.
-const WINDOW_MS = 60_000;
-const MAX_ATTEMPTS = 10;
-const attempts = new Map<string, { count: number; reset: number }>();
-
-function clientIp(req: NextRequest): string {
-  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-}
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = attempts.get(ip);
-  if (!entry || now > entry.reset) {
-    attempts.set(ip, { count: 1, reset: now + WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > MAX_ATTEMPTS;
-}
-
 export async function POST(req: NextRequest) {
   const ip = clientIp(req);
-  if (rateLimited(ip)) {
+  if (rateLimit(`login:${ip}`, 10)) {
     return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
   }
 

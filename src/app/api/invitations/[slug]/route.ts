@@ -3,7 +3,8 @@ import { getInvitation, updateInvitation, deleteInvitation } from '@/lib/db';
 import { updateInvitationSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  if (!verifySession(req)) return unauthorized();
   const { slug } = await params;
   try {
     const inv = getInvitation(slug);
