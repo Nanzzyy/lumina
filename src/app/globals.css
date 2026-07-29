@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Wire next/font families to Tailwind utilities: font-serif → Playfair, default → Inter. */
+@theme {
+  --font-serif: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
 /* ── Design Tokens ────────────────────────────────────────── */
 /* These are the base tokens. The ThemeProvider overrides them  */
 /* at runtime by injecting :root { ... } with theme values.     */
@@ -7,23 +13,23 @@
 /* Tailwind v4 can reference these via theme() or var()         */
 
 :root {
-  /* Colors */
-  --colors-primary: #db2777;
-  --colors-primary-hover: #be185d;
-  --colors-primary-light: #fdf2f8;
-  --colors-secondary: #7c3aed;
-  --colors-secondary-hover: #6d28d9;
-  --colors-accent: #f59e0b;
-  --colors-background: #ffffff;
-  --colors-background-alt: #faf5ff;
+  /* Colors — Warm Aesthetic Palette */
+  --colors-primary: #d4835a;
+  --colors-primary-hover: #c07048;
+  --colors-primary-light: #fdf6f2;
+  --colors-secondary: #7a9b7a;
+  --colors-secondary-hover: #5a7a5a;
+  --colors-accent: #d4a76a;
+  --colors-background: #fdfaf7;
+  --colors-background-alt: #f5f0e8;
   --colors-surface: #ffffff;
-  --colors-text: #171717;
-  --colors-text-secondary: #525252;
-  --colors-text-muted: #a3a3a3;
-  --colors-border: #e5e5e5;
-  --colors-border-light: #f5f5f5;
-  --colors-error: #ef4444;
-  --colors-success: #22c55e;
+  --colors-text: #292524;
+  --colors-text-secondary: #78716c;
+  --colors-text-muted: #a8a29e;
+  --colors-border: #e7e5e4;
+  --colors-border-light: #f5f5f4;
+  --colors-error: #c44e44;
+  --colors-success: #5a9e6f;
 
   /* Typography */
   --typography-font-heading: 'Playfair Display', Georgia, serif;
@@ -58,28 +64,29 @@
   --spacing-gap-element: 1rem;
 
   /* Radius */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.5rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 20px rgb(236 72 153 / 0.3);
+  /* Shadows — Softer, warmer */
+  --shadow-sm: 0 1px 2px 0 rgb(120 85 60 / 0.06);
+  --shadow-md: 0 4px 12px -2px rgb(120 85 60 / 0.1);
+  --shadow-lg: 0 12px 28px -4px rgb(120 85 60 / 0.12);
+  --shadow-xl: 0 24px 40px -8px rgb(120 85 60 / 0.15);
+  --shadow-card: 0 1px 3px rgb(120 85 60 / 0.06), 0 8px 24px rgb(120 85 60 / 0.08);
 
   /* Glass */
-  --glass-opacity: 0.15;
-  --glass-blur: 12px;
-  --glass-border: 1px solid rgb(255 255 255 / 0.2);
+  --glass-opacity: 0.6;
+  --glass-blur: 16px;
+  --glass-border: 1px solid rgb(255 255 255 / 0.3);
 
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #db2777, #7c3aed);
-  --gradient-secondary: linear-gradient(135deg, #fdf2f8, #faf5ff);
-  --gradient-accent: linear-gradient(135deg, #f59e0b, #db2777);
+  --gradient-primary: linear-gradient(135deg, #d4a574, #c0765a);
+  --gradient-secondary: linear-gradient(135deg, #fdf6f2, #f8f2eb);
+  --gradient-accent: linear-gradient(135deg, #e8c9a0, #c0765a);
 }
 
 /* ── Base Styles ──────────────────────────────────────────── */
@@ -87,7 +94,7 @@
 body {
   background: var(--colors-background);
   color: var(--colors-text);
-  font-family: var(--typography-font-body);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;

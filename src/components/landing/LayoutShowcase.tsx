@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Reveal } from './Reveal';
 
 interface LayoutItem {
   id: string;
@@ -13,52 +14,70 @@ interface LayoutItem {
 
 export function LayoutShowcase() {
   const [layouts, setLayouts] = useState<LayoutItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     fetch('/api/layouts')
       .then((r) => r.json())
-      .then(setLayouts)
-      .catch(() => {});
+      .then((data) => {
+        setLayouts(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
-    <section className="py-20 sm:py-28 bg-zinc-50/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <span className="text-xs font-semibold tracking-[0.2em] uppercase text-[var(--colors-primary)]">Structures</span>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-bold font-[var(--typography-font-heading)] text-zinc-900">
-            Choose Your Flow
+    <section className="bg-white py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Reveal className="mx-auto mb-14 max-w-2xl text-center">
+          <span className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-600">Structures</span>
+          <h2 className="mt-4 font-serif text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
+            Choose <span className="italic text-amber-600">Your Flow</span>
           </h2>
-          <p className="mt-3 text-zinc-500 max-w-xl mx-auto">
-            Section arrangements for every style and culture — from classic wedding order to adat Bali.
+          <p className="mt-4 text-stone-500">
+            Section arrangements crafted for every style and culture.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {layouts.map((l) => {
-            const secs = l.config?.sections || l.sections || [];
-            return (
-              <button
-                key={l.id}
-                onClick={() => router.push(`/studio/layouts/${l.id}`)}
-                className="text-left bg-white rounded-xl border border-zinc-200 p-6 hover:border-[var(--colors-primary)]/40 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group"
-              >
-                <h3 className="font-semibold text-zinc-900 group-hover:text-[var(--colors-primary)] transition-colors">
-                  {l.name}
-                </h3>
-                <p className="text-sm text-zinc-500 mt-1 mb-4">{l.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {secs.map((s: { type: string }, i: number) => (
-                    <span key={i} className="text-[10px] px-2 py-0.5 bg-zinc-100 text-zinc-500 rounded-full capitalize">
-                      {s.type}
-                    </span>
-                  ))}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        {loading ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-36 animate-pulse rounded-2xl bg-stone-100" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {layouts.map((l, i) => {
+              const secs = l.config?.sections || l.sections || [];
+              return (
+                <Reveal key={l.id} delay={(i % 3) * 0.08}>
+                  <button
+                    onClick={() => router.push(`/studio/layouts/${l.id}`)}
+                    className="block h-full w-full cursor-pointer rounded-2xl border border-stone-200 bg-white p-6 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-lg"
+                  >
+                    <h3 className="font-serif text-lg font-semibold text-stone-900">{l.name}</h3>
+                    <p className="mb-4 mt-1 text-sm text-stone-500">{l.description || 'No description'}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {secs.length > 0 ? (
+                        secs.map((s: { type: string }, j: number) => (
+                          <span
+                            key={j}
+                            className="rounded-full border border-stone-200 bg-stone-100 px-2.5 py-1 text-[10px] capitalize text-stone-500"
+                          >
+                            {s.type}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs italic text-stone-400">Flexible layout</span>
+                      )}
+                    </div>
+                  </button>
+                </Reveal>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

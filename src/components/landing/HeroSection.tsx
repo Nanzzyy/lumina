@@ -1,105 +1,145 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+const STATS: [string, string][] = [
+  ['23+', 'Premium Templates'],
+  ['Mobile-First', 'Responsive'],
+  ['RSVP & Gifts', 'Built-in'],
+  ['Maps & Music', 'Rich Media'],
+];
+
+/**
+ * Invitation-card mockup (pure CSS, no asset) — gives the hero a real product
+ * visual instead of a wall of text. Floats gently.
+ */
+function InvitationCard({ className = '' }: { className?: string }) {
+  return (
+    <div
+      className={`relative w-80 rounded-[2rem] bg-gradient-to-br from-stone-50 to-stone-200 p-10 shadow-2xl shadow-black/40 ring-1 ring-white/40 ${className}`}
+    >
+      <div className="absolute inset-x-10 top-6 h-px bg-amber-300/60" />
+      <p className="text-center text-[0.65rem] tracking-[0.35em] uppercase text-amber-700">
+        The Wedding Of
+      </p>
+      <h3 className="mt-7 text-center font-serif text-4xl leading-tight text-stone-900">
+        Ananda
+        <span className="block font-serif italic text-2xl text-amber-600 my-1">&</span>
+        Maya
+      </h3>
+      <div className="mx-auto my-6 h-px w-12 bg-amber-400" />
+      <p className="text-center font-serif italic text-stone-500">Saturday, 14 June 2026</p>
+      <p className="mt-2 text-center text-[0.7rem] tracking-wide text-stone-400">
+        Bali, Indonesia
+      </p>
+      <div className="absolute inset-x-10 bottom-6 h-px bg-amber-300/60" />
+    </div>
+  );
+}
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-indigo-950 via-purple-950 to-fuchsia-950">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-purple-500/20 blur-[120px]" />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-pink-500/15 blur-[100px]" />
-        <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] rounded-full bg-indigo-400/10 blur-[80px]" />
-        {/* Grid pattern overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.03]"
-          style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)', backgroundSize: '40px 40px' }}
-        />
+    <section className="relative overflow-hidden bg-stone-950 text-white">
+      {/* Warm radial glows */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute -top-40 -right-32 h-[44rem] w-[44rem] rounded-full bg-amber-500/20 blur-[120px]" />
+        <div className="absolute top-1/3 -left-32 h-[36rem] w-[36rem] rounded-full bg-orange-600/15 blur-[110px]" />
+        <div className="absolute -bottom-40 right-1/4 h-[30rem] w-[30rem] rounded-full bg-rose-500/10 blur-[100px]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-0">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Text content */}
-          <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur border border-white/15 text-xs font-medium text-white/80 tracking-wide mb-8">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Premium Digital Invitations
-            </div>
+      <div className="relative mx-auto grid max-w-7xl items-center gap-16 px-4 pb-24 pt-36 sm:px-6 lg:grid-cols-2 lg:pb-32 lg:pt-44 lg:px-8">
+        {/* Copy */}
+        <div className="text-center lg:text-left">
+          <motion.span
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-amber-200"
+          >
+            ✦ Premium Digital Invitations
+          </motion.span>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold font-[var(--typography-font-heading)] text-white leading-[1.08] tracking-tight">
-              Beautiful
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-rose-200 to-pink-200">
-                Wedding Invitations
-              </span>
-            </h1>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.08, ease: EASE }}
+            className="mt-8 font-serif text-5xl font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl"
+          >
+            Beautiful
+            <br />
+            invitations,
+            <br />
+            <span className="bg-gradient-to-r from-amber-200 via-amber-400 to-orange-300 bg-clip-text italic text-transparent">
+              effortlessly.
+            </span>
+          </motion.h1>
 
-            <p className="mt-6 text-base sm:text-lg text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              From elegant minimal to botanical, art-deco, and beyond — craft a one-of-a-kind
-              digital invitation. Customize every detail, then share in minutes.
-            </p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.16, ease: EASE }}
+            className="mx-auto mt-6 max-w-lg text-base leading-relaxed text-stone-300 sm:text-lg lg:mx-0"
+          >
+            From intimate gatherings to grand celebrations — design, customize,
+            and share stunning digital invitations in minutes.
+          </motion.p>
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link
-                href="/studio/new"
-                className="px-8 py-3.5 bg-white text-indigo-950 rounded-full text-sm font-semibold hover:bg-white/90 transition-all shadow-xl shadow-black/20 hover:shadow-2xl hover:-translate-y-0.5"
-              >
-                Start Creating
-              </Link>
-              <Link
-                href="/studio/templates"
-                className="px-8 py-3.5 bg-white/10 text-white rounded-full text-sm font-semibold border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all hover:-translate-y-0.5"
-              >
-                Browse Templates
-              </Link>
-            </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.24, ease: EASE }}
+            className="mt-10 flex flex-col gap-3.5 sm:flex-row sm:justify-center lg:justify-start"
+          >
+            <Link
+              href="/studio/new"
+              className="rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-8 py-4 text-sm font-semibold text-stone-950 shadow-lg shadow-amber-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-amber-500/40"
+            >
+              Start Creating
+            </Link>
+            <Link
+              href="/studio/templates"
+              className="rounded-full border border-white/20 bg-white/5 px-8 py-4 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10"
+            >
+              Browse Templates
+            </Link>
+          </motion.div>
 
-            {/* Stats */}
-            <div className="mt-16 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-lg mx-auto lg:mx-0">
-              {[
-                { n: '23+', l: 'Premium Templates' },
-                { n: 'Mobile', l: 'First Design' },
-                { n: 'RSVP', l: 'Wishes & Gift' },
-                { n: 'Music', l: 'Countdown & Maps' },
-              ].map((s) => (
-                <div key={s.l} className="text-center lg:text-left">
-                  <p className="font-[var(--typography-font-heading)] text-xl sm:text-2xl font-bold bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">{s.n}</p>
-                  <p className="text-[11px] sm:text-xs text-white/40 mt-0.5 tracking-wide">{s.l}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: Illustration */}
-          <div className="hidden lg:flex justify-center items-center">
-            <div className="relative w-full max-w-md aspect-[3/4]">
-              {/* Main gradient orb */}
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 via-rose-400/20 to-purple-400/20 rounded-[40px] backdrop-blur-sm border border-white/10" />
-              {/* Couple silhouette illustration */}
-              <svg viewBox="0 0 400 500" fill="none" className="w-full h-full drop-shadow-2xl" aria-hidden="true">
-                <defs>
-                  <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
-                    <stop offset="100%" stopColor="rgba(255,255,255,0.05)" />
-                  </linearGradient>
-                </defs>
-                {/* Woman silhouette */}
-                <path d="M200 80 C180 80, 165 95, 165 115 C165 135, 180 150, 200 150 C220 150, 235 135, 235 115 C235 95, 220 80, 200 80Z" fill="url(#g1)" />
-                <path d="M200 150 C150 150, 110 200, 100 270 L300 270 C290 200, 250 150, 200 150Z" fill="url(#g1)" />
-                {/* Man silhouette */}
-                <path d="M200 80 C175 75, 155 95, 155 120 C155 145, 175 160, 200 160 C225 160, 245 145, 245 120 C245 95, 225 75, 200 80Z" fill="url(#g1)" opacity="0.6" />
-                <path d="M200 160 C145 160, 100 215, 90 290 L310 290 C300 215, 255 160, 200 160Z" fill="url(#g1)" opacity="0.6" />
-                {/* Heart */}
-                <path d="M200 180 C200 170, 190 160, 180 160 C165 160, 155 175, 155 185 C155 205, 200 220, 200 220 C200 220, 245 205, 245 185 C245 175, 235 160, 220 160 C210 160, 200 170, 200 180Z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-                {/* Decorative rings */}
-                <circle cx="200" cy="250" r="140" stroke="rgba(255,255,255,0.04)" strokeWidth="1" fill="none" />
-                <circle cx="200" cy="250" r="120" stroke="rgba(255,255,255,0.06)" strokeWidth="1" fill="none" />
-                <circle cx="200" cy="250" r="100" stroke="rgba(255,255,255,0.08)" strokeWidth="1" fill="none" />
-              </svg>
-            </div>
-          </div>
+          <motion.dl
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="mt-16 flex flex-wrap justify-center gap-8 sm:gap-12 lg:justify-start"
+          >
+            {STATS.map(([n, l]) => (
+              <div key={l} className="text-center lg:text-left">
+                <dt className="font-serif text-2xl font-semibold text-white">{n}</dt>
+                <dd className="mt-0.5 text-xs tracking-wide text-stone-400">{l}</dd>
+              </div>
+            ))}
+          </motion.dl>
         </div>
+
+        {/* Visual */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
+          className="relative hidden lg:block"
+        >
+          <div className="absolute left-6 top-10 rotate-[-8deg]">
+            <InvitationCard className="opacity-60 blur-[1px]" />
+          </div>
+          <div className="relative rotate-[4deg]">
+            <InvitationCard className="animate-float" />
+          </div>
+        </motion.div>
       </div>
+
+      {/* bottom fade into next (light) section */}
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-stone-50" aria-hidden="true" />
     </section>
   );
 }
