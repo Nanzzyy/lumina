@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storeAsset } from '@/lib/assets';
+import { verifySession, unauthorized } from '@/lib/auth';
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'];
+// SVG excluded: served verbatim from /uploads with no CSP → embedded <script> = stored XSS.
+// ponytail: re-enable via a sanitizing proxy (DOMPurify) if SVG upload is ever needed.
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 const MAX_SIZE = 10 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
+  if (!verifySession(req)) return unauthorized();
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File | null;

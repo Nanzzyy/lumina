@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvitation, updateInvitation, deleteInvitation } from '@/lib/db';
 import { updateInvitationSchema } from '@/lib/validation';
+import { verifySession, unauthorized } from '@/lib/auth';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -14,6 +15,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
 }
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  if (!verifySession(req)) return unauthorized();
   const { slug } = await params;
   try {
     const body = await req.json();
@@ -30,7 +32,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  if (!verifySession(req)) return unauthorized();
   const { slug } = await params;
   try {
     deleteInvitation(slug);

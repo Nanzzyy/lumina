@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listWidgets, createWidget } from '@/lib/db';
 import { createWidgetSchema } from '@/lib/validation';
+import { verifySession, unauthorized } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -22,6 +23,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!verifySession(req)) return unauthorized();
   try {
     const body = await req.json();
     const parsed = createWidgetSchema.safeParse(body);

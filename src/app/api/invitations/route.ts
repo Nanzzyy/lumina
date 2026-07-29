@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listInvitations, createInvitation } from '@/lib/db';
 import { createInvitationSchema } from '@/lib/validation';
+import { verifySession, unauthorized } from '@/lib/auth';
 
 export async function GET() {
   try {
@@ -23,6 +24,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (!verifySession(req)) return unauthorized();
   try {
     const body = await req.json();
     const parsed = createInvitationSchema.safeParse(body);
