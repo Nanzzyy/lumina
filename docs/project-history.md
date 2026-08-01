@@ -5,6 +5,38 @@ For architecture overview, see [README.md](./README.md).
 
 ---
 
+## 2026-07-31 — Template Baru: "Bali Modern"
+
+### What changed
+
+Menambahkan template monolithic baru **Bali Modern** (`id: undangan-bali-modern`) ke Lumina, meniru layout & font undangan ceritabahagiaku.com/wardana-moni (copy lokal `~/Downloads/Telegram Desktop/ceritabahagiaku-wardana-moni/`).
+
+### Fitur template
+
+- Font: **Parisienne** (heading) + **Roboto** (body) via Google Fonts `injectStyles()` (pola Terracotta).
+- Dark tropical theme: hero video/photo background, "The Wedding Of" + nama Parisienne besar.
+- Section: cover loading (heartbeat + "Buka Undangan"), hero photo swiper (auto-advance), quote Rg Veda, "Om Swastyastu" couple info (2 profil bulat + "&" raksasa), countdown + Add to Calendar, venue card (View Maps), love story slider, YouTube embed ("Our Moment"), galeri grid + carousel + lightbox, kartu bank (copy), RSVP toggle hadir/tidak, wedding wish form + pagination, footer fullscreen "Om Shanti Shanti Shanti Om", music player fixed.
+- Semua data dari `InvitationContent` via `deriveData()` dengan DEFAULTS — semua section tetap bisa diedit dari studio (editor monolithic otomatis menyediakan semua form).
+- Foto default: placeholder Unsplash generik (keputusan user — bukan foto asli Wardana & Moni).
+
+### Files
+
+- `src/templates/premium/UndanganPernikahanBaliModern.tsx` — komponen baru
+- `src/templates/premium/index.ts` — export `baliModernWeddingTemplate`
+- `src/templates/all-templates.ts` — re-export
+- `src/lib/registry/index.ts` — register template
+- `src/lib/template/TemplateRenderer.tsx` — fix: monolithic tidak lagi hardcode `preview={true}`; prop `preview` dipass dari pemanggil (studio editor set `preview`, halaman publik `/invitation` & `/i` tidak) sehingga cover "Buka Undangan" muncul di publik
+- `src/app/studio/[slug]/page.tsx`, `src/app/studio/mobile/[slug]/page.tsx` — set `preview` pada TemplateRenderer editor
+- `src/templates/premium/shared.ts` — `useRsvpWishes` kini ekspos `refresh()` (backward-compatible) untuk re-fetch daftar wish setelah submit
+
+### Catatan
+
+- Tidak ada dependensi baru (swiper/lightbox diimplementasikan manual dengan state + interval).
+- Editor studio tidak diubah — form section otomatis tersedia untuk template monolithic.
+- RSVP/wish submit via `/api/rsvp` langsung (guard pesan kosong di `useRsvpWishes.submit` dihindari dengan fetch sendiri + `refresh()`).
+
+---
+
 ## 2026-07-14 — Template vs Layout Separation (Major Redesign)
 
 ### What changed
