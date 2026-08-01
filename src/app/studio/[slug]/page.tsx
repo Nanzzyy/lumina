@@ -196,13 +196,16 @@ function ScheduleEditor({ content, onChange }: { content: InvitationContent; onC
 
 function MediaEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
   const m = content.media || {};
-  const set = (k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo', v: string) =>
+  const set = (k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo' | 'video' | 'footerImage', v: string) =>
     onChange({ ...content, media: { ...m, [k]: v } });
-  const fields: { k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo'; label: string }[] = [
-    { k: 'cover', label: 'Cover Background' },
-    { k: 'hero', label: 'Hero Background' },
-    { k: 'partner1Photo', label: 'Foto Mempelai 1' },
-    { k: 'partner2Photo', label: 'Foto Mempelai 2' },
+  // Label menunjukkan section tujuan supaya user tidak bingung foto/video masuk di mana.
+  const fields: { k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo' | 'video' | 'footerImage'; label: string; hint: string }[] = [
+    { k: 'cover', label: 'Foto Cover', hint: 'Gate "Buka Undangan" + panel kiri (desktop) + poster video' },
+    { k: 'video', label: 'Video Background', hint: 'Video prewed looping di kolom kanan & mobile (bg undangan)' },
+    { k: 'hero', label: 'Hero Background', hint: 'Background bagian hero (jika tak diisi, pakai Cover)' },
+    { k: 'partner1Photo', label: 'Foto Mempelai 1', hint: 'Foto profil Wardana' },
+    { k: 'partner2Photo', label: 'Foto Mempelai 2', hint: 'Foto profil Moni' },
+    { k: 'footerImage', label: 'Foto Footer', hint: 'Background footer bagian bawah (doa & copyright)' },
   ];
   const music = content.music ?? { src: '' };
   const setMusic = (k: 'src' | 'title', v: string) => onChange({ ...content, music: { ...music, [k]: v } });
@@ -210,7 +213,7 @@ function MediaEditor({ content, onChange }: { content: InvitationContent; onChan
   return (
     <div className="space-y-3">
       <p className="text-xs text-zinc-400">Gambar <strong>atau video</strong> (.mp4/.webm/.mov) — tempel URL, terdeteksi otomatis.</p>
-      {fields.map(({ k, label }) => (
+      {fields.map(({ k, label, hint }) => (
         <div key={k} className="flex gap-3 items-center">
           <div className="w-14 h-14 rounded-lg border border-zinc-200 overflow-hidden flex-shrink-0 bg-zinc-50">
             {m[k] ? (
@@ -222,6 +225,7 @@ function MediaEditor({ content, onChange }: { content: InvitationContent; onChan
           <div className="flex-1">
             <label className="block text-xs text-zinc-500 mb-1">{label}</label>
             <Input value={m[k] || ''} onChange={(v) => set(k, v)} placeholder="https://... (gambar / video)" />
+            <p className="text-[10px] text-zinc-400 mt-0.5">{hint}</p>
           </div>
         </div>
       ))}
@@ -1037,43 +1041,24 @@ export default function StudioEditorPage() {
               </div>
             </div>
             <div className="flex justify-center">
-              {device !== 'desktop' ? (
-                <div className="shadow-xl rounded-xl overflow-hidden" style={{ width: device === 'mobile' ? 384 : 768 }}>
-                  <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
-                    <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <span className="ml-2 text-[10px]">
-                      {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : 'Tablet (768×1024)'}
-                    </span>
-                  </div>
-                  <IframePreview
-                    width={device === 'mobile' ? 384 : 768}
-                    height={device === 'mobile' ? 728 : 1024}
-                  >
-                    <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                    </ThemeProvider>
-                  </IframePreview>
+              <div className="shadow-xl rounded-xl overflow-auto max-w-full" style={{ width: device === 'mobile' ? 384 : device === 'tablet' ? 768 : 1100 }}>
+                <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
+                  <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
+                  <span className="ml-2 text-[10px]">
+                    {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : device === 'tablet' ? 'Tablet (768×1024)' : 'Desktop (1100×728)'}
+                  </span>
                 </div>
-              ) : (
-                <div className="border border-zinc-200 rounded-xl overflow-hidden w-full h-[80vh]"
-                  style={{ transform: 'translateZ(0)' }}>
-                  <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
-                    <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
-                    <span className="ml-2 text-[10px]">
-                      {template.name} &middot; Desktop
-                    </span>
-                  </div>
-                  <div className="bg-white h-full overflow-y-auto" data-lumina-scroll>
-                    <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                      <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
-                    </ThemeProvider>
-                  </div>
-                </div>
-              )}
+                <IframePreview
+                  width={device === 'mobile' ? 384 : device === 'tablet' ? 768 : 1100}
+                  height={device === 'tablet' ? 1024 : 728}
+                >
+                  <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
+                    <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview />
+                  </ThemeProvider>
+                </IframePreview>
+              </div>
             </div>
           </div>
         </div>
@@ -1249,39 +1234,39 @@ export default function StudioEditorPage() {
                       height={device === 'mobile' ? 728 : 1024}
                     >
                       <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                        <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                        <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview />
                       </ThemeProvider>
                     </IframePreview>
                   </div>
                 ) : (
                   <div className={cn(
-                    'border border-zinc-200 rounded-xl overflow-hidden transition-all duration-300',
-                    device === 'desktop' ? 'w-full' : 'shadow-xl',
+                    'border border-zinc-200 rounded-xl overflow-auto transition-all duration-300 shadow-xl max-w-full',
                     editOrnaments && 'border-[var(--colors-primary)]/30',
                   )}
-                    style={{
-                      ...(device !== 'desktop' ? { maxWidth: device === 'mobile' ? 384 : 768 } : {}),
-                    }}
+                    style={{ width: device === 'mobile' ? 384 : device === 'tablet' ? 768 : 1100 }}
                   >
                     <div className="bg-zinc-900 text-white/60 text-xs px-4 py-2 flex items-center gap-2">
                       <svg className="w-3 h-3 text-red-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
                       <svg className="w-3 h-3 text-yellow-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
                       <svg className="w-3 h-3 text-green-500" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="currentColor" /></svg>
                       <span className="ml-2 text-[10px]">
-                        {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile' : device === 'tablet' ? 'Tablet' : 'Desktop'}
+                        {editOrnaments ? 'Ornament Editor' : `Preview`} &middot; {template.name} &middot; {device === 'mobile' ? 'Mobile (384×728)' : device === 'tablet' ? 'Tablet (768×1024)' : 'Desktop (1100×728)'}
                       </span>
                     </div>
-                    <div className="bg-white" data-lumina-scroll>
+                    <IframePreview
+                      width={device === 'mobile' ? 384 : device === 'tablet' ? 768 : 1100}
+                      height={device === 'tablet' ? 1024 : 728}
+                    >
                       <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
                         <OrnamentCanvas
                           ornaments={content.ornaments || []}
                           onChange={(ornaments) => handleChange({ ...content, ornaments })}
                           readOnly={!editOrnaments}
                         >
-                          <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} />
+                          <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview />
                         </OrnamentCanvas>
                       </ThemeProvider>
-                    </div>
+                    </IframePreview>
                   </div>
                 )}
               </div>

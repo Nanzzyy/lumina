@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import type { InvitationContent } from '@/lib/content/types';
 
 /** Treat common video extensions as video (else image). */
@@ -57,7 +57,8 @@ export function useRsvpWishes(slug?: string) {
   const [rsvpForm, setRsvpForm] = useState({ name: '', guests: '1', attendance: 'Hadir', message: '' });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  useEffect(() => {
+  /** Re-fetch the wish list from the server. */
+  const refresh = useCallback(() => {
     if (!slug) return;
     fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`)
       .then((r) => r.json())
@@ -67,6 +68,10 @@ export function useRsvpWishes(slug?: string) {
       })
       .catch(() => {});
   }, [slug]);
+
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -95,7 +100,7 @@ export function useRsvpWishes(slug?: string) {
     } catch { /* ignore */ }
   };
 
-  return { wishes, rsvpForm, setRsvpForm, isSubmitted, submit };
+  return { wishes, rsvpForm, setRsvpForm, isSubmitted, submit, refresh };
 }
 
 /** Date parser (ISO / English / Indonesian). Logic in @/lib/utils/date. */
@@ -147,12 +152,14 @@ export function displayDateFrom(iso: string, fallback?: string): string {
 /** Resolve headline media with fallbacks. */
 export function pickMedia(
   content: InvitationContent,
-  fallback: { cover: string; hero: string; p1: string; p2: string },
+  fallback: { cover: string; hero: string; p1: string; p2: string; video?: string; footerImage?: string },
 ) {
   return {
     cover: content.media?.cover || fallback.cover,
     hero: content.media?.hero || fallback.hero,
     p1: content.media?.partner1Photo || fallback.p1,
     p2: content.media?.partner2Photo || fallback.p2,
+    video: content.media?.video || fallback.video || '',
+    footerImage: content.media?.footerImage || fallback.footerImage || '',
   };
 }

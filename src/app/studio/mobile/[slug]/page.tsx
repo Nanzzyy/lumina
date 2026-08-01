@@ -130,7 +130,7 @@ export default function MobileEditorPage() {
               {template.name}
             </div>
             <div className="max-h-[780px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-              <TemplateRenderer template={template} content={content} slug={slug} />
+              <TemplateRenderer template={template} content={content} slug={slug} preview />
             </div>
           </div>
         </div>

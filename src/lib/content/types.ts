@@ -177,6 +177,10 @@ export interface MediaContent {
   hero?: string;
   partner1Photo?: string;
   partner2Photo?: string;
+  /** Background video (Bali Modern split-screen prewed video). */
+  video?: string;
+  /** Footer background image. */
+  footerImage?: string;
 }
 
 /**

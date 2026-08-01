@@ -23,7 +23,8 @@ import { rsvpManifest } from '@/data/library/plugins/rsvp';
 import {
   auroraTemplate, fleurTemplate, lunaTemplate, ivoryTemplate,
   sakuraTemplate, nordicTemplate, royalTemplate, celesteTemplate,
-  veronaTemplate, noirTemplate, premiumWeddingTemplate, terracottaWeddingTemplate,
+  veronaTemplate, noirTemplate, premiumWeddingTemplate, baliModernWeddingTemplate,
+  terracottaWeddingTemplate,
   luxuryWeddingTemplate, metatahBaliTemplate, birthdayGalaTemplate,
   birthdayWishTemplate, mobileCanvasTemplate, floraWeddingTemplate,
   hanaWeddingTemplate, sakuraWeddingTemplate, kazeWeddingTemplate,
@@ -64,6 +65,7 @@ export function registerAllTemplates() {
   registerTemplate(veronaTemplate);
   registerTemplate(noirTemplate);
   registerTemplate(premiumWeddingTemplate);
+  registerTemplate(baliModernWeddingTemplate);
   registerTemplate(terracottaWeddingTemplate);
   registerTemplate(luxuryWeddingTemplate);
   registerTemplate(metatahBaliTemplate);

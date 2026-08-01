@@ -2,6 +2,7 @@ import type { TemplateDefinition } from '@/lib/template/types';
 
 export type { MonolithicTemplateProps } from '@/lib/template/types';
 import { UndanganPernikahanPremium } from './UndanganPernikahanPremium';
+import { UndanganPernikahanBaliModern } from './UndanganPernikahanBaliModern';
 import { UndanganPernikahanTerracotta } from './UndanganPernikahanTerracotta';
 import { UndanganPernikahanLuxury } from './UndanganPernikahanLuxury';
 import { UndanganMetatahBali, UndanganBirthdayGala } from './UndanganCelebrationPremium';
@@ -36,6 +37,15 @@ export const premiumWeddingTemplate: TemplateDefinition = {
   kind: 'monolithic',
   category: 'wedding',
   component: UndanganPernikahanPremium,
+};
+
+export const baliModernWeddingTemplate: TemplateDefinition = {
+  id: 'undangan-bali-modern',
+  name: 'Bali Modern',
+  description: 'Split-screen Bali wedding — fixed prewed video bg, Parisienne + Montserrat, Om Swastyastu couple, countdown, venue, love story, galeri, gift, RSVP, wedding wish.',
+  kind: 'monolithic',
+  category: 'wedding',
+  component: UndanganPernikahanBaliModern,
 };
 
 export const terracottaWeddingTemplate: TemplateDefinition = {

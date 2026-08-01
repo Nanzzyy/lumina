@@ -161,6 +161,7 @@ export const noirTemplate = makeTemplate({
 // Monolithic (self-contained) templates — bypass makeTemplate (no theme/layout).
 export {
   premiumWeddingTemplate,
+  baliModernWeddingTemplate,
   terracottaWeddingTemplate,
   luxuryWeddingTemplate,
   metatahBaliTemplate,

@@ -16,6 +16,8 @@ interface TemplateRendererProps {
   scopeClass?: string;
   hideOrnaments?: boolean;
   slug?: string;
+  /** Monolithic templates render their cover/loading screen unless preview. */
+  preview?: boolean;
 }
 
 interface SectionRendererProps {
@@ -80,11 +82,13 @@ export function TemplateRenderer({
   scopeClass,
   hideOrnaments,
   slug,
+  preview,
 }: TemplateRendererProps) {
   // Monolithic switch: a self-contained template renders the whole page itself.
+  // `preview` is only set by the studio editor — public pages show the cover.
   if (template.kind === 'monolithic' && template.component) {
     const Monolithic = template.component;
-    return <Monolithic content={content} slug={slug} preview={true} />;
+    return <Monolithic content={content} slug={slug} preview={preview} />;
   }
 
   // Mobile-canvas switch: free-position element canvas.
