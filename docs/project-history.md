@@ -9,7 +9,7 @@ For architecture overview, see [README.md](./README.md).
 
 ### What changed
 
-Menambahkan template monolithic baru **Bali Modern** (`id: undangan-bali-modern`) ke Lumina, meniru layout & font undangan ceritabahagiaku.com/wardana-moni (copy lokal `~/Downloads/Telegram Desktop/ceritabahagiaku-wardana-moni/`).
+Menambahkan template monolithic baru **Bali Modern** (`id: undangan-bali-modern`) ke Lumina, dengan layout split-screen Bali modern dan font Parisienne + Roboto.
 
 ### Fitur template
 

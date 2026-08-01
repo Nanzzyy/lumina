@@ -13,9 +13,9 @@ import { useAutoplayMusic } from './_music';
 
 /**
  * "Bali Modern" — split-screen Bali wedding invitation.
- * Mirrors the ceritabahagiaku.com/wardana-moni layout: a fixed background
- * prewed video on the right 40vw + a static cover panel on the left 60vw
- * (desktop), single column over full-bleed video on mobile. Parisienne +
+ * Split layout: fixed prewed video on the right 40vw + a static cover panel
+ * on the left 60vw (desktop), single column over full-bleed video on mobile.
+ * Parisienne +
  * Montserrat + Roboto typography. Signature sections: "Om Swastyastu" couple,
  * Save The Date countdown, venue card, love story slider, "Our Moment" gallery
  * + lightbox, gift cards, RSVP, wedding wish, fullscreen footer and a fixed
@@ -29,18 +29,19 @@ import { useAutoplayMusic } from './_music';
 const A = '/bali-modern';
 const DEFAULTS = {
   couple: {
-    p1: { nick: 'Wardana', full: 'I Kadek Wardana', father: 'Bapak I Ketut Sadia', mother: 'Ibu Ni Made Murniati', ig: 'wardana.87', desc: 'Anak Kedua dari pasangan yang penuh cinta, tumbuh di antara sawah dan senyum keluarga.' },
-    p2: { nick: 'Moni', full: 'Ni Made Moni Melia Santi, S.Kep', father: 'Bapak Drg. I Wayan Nik Arsana, S.KG', mother: 'Ibu Ni Nyoman Kariani', ig: 'moniimeliaa', desc: 'Anak Kedua dari keluarga yang hangat, dengan mimpi besar dan hati yang tulus.' },
+    p1: { nick: 'Wardana', full: 'I Kadek Wardana', father: 'Bapak I Ketut Sadia', mother: 'Ibu Ni Made Murniati', ig: 'wardana.87', childOrder: 'Anak Kedua', desc: 'Tumbuh di antara sawah dan senyum keluarga.' },
+    p2: { nick: 'Moni', full: 'Ni Made Moni Melia Santi, S.Kep', father: 'Bapak Drg. I Wayan Nik Arsana, S.KG', mother: 'Ibu Ni Nyoman Kariani', ig: 'moniimeliaa', childOrder: 'Anak Kedua', desc: 'Tumbuh dari keluarga yang hangat, dengan mimpi besar dan hati yang tulus.' },
   },
   date: '2026-06-03T13:00:00',
   quote: { text: 'Wahai pasangan suami-istri, bersatulah dalam cinta, dan semoga keturunanmu penuh kebahagiaan.', source: 'Rg Veda : X.85.42' },
   events: [
     { title: 'Resepsi', time: '13:00 WITA - Selesai', venue: 'Jabon Homestay', address: 'Gg. Anila no 1, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571', mapsUrl: 'https://maps.google.com', note: 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir.' },
   ],
+  heroSlides: [`${A}/ABP_2608.jpg`, `${A}/ABZ_8666.jpg`, `${A}/ABP_2239.jpg`, `${A}/ABP_2124.jpg`],
   stories: [
-    { year: '2018', title: 'Awal Cerita', desc: 'Perjalanan kami dimulai dengan pertemuan sederhana yang akhirnya mengikat dua hati.' },
-    { year: '2022', title: 'Delapan Tahun Bersama', desc: 'Setiap musim yang kami lalui bersama menguatkan janji yang tumbuh pelan namun pasti.' },
-    { year: '2026', title: 'Menuju Jenjang Pernikahan', desc: 'Dengan restu keluarga, kami melangkah menuju ikatan suci Manusa Yadnya Pawiwahan.' },
+    { year: '2018', title: 'Awal Cerita', desc: 'Perjalanan kami dimulai dengan pertemuan sederhana yang akhirnya mengikat dua hati.', image: `${A}/ABP_2095.jpg` },
+    { year: '2022', title: 'Delapan Tahun Bersama', desc: 'Setiap musim yang kami lalui bersama menguatkan janji yang tumbuh pelan namun pasti.', image: `${A}/ABP_2277.jpg` },
+    { year: '2026', title: 'Menuju Jenjang Pernikahan', desc: 'Dengan restu keluarga, kami melangkah menuju ikatan suci Manusa Yadnya Pawiwahan.', image: `${A}/ABP_2288.jpg` },
   ],
   gallery: [
     `${A}/ABP_2608.jpg`, `${A}/ABZ_8666.jpg`, `${A}/ABP_2239.jpg`, `${A}/ABP_2124.jpg`,
@@ -70,6 +71,7 @@ function deriveData(content: InvitationContent) {
     father: c.partner1Father || DEFAULTS.couple.p1.father,
     mother: c.partner1Mother || DEFAULTS.couple.p1.mother,
     ig: c.partner1Instagram || DEFAULTS.couple.p1.ig,
+    childOrder: c.partner1ChildOrder || DEFAULTS.couple.p1.childOrder,
     desc: c.partner1Desc || DEFAULTS.couple.p1.desc,
   };
   const p2 = {
@@ -78,6 +80,7 @@ function deriveData(content: InvitationContent) {
     father: c.partner2Father || DEFAULTS.couple.p2.father,
     mother: c.partner2Mother || DEFAULTS.couple.p2.mother,
     ig: c.partner2Instagram || DEFAULTS.couple.p2.ig,
+    childOrder: c.partner2ChildOrder || DEFAULTS.couple.p2.childOrder,
     desc: c.partner2Desc || DEFAULTS.couple.p2.desc,
   };
   const isoDate = content.event?.date || DEFAULTS.date;
@@ -85,7 +88,11 @@ function deriveData(content: InvitationContent) {
   const events = (content.schedule?.items?.length
     ? content.schedule.items.map((it) => ({ title: it.title || '', time: it.time || '', venue: it.venue || '', address: it.address || '', mapsUrl: it.mapsUrl || 'https://maps.google.com', note: it.description || '' }))
     : DEFAULTS.events).filter((e) => e.title);
-  const stories = content.stories?.length ? content.stories : DEFAULTS.stories;
+  const heroSlideOverrides = content.media?.heroSlides?.filter(Boolean) || [];
+  const heroSlides = heroSlideOverrides.length ? heroSlideOverrides : DEFAULTS.heroSlides;
+  const stories = content.stories?.length
+    ? content.stories.map((s, i) => ({ ...s, image: s.image || DEFAULTS.stories[i % DEFAULTS.stories.length]?.image }))
+    : DEFAULTS.stories;
   const gallery = content.gallery?.images?.length ? content.gallery.images : DEFAULTS.gallery;
   const gifts = (content.gift?.items?.length
     ? content.gift.items.map((g) => ({ bank: g.bank || g.name || '', number: g.number || '', owner: g.owner || g.note || '' }))
@@ -96,7 +103,7 @@ function deriveData(content: InvitationContent) {
   const footerMedia = media.footerImage;
   const bgVideo = media.video;
   const youtubeIds = [content.video?.youtubeId, content.video?.title].filter((v): v is string => !!v && /^[a-zA-Z0-9_-]{6,}$/.test(v));
-  return { p1, p2, isoDate, displayDate, events, stories, gallery, gifts, quote, audio, media, footerMedia, bgVideo, youtubeIds };
+  return { p1, p2, isoDate, displayDate, events, heroSlides, stories, gallery, gifts, quote, audio, media, footerMedia, bgVideo, youtubeIds };
 }
 
 function injectStyles() {
@@ -156,7 +163,7 @@ const extractYoutubeId = (url: string) => {
 
 export function UndanganPernikahanBaliModern({ content, slug, preview }: MonolithicTemplateProps) {
   const data = deriveData(content);
-  const { p1, p2, isoDate, displayDate, events, stories, gallery, gifts, quote, audio, media, footerMedia, bgVideo, youtubeIds } = data;
+  const { p1, p2, isoDate, displayDate, events, heroSlides, stories, gallery, gifts, quote, audio, media, footerMedia, bgVideo, youtubeIds } = data;
 
   const [inIframe] = useState(() => typeof window !== 'undefined' && window.self !== window.top);
   const [isOpen, setIsOpen] = useState(false);
@@ -215,13 +222,13 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
 
   // Hero + gallery auto-advance (replaces swiper autoplay)
   useEffect(() => {
-    if (!isOpen || gallery.length < 2) return;
+    if (!isOpen || (heroSlides.length < 2 && gallery.length < 2)) return;
     const id = setInterval(() => {
-      setHeroIdx((i) => (i + 1) % Math.min(4, gallery.length));
-      setGalleryIdx((i) => (i + 1) % gallery.length);
+      if (heroSlides.length > 1) setHeroIdx((i) => (i + 1) % heroSlides.length);
+      if (gallery.length > 1) setGalleryIdx((i) => (i + 1) % gallery.length);
     }, 4000);
     return () => clearInterval(id);
-  }, [isOpen, gallery.length]);
+  }, [isOpen, heroSlides.length, gallery.length]);
 
   useEffect(() => {
     if (!isOpen || stories.length < 2) return;
@@ -229,8 +236,8 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
     return () => clearInterval(id);
   }, [isOpen, stories.length]);
 
-  const heroSlides = gallery.slice(0, 4);
-  // Group gallery into blocks of 4 (3 squares + 1 banner) — matches reference 6-col grid.
+  // Group gallery into blocks of 4 (3 squares + 1 banner).
+  // Hero and love-story slides are separate fields, not reused from gallery.
   const galleryGroups: string[][] = [];
   for (let i = 0; i < gallery.length; i += 4) galleryGroups.push(gallery.slice(i, i + 4));
   const open = () => { setIsOpen(true); setIsPlaying(true); audioRef.current?.play().catch(() => {}); };
@@ -326,7 +333,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
             <p data-bm-reveal="down" className="font-bm-montserrat text-[11px] md:text-xs uppercase tracking-[6px] text-white/80 font-light">The Wedding of</p>
             <h1 data-bm-reveal="down" style={{ transitionDelay: '200ms' }} className="mt-5 font-bm-parisienne text-5xl md:text-6xl text-white leading-none">{p1.nick} <span className="text-3xl text-white/60 italic">&amp;</span> {p2.nick}</h1>
             <p data-bm-reveal="up" style={{ transitionDelay: '400ms' }} className="mt-5 font-bm-roboto text-xs md:text-sm uppercase tracking-[6px] text-white/70 font-light">{displayDate}</p>
-            {heroSlides.length > 1 && (
+            {heroSlides.length > 0 && (
               <div data-bm-reveal="zoom-out-up" style={{ transitionDelay: '500ms' }} className="mt-10 relative">
                 <div className="relative h-[300px] md:h-[500px] overflow-hidden rounded-tl-3xl rounded-br-3xl shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
                   {heroSlides.map((src, i) => (
@@ -363,7 +370,8 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
                   </div>
                   <span className="font-bm-montserrat text-[11px] md:text-xs uppercase tracking-[6px] text-white/50 font-medium">{role}</span>
                   <h3 className="font-bm-parisienne text-4xl md:text-5xl xl:text-6xl text-white">{d.full}</h3>
-                  <p className="font-bm-roboto text-sm md:text-base text-white/65 font-light">Anak Kedua dari<br /><span className="text-white/90">{d.father}</span> &amp; <span className="text-white/90">{d.mother}</span></p>
+                  <p className="font-bm-roboto text-sm md:text-base text-white/65 font-light">{d.childOrder} dari<br /><span className="text-white/90">{d.father}</span> &amp; <span className="text-white/90">{d.mother}</span></p>
+                  {d.desc && <p className="font-bm-roboto text-xs md:text-sm text-white/55 font-light max-w-md leading-relaxed">{d.desc}</p>}
                   {d.ig && <a href={`https://instagram.com/${d.ig.replace('@', '')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-bm-montserrat text-xs uppercase tracking-widest text-white/70 hover:text-white transition-colors"><AtSign className="w-4 h-4" />{d.ig.replace('@', '')}</a>}
                 </div>
               ))}
@@ -421,9 +429,11 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
               <h2 data-bm-reveal="up" style={{ transitionDelay: '150ms' }} className="mt-3 font-bm-parisienne text-4xl md:text-5xl text-white">{p1.nick} &amp; {p2.nick}</h2>
               <div data-bm-reveal="zoom-out-up" style={{ transitionDelay: '250ms' }} className="mt-10 relative">
                 <div className="relative h-[360px] md:h-[440px] overflow-hidden rounded-tl-3xl rounded-br-3xl shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
-                  {gallery.length > 0 && stories.map((s, si) => (
+                  {stories.map((s, si) => (
                     <div key={si} className={`bm-crossfade ${si === storyIdx ? 'bm-crossfade-active' : 'bm-crossfade-inactive'}`}>
-                      <img src={gallery[si % gallery.length]} alt={s.title} className="w-full h-full object-cover bg-black lg:object-cover" />
+                      {s.image && isVideo(s.image)
+                        ? <video src={s.image} muted loop playsInline autoPlay className="w-full h-full object-cover bg-black lg:object-cover" />
+                        : <img src={s.image || media.cover} alt={s.title} className="w-full h-full object-cover bg-black lg:object-cover" />}
                     </div>
                   ))}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/30"></div>
@@ -568,7 +578,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
               <h4 className="mt-2 font-bm-parisienne text-3xl md:text-4xl text-white">{p1.nick} &amp; {p2.nick}</h4>
             </div>
             <div className="flex flex-col items-center pt-6">
-              <img src={`${A}/footer-logo.png`} alt="Lumina" className="w-1/2 max-w-[180px] pb-2 object-contain" />
+              <p className="pb-2 font-bm-montserrat text-[11px] uppercase tracking-[5px] text-white/60">Lumina</p>
               <p className="font-bm-roboto pb-2 text-xs text-center text-white/70">© {new Date().getFullYear()} <span className="font-semibold">Lumina</span>. All rights reserved.</p>
               <div className="flex flex-row gap-3">
                 <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram" className="text-white/70 hover:text-white transition-colors duration-300">

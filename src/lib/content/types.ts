@@ -28,6 +28,9 @@ export interface CoupleContent {
   /** Short bio / description per partner (used by richer templates). */
   partner1Desc?: string;
   partner2Desc?: string;
+  /** Child-order label per partner, e.g. "Anak Kedua". */
+  partner1ChildOrder?: string;
+  partner2ChildOrder?: string;
   /** Partner list for multi-celebrant templates (wedding groups, ceremonies). */
   partners?: Partner[];
 }
@@ -70,6 +73,8 @@ export interface StoryMoment {
   year: string;
   title: string;
   desc: string;
+  /** Image/video used as this love-story slide background. */
+  image?: string;
 }
 
 export interface ScheduleContent {
@@ -179,6 +184,8 @@ export interface MediaContent {
   partner2Photo?: string;
   /** Background video (Bali Modern split-screen prewed video). */
   video?: string;
+  /** Hero carousel images/videos, ordered as slide 1, 2, etc. */
+  heroSlides?: string[];
   /** Footer background image. */
   footerImage?: string;
 }

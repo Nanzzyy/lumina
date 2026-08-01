@@ -62,8 +62,10 @@ function CoupleEditor({ content, onChange, isSolo }: { content: InvitationConten
       </div>
       <Field label="Partner 1 Father"><Input value={content.couple.partner1Father || ''} onChange={(v) => update('partner1Father', v)} placeholder="Bpk. ..." /></Field>
       <Field label="Partner 1 Mother"><Input value={content.couple.partner1Mother || ''} onChange={(v) => update('partner1Mother', v)} placeholder="Ibu ..." /></Field>
+      <Field label="Anak keberapa Mempelai 1"><Input value={content.couple.partner1ChildOrder || ''} onChange={(v) => update('partner1ChildOrder', v)} placeholder="Anak Kedua" /></Field>
       {!isSolo && <><Field label="Partner 2 Father"><Input value={content.couple.partner2Father || ''} onChange={(v) => update('partner2Father', v)} placeholder="Bpk. ..." /></Field></>}
       {!isSolo && <><Field label="Partner 2 Mother"><Input value={content.couple.partner2Mother || ''} onChange={(v) => update('partner2Mother', v)} placeholder="Ibu ..." /></Field></>}
+      {!isSolo && <><Field label="Anak keberapa Mempelai 2"><Input value={content.couple.partner2ChildOrder || ''} onChange={(v) => update('partner2ChildOrder', v)} placeholder="Anak Kedua" /></Field></>}
       <Field label="Partner 1 Instagram"><Input value={content.couple.partner1Instagram || ''} onChange={(v) => update('partner1Instagram', v)} placeholder="@handle" /></Field>
       {!isSolo && <><Field label="Partner 2 Instagram"><Input value={content.couple.partner2Instagram || ''} onChange={(v) => update('partner2Instagram', v)} placeholder="@handle" /></Field></>}
       <Field label="Partner 1 Bio" fullWidth><Input value={content.couple.partner1Desc || ''} onChange={(v) => update('partner1Desc', v)} placeholder="Short bio..." /></Field>
@@ -198,11 +200,19 @@ function MediaEditor({ content, onChange }: { content: InvitationContent; onChan
   const m = content.media || {};
   const set = (k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo' | 'video' | 'footerImage', v: string) =>
     onChange({ ...content, media: { ...m, [k]: v } });
+  const heroSlides = m.heroSlides || [];
+  const setHeroSlides = (heroSlides: string[]) => onChange({ ...content, media: { ...m, heroSlides } });
+  const addHeroSlide = () => setHeroSlides([...heroSlides, '']);
+  const updateHeroSlide = (i: number, v: string) => {
+    const next = [...heroSlides]; next[i] = v;
+    setHeroSlides(next);
+  };
+  const removeHeroSlide = (i: number) => setHeroSlides(heroSlides.filter((_, idx) => idx !== i));
   // Label menunjukkan section tujuan supaya user tidak bingung foto/video masuk di mana.
   const fields: { k: 'cover' | 'hero' | 'partner1Photo' | 'partner2Photo' | 'video' | 'footerImage'; label: string; hint: string }[] = [
     { k: 'cover', label: 'Foto Cover', hint: 'Gate "Buka Undangan" + panel kiri (desktop) + poster video' },
     { k: 'video', label: 'Video Background', hint: 'Video prewed looping di kolom kanan & mobile (bg undangan)' },
-    { k: 'hero', label: 'Hero Background', hint: 'Background bagian hero (jika tak diisi, pakai Cover)' },
+    { k: 'hero', label: 'Hero Fallback', hint: 'Dipakai kalau Hero Slide kosong' },
     { k: 'partner1Photo', label: 'Foto Mempelai 1', hint: 'Foto profil Wardana' },
     { k: 'partner2Photo', label: 'Foto Mempelai 2', hint: 'Foto profil Moni' },
     { k: 'footerImage', label: 'Foto Footer', hint: 'Background footer bagian bawah (doa & copyright)' },
@@ -229,6 +239,18 @@ function MediaEditor({ content, onChange }: { content: InvitationContent; onChan
           </div>
         </div>
       ))}
+
+      <div className="pt-3 mt-2 border-t border-zinc-200 space-y-2">
+        <p className="text-xs text-zinc-400">Hero Slides — slide 1, 2, dst. Khusus hero, tidak mengambil dari Gallery.</p>
+        {heroSlides.map((src, i) => (
+          <div key={i} className="flex gap-2 items-center">
+            <span className="text-xs text-zinc-400 w-14">Slide {i + 1}</span>
+            <Input value={src} onChange={(v) => updateHeroSlide(i, v)} placeholder="Image / video URL (.mp4/.webm)" />
+            <button onClick={() => removeHeroSlide(i)} className="text-zinc-400 hover:text-red-500"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+          </div>
+        ))}
+        <button onClick={addHeroSlide} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)]">+ Tambah hero slide</button>
+      </div>
 
       <div className="pt-3 mt-2 border-t border-zinc-200">
         <p className="text-xs text-zinc-400 mb-2">Lagu (background music)</p>
@@ -271,7 +293,7 @@ function VideoEditor({ content, onChange }: { content: InvitationContent; onChan
 
 function StoriesEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
   const stories = content.stories || [];
-  const update = (i: number, k: 'year' | 'title' | 'desc', v: string) => {
+  const update = (i: number, k: 'year' | 'title' | 'desc' | 'image', v: string) => {
     const next = stories.map((s, idx) => (idx === i ? { ...s, [k]: v } : s));
     onChange({ ...content, stories: next });
   };
@@ -291,6 +313,7 @@ function StoriesEditor({ content, onChange }: { content: InvitationContent; onCh
             <div><label className="block text-xs text-zinc-500 mb-1">Year</label><Input value={s.year} onChange={(v) => update(i, 'year', v)} placeholder="2021" /></div>
             <div className="col-span-2"><label className="block text-xs text-zinc-500 mb-1">Title</label><Input value={s.title} onChange={(v) => update(i, 'title', v)} placeholder="Pertemuan Pertama" /></div>
           </div>
+          <div><label className="block text-xs text-zinc-500 mb-1">Love Story Slide {i + 1} (Image / Video URL)</label><Input value={s.image || ''} onChange={(v) => update(i, 'image', v)} placeholder="https://... (gambar / video)" /></div>
           <div><label className="block text-xs text-zinc-500 mb-1">Description</label><Input value={s.desc} onChange={(v) => update(i, 'desc', v)} multiline rows={2} placeholder="Cerita singkat..." /></div>
         </div>
       ))}
