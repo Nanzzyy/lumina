@@ -13,13 +13,16 @@ export const STATUS_LABEL: Record<string, string> = {
 };
 
 export function timeAgo(iso: string): string {
-  const then = new Date(iso).getTime();
+  const normalized = /Z|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso.replace(' ', 'T')}Z`;
+  const then = new Date(normalized).getTime();
   if (isNaN(then)) return '';
-  const diff = Date.now() - then;
+  const diff = Math.max(0, Date.now() - then);
+  const min = Math.floor(diff / 60_000);
+  if (min < 1) return 'Now';
+  if (min < 60) return `${min}m lalu`;
   const hr = Math.floor(diff / 3_600_000);
-  if (hr < 1) return 'Baru saja';
-  if (hr < 24) return `${hr} jam yang lalu`;
-  return `${Math.floor(hr / 24)} hari yang lalu`;
+  if (hr < 24) return `${hr}h lalu`;
+  return `${Math.floor(hr / 24)}d lalu`;
 }
 
 export interface WishRow {
@@ -91,7 +94,7 @@ export function useRsvpWishes(slug?: string) {
       });
       if (!res.ok) return;
       const created: RsvpApiRow = await res.json();
-      setWishes((w) => [{ ...toWish(created), time: 'Baru saja' }, ...w]);
+      setWishes((w) => [{ ...toWish(created), time: 'Now' }, ...w]);
       setIsSubmitted(true);
       setTimeout(() => {
         setIsSubmitted(false);

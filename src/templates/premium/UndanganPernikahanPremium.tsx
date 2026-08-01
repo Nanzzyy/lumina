@@ -201,14 +201,16 @@ interface RsvpRow {
 }
 
 function timeAgo(iso: string): string {
-  const then = new Date(iso).getTime();
+  const normalized = /Z|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso.replace(' ', 'T')}Z`;
+  const then = new Date(normalized).getTime();
   if (isNaN(then)) return '';
-  const diff = Date.now() - then;
+  const diff = Math.max(0, Date.now() - then);
+  const min = Math.floor(diff / 60_000);
+  if (min < 1) return 'Now';
+  if (min < 60) return `${min}m lalu`;
   const hr = Math.floor(diff / 3_600_000);
-  if (hr < 1) return 'Baru saja';
-  if (hr < 24) return `${hr} jam yang lalu`;
-  const day = Math.floor(hr / 24);
-  return `${day} hari yang lalu`;
+  if (hr < 24) return `${hr}h lalu`;
+  return `${Math.floor(hr / 24)}d lalu`;
 }
 
 export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateProps) {
@@ -307,7 +309,7 @@ export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateP
       if (!res.ok) return;
       const created = await res.json();
       setWishes((w) => [
-        { id: created.id, name: created.name, attendance: STATUS_LABEL[created.status] ?? 'Hadir', guests: String(created.guests ?? 1), message: created.message || '', time: 'Baru saja' },
+        { id: created.id, name: created.name, attendance: STATUS_LABEL[created.status] ?? 'Hadir', guests: String(created.guests ?? 1), message: created.message || '', time: 'Now' },
         ...w,
       ]);
       setIsSubmitted(true);
