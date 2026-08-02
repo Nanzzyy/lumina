@@ -74,9 +74,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
     <>
       <div className="px-5 h-14 flex items-center border-b border-zinc-100">
         <button onClick={() => navigate('/studio')} className="flex items-center gap-2 text-sm font-medium tracking-tight">
-          <span className="w-5 h-5 rounded-md bg-[var(--colors-primary)] flex items-center justify-center">
-            <span className="w-1.5 h-1.5 rounded-full bg-white" />
-          </span>
+          <img src="/icon.png" alt="" className="h-6 w-6 rounded-md" />
           <span className="text-zinc-900">Lumina</span>
           <span className="text-zinc-400">Studio</span>
         </button>
@@ -137,7 +135,7 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
           </svg>
         </button>
         <button onClick={() => router.push('/studio')} className="flex items-center gap-1.5 text-sm font-medium tracking-tight">
-          <span className="w-4 h-4 rounded bg-[var(--colors-primary)]" />
+          <img src="/icon.png" alt="" className="h-5 w-5 rounded" />
           <span className="text-zinc-900">Lumina</span>
           <span className="text-zinc-400">Studio</span>
         </button>

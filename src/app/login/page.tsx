@@ -34,7 +34,10 @@ function LoginForm() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
       <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <h1 className="font-[var(--typography-font-heading)] text-2xl text-zinc-800">Lumina Studio</h1>
+        <div className="flex items-center gap-3">
+          <img src="/icon.png" alt="" className="h-10 w-10 rounded-xl" />
+          <h1 className="font-[var(--typography-font-heading)] text-2xl text-zinc-800">Lumina Studio</h1>
+        </div>
         <p className="mt-2 text-sm text-zinc-500">Masukkan password studio untuk melanjutkan.</p>
         <form onSubmit={handleLogin} className="mt-6 space-y-4">
           <div>

@@ -30,9 +30,12 @@ export function Footer(props: SectionComponentProps) {
         </p>
 
         {showCredit && (
-          <p className={cn('text-xs mt-8', isNoir ? 'text-[var(--colors-text-muted)]' : 'text-[var(--colors-text-muted)]')}>
-            Made with love &middot; Lumina Invitations
-          </p>
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <img src="/icon.png" alt="" className="h-6 w-6 rounded-md opacity-80" />
+            <p className={cn('text-xs', isNoir ? 'text-[var(--colors-text-muted)]' : 'text-[var(--colors-text-muted)]')}>
+              Made with love &middot; Lumina Invitations
+            </p>
+          </div>
         )}
       </div>
     </footer>

@@ -578,7 +578,10 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
               <h4 className="mt-2 font-bm-parisienne text-3xl md:text-4xl text-white">{p1.nick} &amp; {p2.nick}</h4>
             </div>
             <div className="flex flex-col items-center pt-6">
-              <p className="pb-2 font-bm-montserrat text-[11px] uppercase tracking-[5px] text-white/60">Lumina</p>
+              <div className="flex items-center gap-2 pb-2">
+                <img src="/icon.png" alt="" className="h-8 w-8 rounded-lg opacity-85" />
+                <p className="font-bm-montserrat text-[11px] uppercase tracking-[5px] text-white/60">Lumina</p>
+              </div>
               <p className="font-bm-roboto pb-2 text-xs text-center text-white/70">© {new Date().getFullYear()} <span className="font-semibold">Lumina</span>. All rights reserved.</p>
               <div className="flex flex-row gap-3">
                 <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram" className="text-white/70 hover:text-white transition-colors duration-300">

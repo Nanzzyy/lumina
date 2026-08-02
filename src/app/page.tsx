@@ -23,7 +23,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid gap-12 md:grid-cols-4">
             <div className="md:col-span-2">
-              <p className="font-serif text-2xl font-bold text-white tracking-tight">Lumina</p>
+              <div className="flex items-center gap-3">
+                <img src="/icon.png" alt="" className="h-10 w-10 rounded-xl" />
+                <p className="font-serif text-2xl font-bold text-white tracking-tight">Lumina</p>
+              </div>
               <p className="mt-3 text-sm leading-relaxed max-w-sm text-stone-500">
                 Premium digital invitations — crafted with character.
               </p>
