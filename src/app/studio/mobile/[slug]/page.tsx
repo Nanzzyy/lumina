@@ -394,12 +394,18 @@ function MusicForm({ content, setContent }: { content: InvitationContent; setCon
 function PublishToggle({ slug, invitation }: { slug: string; invitation: { published?: boolean } }) {
   const [pub, setPub] = useState(invitation.published ?? false);
   const [copied, setCopied] = useState(false);
-  const { update } = useStudioStore();
+  const [loading, setLoading] = useState(false);
 
   const toggle = async () => {
-    const next = !pub;
-    setPub(next);
-    await update(slug, { published: next });
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/invitations/${slug}/publish`, { method: pub ? 'DELETE' : 'POST' });
+      if (!res.ok) return;
+      setPub(!pub);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const url = `${window.location.origin}/invitation/${slug}`;
@@ -412,11 +418,11 @@ function PublishToggle({ slug, invitation }: { slug: string; invitation: { publi
           {copied ? '✓ Copied' : <><Globe className="w-3 h-3" /> Copy Link</>}
         </button>
       )}
-      <button onClick={toggle}
-        className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all flex items-center gap-1.5 ${
+      <button onClick={toggle} disabled={loading}
+        className={`px-3 py-1.5 text-[10px] font-medium rounded-md transition-all flex items-center gap-1.5 disabled:opacity-50 ${
           pub ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'
         }`}>
-        {pub ? 'Published' : 'Draft'}
+        {loading ? '...' : pub ? 'Published' : 'Draft'}
       </button>
     </div>
   );

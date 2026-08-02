@@ -556,7 +556,7 @@ export function unpublishInvitation(slug: string) {
   if (!inv) return null;
 
   getDb().prepare(`
-    UPDATE invitations SET published = 0, published_at = NULL, updated_at = datetime('now')
+    UPDATE invitations SET published = 0, published_snapshot = NULL, published_at = NULL, updated_at = datetime('now')
     WHERE slug = ?
   `).run(slug);
 

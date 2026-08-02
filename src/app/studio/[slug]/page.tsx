@@ -1313,12 +1313,14 @@ function PublishToggle({ slug, published, onToggle }: { slug: string; published?
     try {
       if (!pub) {
         // Publish — snapshots the current data
-        await fetch(`/api/invitations/${slug}/publish`, { method: 'POST' });
+        const res = await fetch(`/api/invitations/${slug}/publish`, { method: 'POST' });
+        if (!res.ok) return;
         setPub(true);
         onToggle(true);
       } else {
-        // Unpublish — clears snapshot
-        await fetch(`/api/invitations/${slug}/publish`, { method: 'DELETE' });
+        // Unpublish — clears snapshot and takes down public routes
+        const res = await fetch(`/api/invitations/${slug}/publish`, { method: 'DELETE' });
+        if (!res.ok) return;
         setPub(false);
         onToggle(false);
       }

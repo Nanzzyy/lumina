@@ -64,6 +64,7 @@ export function useStudioStore() {
         title: i.title,
         content: i.content,
         themeOverrides: i.themeOverrides,
+        published: !!i.published,
         createdAt: i.createdAt,
         updatedAt: i.updatedAt,
       })));
