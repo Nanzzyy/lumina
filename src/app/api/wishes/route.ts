@@ -1,36 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { createWish, listWishes } from '@/lib/db';
-import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { badRequest, created, guestRoute, json, requireFound, requireQuery, route } from '@/lib/api/respond';
 
-export async function POST(req: NextRequest) {
-  // Guest-facing → public, but rate-limited per IP to stop spam/flooding.
-  if (rateLimit(`wish:${clientIp(req)}`, 20)) {
-    return NextResponse.json({ error: 'Too many submissions. Please wait a moment.' }, { status: 429 });
-  }
-  try {
-    const { slug, name, message } = await req.json();
-    if (!slug || !name || !message) {
-      return NextResponse.json({ error: 'slug, name, and message required' }, { status: 400 });
-    }
-    const wish = createWish({
-      slug,
-      name: name.trim().slice(0, 100),
-      message: message.trim().slice(0, 1000),
-    });
-    if (!wish) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(wish, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const POST = guestRoute('wish', async (req) => {
+  const { slug, name, message } = await req.json();
+  if (!slug || !name || !message) throw badRequest('slug, name, and message required');
+  const wish = createWish({
+    slug,
+    name: name.trim().slice(0, 100),
+    message: message.trim().slice(0, 1000),
+  });
+  return created(requireFound(wish));
+});
 
-export async function GET(req: NextRequest) {
-  const slug = req.nextUrl.searchParams.get('slug');
-  if (!slug) return NextResponse.json({ error: 'slug required' }, { status: 400 });
-  try {
-    const list = listWishes(slug);
-    return NextResponse.json(list);
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const GET = route(async (req) => json(listWishes(requireQuery(req, 'slug'))));

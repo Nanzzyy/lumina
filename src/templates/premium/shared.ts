@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import type { InvitationContent } from '@/lib/content/types';
+import { getJsonOr, postJson } from '@/lib/utils/api-client';
+import { useCountdown } from '@/hooks';
 
 /** Treat common video extensions as video (else image). */
 export function isVideo(url: string): boolean {
@@ -63,13 +65,10 @@ export function useRsvpWishes(slug?: string) {
   /** Re-fetch the wish list from the server. */
   const refresh = useCallback(() => {
     if (!slug) return;
-    fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`)
-      .then((r) => r.json())
-      .then((list: unknown) => {
-        if (!Array.isArray(list)) return;
-        setWishes((list as RsvpApiRow[]).map(toWish));
-      })
-      .catch(() => {});
+    getJsonOr<RsvpApiRow[]>(`/api/rsvp?slug=${encodeURIComponent(slug)}`, []).then((list) => {
+      if (!Array.isArray(list)) return;
+      setWishes(list.map(toWish));
+    });
   }, [slug]);
 
   useEffect(() => {
@@ -81,19 +80,13 @@ export function useRsvpWishes(slug?: string) {
     if (!rsvpForm.name.trim() || !rsvpForm.message.trim() || !slug) return;
     const status = rsvpForm.attendance === 'Tidak Hadir' ? 'tidak_hadir' : 'hadir';
     try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          slug,
-          name: rsvpForm.name.trim(),
-          status,
-          guests: Number(rsvpForm.guests) || 1,
-          message: rsvpForm.message.trim(),
-        }),
+      const created = await postJson<RsvpApiRow>('/api/rsvp', {
+        slug,
+        name: rsvpForm.name.trim(),
+        status,
+        guests: Number(rsvpForm.guests) || 1,
+        message: rsvpForm.message.trim(),
       });
-      if (!res.ok) return;
-      const created: RsvpApiRow = await res.json();
       setWishes((w) => [{ ...toWish(created), time: 'Now' }, ...w]);
       setIsSubmitted(true);
       setTimeout(() => {
@@ -112,28 +105,8 @@ export { parseFlexibleDate };
 
 
 
-/** Countdown to an event date (ISO / English / Indonesian). */
-export function useCountdown(isoDate: string) {
-  const [t, setT] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  useEffect(() => {
-    const target = parseFlexibleDate(isoDate)?.getTime();
-    if (!target || isNaN(target)) return;
-    const tick = () => {
-      const diff = target - Date.now();
-      if (diff <= 0) return setT({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      setT({
-        days: Math.floor(diff / 86_400_000),
-        hours: Math.floor((diff % 86_400_000) / 3_600_000),
-        minutes: Math.floor((diff % 3_600_000) / 60_000),
-        seconds: Math.floor((diff % 60_000) / 1000),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [isoDate]);
-  return t;
-}
+/** Countdown to an event date (ISO / English / Indonesian). Logic in @/hooks. */
+export { useCountdown };
 
 /** Read `?to=` guest name once. contentGuestName takes priority over URL param. */
 export function useGuestName(contentGuestName?: string, fallback = 'Tamu Undangan') {

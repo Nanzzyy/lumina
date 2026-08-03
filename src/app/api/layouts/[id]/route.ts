@@ -1,45 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getLayout, updateLayout, deleteLayout } from '@/lib/db';
 import { updateLayoutSchema } from '@/lib/validation';
-import { verifySession, unauthorized } from '@/lib/auth';
+import { authedRoute, forbidden, json, ok, parseBody, requireFound, route } from '@/lib/api/respond';
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  try {
-    const layout = getLayout(id);
-    if (!layout) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(layout);
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+type Params = { id: string };
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { id } = await params;
-  try {
-    const body = await req.json();
-    const parsed = updateLayoutSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 });
-    }
-    const { name, description, config } = parsed.data;
-    const updated = updateLayout(id, { name, description, config });
-    if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(updated);
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const GET = route<Params>(async (_req, { id }) => json(requireFound(getLayout(id))));
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { id } = await params;
-  try {
-    const deleted = deleteLayout(id);
-    if (!deleted) return NextResponse.json({ error: 'Not found or built-in layout cannot be deleted' }, { status: 403 });
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const PUT = authedRoute<Params>(async (req, { id }) => {
+  const { name, description, config } = await parseBody(req, updateLayoutSchema);
+  return json(requireFound(updateLayout(id, { name, description, config })));
+});
+
+export const DELETE = authedRoute<Params>(async (_req, { id }) => {
+  if (!deleteLayout(id)) throw forbidden('Not found or built-in layout cannot be deleted');
+  return ok();
+});

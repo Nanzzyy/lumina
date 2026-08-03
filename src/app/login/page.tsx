@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { HttpError, postJson } from '@/lib/utils/api-client';
 
 function LoginForm() {
   const router = useRouter();
@@ -15,19 +16,10 @@ function LoginForm() {
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Invalid password');
-        return;
-      }
+      await postJson('/api/auth/login', { password });
       router.push(redirect);
-    } catch {
-      setError('Network error. Try again.');
+    } catch (e) {
+      setError(e instanceof HttpError ? e.message : 'Network error. Try again.');
     }
   }
 

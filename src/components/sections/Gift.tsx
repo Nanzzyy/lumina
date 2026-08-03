@@ -1,33 +1,21 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Button, Icon } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
+import { useCopyFeedback } from '@/hooks';
 
 export function Gift(props: SectionComponentProps) {
   const { content, variant } = props;
   const { title = 'Wedding Gift', description, bankName, accountNumber, accountName, enabled, layout } = content.gift;
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback(2000);
+  const copied = copiedKey !== null;
   const isNoir = variant === 'noir';
 
   // If disabled or no data, don't render
   if (enabled === false) return null;
   if (!bankName && !description) return null;
-
-  const handleCopy = async (text: string) => {
-    try { await navigator.clipboard.writeText(text); } catch {
-      const el = document.createElement('textarea');
-      el.value = text;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand('copy');
-      document.body.removeChild(el);
-    }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const giftContent = (
     <motion.div
@@ -78,7 +66,7 @@ export function Gift(props: SectionComponentProps) {
                 )}>
                   {accountNumber}
                 </code>
-                <Button variant="ghost" size="sm" onClick={() => handleCopy(accountNumber)}>
+                <Button variant="ghost" size="sm" onClick={() => copy(accountNumber)}>
                   {copied ? <Icon name="check" size={16} className="text-[var(--colors-success)]" />
                     : <Icon name="copy" size={16} />}
                 </Button>

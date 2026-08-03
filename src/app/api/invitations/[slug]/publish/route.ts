@@ -1,27 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { publishInvitation, unpublishInvitation } from '@/lib/db';
-import { verifySession, unauthorized } from '@/lib/auth';
+import { authedRoute, json, ok, requireFound } from '@/lib/api/respond';
 
-export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { slug } = await params;
-  try {
-    const result = publishInvitation(slug);
-    if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(result);
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+type Params = { slug: string };
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { slug } = await params;
-  try {
-    const result = unpublishInvitation(slug);
-    if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const POST = authedRoute<Params>(async (_req, { slug }) => json(requireFound(publishInvitation(slug))));
+
+export const DELETE = authedRoute<Params>(async (_req, { slug }) => {
+  requireFound(unpublishInvitation(slug));
+  return ok();
+});

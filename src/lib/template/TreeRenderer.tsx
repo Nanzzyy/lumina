@@ -6,6 +6,7 @@ import type { InvitationContent, SectionBackground } from '@/lib/content/types';
 import type { LayoutDefinition } from '@/lib/layout/types';
 import type { LayoutNode } from '@/lib/layout/tree';
 import { normalizeLayout } from '@/lib/layout/migrate';
+import { getJsonOr } from '@/lib/utils/api-client';
 import { resolveNode } from '@/lib/layout/resolve';
 import { SectionRegistry } from './SectionRegistry';
 import { SectionShell } from './SectionShell';
@@ -97,12 +98,9 @@ export function TreeRenderer({ template, layout, content, scopeClass, hideOrname
 
   useEffect(() => {
     let alive = true;
-    fetch('/api/widgets')
-      .then((r) => r.json())
-      .then((list: { id: string; definition: LayoutNode }[]) => {
-        if (alive) setWidgets(new Map(list.map((w) => [w.id, w.definition])));
-      })
-      .catch(() => {});
+    getJsonOr<{ id: string; definition: LayoutNode }[]>('/api/widgets', []).then((list) => {
+      if (alive) setWidgets(new Map(list.map((w) => [w.id, w.definition])));
+    });
     return () => { alive = false; };
   }, []);
 

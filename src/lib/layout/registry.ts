@@ -1,6 +1,12 @@
 import type { LayoutDefinition } from './types';
+import { getJson } from '@/lib/utils/api-client';
 
 const registry = new Map<string, LayoutDefinition>();
+
+/** `/api/layouts` payload: a `LayoutDefinition` with its structure under `config`. */
+interface DBLayoutRow extends Pick<LayoutDefinition, 'id' | 'name' | 'description'> {
+  config: Pick<LayoutDefinition, 'sections' | 'containers' | 'animation' | 'wrapper' | 'engine' | 'nodes'>;
+}
 
 export function registerLayout(layout: LayoutDefinition): void {
   registry.set(layout.id, layout);
@@ -20,8 +26,7 @@ export function clearLayoutRegistry(): void {
 
 export async function syncLayoutsFromDB(): Promise<void> {
   try {
-    const res = await fetch('/api/layouts');
-    const layouts = await res.json();
+    const layouts = await getJson<DBLayoutRow[]>('/api/layouts');
     for (const l of layouts) {
       if (!registry.has(l.id)) {
         registry.set(l.id, {

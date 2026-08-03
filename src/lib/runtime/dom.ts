@@ -9,6 +9,7 @@
  */
 
 import { EventBus } from './core';
+import { postJson } from '@/lib/utils/api-client';
 
 // ─── DOM runtime ────────────────────────────────────────────
 export class DOMRuntime {
@@ -94,12 +95,7 @@ export class DOMRuntime {
       }
 
       try {
-        const res = await fetch(`/api/rsvp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug, ...data }),
-        });
-        if (!res.ok) throw new Error('RSVP failed');
+        await postJson('/api/rsvp', { slug, ...data });
         form.innerHTML = '<p class="text-sm text-green-600">Thank you! Your RSVP has been received.</p>';
       } catch {
         alert('Failed to submit RSVP. Please try again.');

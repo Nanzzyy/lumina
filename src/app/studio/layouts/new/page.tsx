@@ -8,8 +8,22 @@ import { initializeRegistries } from '@/lib/registry';
 import type { SectionConfig } from '@/lib/template/types';
 import type { ContainerConfig } from '@/lib/layout/types';
 import type { LayoutNode } from '@/lib/layout/tree';
+import { getJsonOr, postJson, putJson } from '@/lib/utils/api-client';
 
 initializeRegistries();
+
+/** `/api/layouts/:id` payload consumed when opening the builder in edit mode. */
+interface EditableLayout {
+  name: string;
+  description: string;
+  config: {
+    engine?: string;
+    mode?: 'basic' | 'advanced';
+    nodes?: LayoutNode[];
+    sections?: SectionConfig[];
+    containers?: ContainerConfig[];
+  };
+}
 
 function LayoutBuilderContent() {
   const router = useRouter();
@@ -29,13 +43,12 @@ function LayoutBuilderContent() {
   const [widgets, setWidgets] = useState<{ id: string; name: string; thumbnail?: string; definition?: LayoutNode }[]>([]);
 
   useEffect(() => {
-    fetch('/api/widgets').then((r) => r.json()).then(setWidgets).catch(() => {});
+    getJsonOr<typeof widgets>('/api/widgets', []).then(setWidgets);
   }, []);
 
   useEffect(() => {
     if (editId && editId !== loadedEditId) {
-      fetch(`/api/layouts/${editId}`)
-        .then((r) => r.json())
+      getJsonOr<EditableLayout | null>(`/api/layouts/${editId}`, null)
         .then((layout) => {
           if (layout) {
             setInitialName(layout.name);
@@ -49,8 +62,7 @@ function LayoutBuilderContent() {
             }
             setLoadedEditId(editId);
           }
-        })
-        .catch(() => {});
+        });
     }
   }, [editId, loadedEditId]);
 
@@ -58,8 +70,7 @@ function LayoutBuilderContent() {
     if (saving) return;
     setSaving(true);
     try {
-      const body = { name: data.name || 'Custom Layout', description: data.description, config: { engine: 'tree', nodes: data.nodes, animation: data.animation, mode: data.mode } };
-      await send(editId ? `/api/layouts/${editId}` : '/api/layouts', editId ? 'PUT' : 'POST', body);
+      await saveLayout(editId, { name: data.name || 'Custom Layout', description: data.description, config: { engine: 'tree', nodes: data.nodes, animation: data.animation, mode: data.mode } });
       router.push('/studio/layouts');
     } catch {
       alert('Failed to save layout');
@@ -72,8 +83,7 @@ function LayoutBuilderContent() {
     if (saving) return;
     setSaving(true);
     try {
-      const body = { name: data.name || 'Custom Layout', description: data.description, config: { sections: data.sections, containers: data.containers, animation: data.animation } };
-      await send(editId ? `/api/layouts/${editId}` : '/api/layouts', editId ? 'PUT' : 'POST', body);
+      await saveLayout(editId, { name: data.name || 'Custom Layout', description: data.description, config: { sections: data.sections, containers: data.containers, animation: data.animation } });
       router.push('/studio/layouts');
     } catch {
       alert('Failed to save layout');
@@ -120,18 +130,9 @@ function LayoutBuilderContent() {
   );
 }
 
-async function send(url: string, method: string, body: unknown) {
-  const res = await fetch(url, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Failed to save layout');
-  }
-  return res.json();
-}
+/** Create (POST /api/layouts) or update (PUT /api/layouts/:id) a layout. */
+const saveLayout = (editId: string | null, body: unknown) =>
+  editId ? putJson(`/api/layouts/${editId}`, body) : postJson('/api/layouts', body);
 
 export default function LayoutBuilderPage() {
   return (
