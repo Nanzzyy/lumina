@@ -43,4 +43,6 @@ next-env.d.ts
 
 /src/generated/prisma
 dev.db*
-dev.db*
+
+# database snapshots (scripts/backup.sh) — contain production data
+/.backups/
