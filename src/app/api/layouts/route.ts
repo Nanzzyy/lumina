@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listLayouts, createLayout } from '@/lib/db';
 import { createLayoutSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError } from '@/lib/log';
 
 export async function GET() {
   try {
@@ -15,7 +16,8 @@ export async function GET() {
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     })));
-  } catch {
+  } catch (e) {
+    logError('GET /api/layouts', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -31,7 +33,8 @@ export async function POST(req: NextRequest) {
     const { id, name, description, config, isBuiltin } = parsed.data;
     const result = createLayout({ id, name, description, config, isBuiltin });
     return NextResponse.json(result, { status: 201 });
-  } catch {
+  } catch (e) {
+    logError('POST /api/layouts', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

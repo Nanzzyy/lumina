@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getWidget, updateWidget, deleteWidget } from '@/lib/db';
 import { updateWidgetSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError } from '@/lib/log';
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -19,7 +20,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       createdAt: widget.created_at,
       updatedAt: widget.updated_at,
     });
-  } catch {
+  } catch (e) {
+    logError('GET /api/widgets/[id]', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -36,7 +38,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     const result = updateWidget(id, parsed.data);
     if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(result);
-  } catch {
+  } catch (e) {
+    logError('PUT /api/widgets/[id]', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -48,7 +51,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const ok = deleteWidget(id);
     if (!ok) return NextResponse.json({ error: 'Not found or built-in' }, { status: 404 });
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (e) {
+    logError('DELETE /api/widgets/[id]', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listWidgets, createWidget } from '@/lib/db';
 import { createWidgetSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError } from '@/lib/log';
 
 export async function GET() {
   try {
@@ -17,7 +18,8 @@ export async function GET() {
       createdAt: r.created_at,
       updatedAt: r.updated_at,
     })));
-  } catch {
+  } catch (e) {
+    logError('GET /api/widgets', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -33,7 +35,8 @@ export async function POST(req: NextRequest) {
     const { id, name, description, thumbnail, category, definition } = parsed.data;
     const result = createWidget({ id, name, description, thumbnail, category, definition });
     return NextResponse.json(result, { status: 201 });
-  } catch {
+  } catch (e) {
+    logError('POST /api/widgets', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

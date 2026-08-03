@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { publishInvitation, unpublishInvitation } from '@/lib/db';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError } from '@/lib/log';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   if (!verifySession(req)) return unauthorized();
@@ -9,7 +10,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     const result = publishInvitation(slug);
     if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(result);
-  } catch {
+  } catch (e) {
+    logError(`POST /api/invitations/${slug}/publish`, e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -21,7 +23,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
     const result = unpublishInvitation(slug);
     if (!result) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    logError(`DELETE /api/invitations/${slug}/publish`, e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveDocument, loadDocumentBySlug } from '@/lib/db';
 import { verifySession } from '@/lib/auth';
+import { logError } from '@/lib/log';
 import type { Document } from '@/lib/core/document';
 
 export const dynamic = 'force-dynamic';
@@ -26,7 +27,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   try {
     saveDocument(doc);
     return NextResponse.json({ success: true, slug });
-  } catch {
+  } catch (e) {
+    logError(`POST /api/documents/${slug}`, e);
     return NextResponse.json({ error: 'Save failed' }, { status: 500 });
   }
 }

@@ -22,6 +22,8 @@ export function RSVP(props: SectionComponentProps) {
   const [confirmations, setConfirmations] = useState<RSVPEntry[]>([]);
   const [submittedName, setSubmittedName] = useState('');
   const [formData, setFormData] = useState({ name: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const isNoir = variant === 'noir';
 
   useEffect(() => {
@@ -31,25 +33,34 @@ export function RSVP(props: SectionComponentProps) {
       .then(data => {
         if (Array.isArray(data)) setConfirmations(data);
       })
-      .catch(() => {});
+      .catch(err => console.error('[RSVP] failed to load confirmations', err));
   }, [slug]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !slug) return;
+    if (!formData.name.trim() || !slug || submitting) return;
+    setSubmitting(true);
+    setError('');
     try {
       const res = await fetch('/api/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug, name: formData.name.trim(), message: formData.message.trim(), status: 'hadir', guests: 1 }),
       });
-      if (res.ok) {
-        const newEntry = await res.json();
-        setConfirmations(p => [newEntry, ...p]);
-        setSubmittedName(formData.name.trim());
-        setSubmitted(true);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Request failed (${res.status})`);
       }
-    } catch {}
+      const newEntry = await res.json();
+      setConfirmations(p => [newEntry, ...p]);
+      setSubmittedName(formData.name.trim());
+      setSubmitted(true);
+    } catch (err) {
+      console.error('[RSVP] submit failed', err);
+      setError('Gagal mengirim konfirmasi. Silakan coba lagi.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // After submit: show thank you + full confirmation list
@@ -165,7 +176,12 @@ export function RSVP(props: SectionComponentProps) {
             placeholder="Tulis pesan untuk kami..."
           />
         </div>
-        <Button variant={isNoir ? 'outline' : 'primary'} fullWidth size="lg">Konfirmasi Kehadiran</Button>
+        {error && (
+          <p role="alert" className="text-sm text-center text-[var(--colors-danger,#dc2626)]">{error}</p>
+        )}
+        <Button variant={isNoir ? 'outline' : 'primary'} fullWidth size="lg" disabled={submitting}>
+          {submitting ? 'Mengirim...' : 'Konfirmasi Kehadiran'}
+        </Button>
       </motion.form>
 
       {/* Live confirmation list (shown even before submit if others confirmed) */}

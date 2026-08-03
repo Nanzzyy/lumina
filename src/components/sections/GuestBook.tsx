@@ -18,6 +18,8 @@ export function GuestBook(props: SectionComponentProps) {
   const { title = 'Guest Book', description, enabled, showMessages } = content.guestbook;
   const [entries, setEntries] = useState<WishEntry[]>([]);
   const [formData, setFormData] = useState({ name: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const isNoir = variant === 'noir';
 
   useEffect(() => {
@@ -27,26 +29,35 @@ export function GuestBook(props: SectionComponentProps) {
       .then(data => {
         if (Array.isArray(data)) setEntries(data);
       })
-      .catch(() => {});
+      .catch(err => console.error('[GuestBook] failed to load wishes', err));
   }, [slug]);
 
   if (!enabled) return null;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.message.trim() || !slug) return;
+    if (!formData.name.trim() || !formData.message.trim() || !slug || submitting) return;
+    setSubmitting(true);
+    setError('');
     try {
       const res = await fetch('/api/wishes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug, name: formData.name.trim(), message: formData.message.trim() }),
       });
-      if (res.ok) {
-        const newEntry = await res.json();
-        setEntries(p => [newEntry, ...p]);
-        setFormData({ name: '', message: '' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Request failed (${res.status})`);
       }
-    } catch {}
+      const newEntry = await res.json();
+      setEntries(p => [newEntry, ...p]);
+      setFormData({ name: '', message: '' });
+    } catch (err) {
+      console.error('[GuestBook] submit failed', err);
+      setError('Gagal mengirim ucapan. Silakan coba lagi.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -68,7 +79,12 @@ export function GuestBook(props: SectionComponentProps) {
           onChange={(e) => setFormData(p => ({ ...p, message: e.target.value }))}
           rows={3} className="w-full px-4 py-3 rounded-lg border border-[var(--colors-border)] text-base sm:text-sm text-[var(--colors-text)] bg-[var(--colors-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--colors-primary)] focus:border-transparent resize-none"
           placeholder="Tulis ucapan dan doa untuk kami..." />
-        <Button variant={isNoir ? 'outline' : 'primary'} fullWidth>Kirim Ucapan</Button>
+        {error && (
+          <p role="alert" className="text-sm text-center text-[var(--colors-danger,#dc2626)]">{error}</p>
+        )}
+        <Button variant={isNoir ? 'outline' : 'primary'} fullWidth disabled={submitting}>
+          {submitting ? 'Mengirim...' : 'Kirim Ucapan'}
+        </Button>
       </motion.form>
 
       {showMessages !== false && entries.length > 0 && (

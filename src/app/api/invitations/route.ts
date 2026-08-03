@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listInvitations, createInvitation } from '@/lib/db';
 import { createInvitationSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError, toError } from '@/lib/log';
 
 export async function GET(req: NextRequest) {
   if (!verifySession(req)) return unauthorized();
@@ -20,6 +21,7 @@ export async function GET(req: NextRequest) {
       updatedAt: r.updated_at,
     })));
   } catch (e) {
+    logError('GET /api/invitations', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -35,10 +37,11 @@ export async function POST(req: NextRequest) {
     const { slug, title, templateId, layoutId, content, themeOverrides, published } = parsed.data;
     const result = createInvitation({ slug, title: title || slug, templateId, layoutId, content, themeOverrides, published });
     return NextResponse.json(result, { status: 201 });
-  } catch (e: any) {
-    if (e?.message?.includes('UNIQUE')) {
+  } catch (e) {
+    if (toError(e).message.includes('UNIQUE')) {
       return NextResponse.json({ error: 'Slug already exists' }, { status: 409 });
     }
+    logError('POST /api/invitations', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

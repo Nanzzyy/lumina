@@ -5,6 +5,7 @@
 import { SectionRegistry, registerTemplate } from '@/lib/template';
 import { registerLayout, syncLayoutsFromDB } from '@/lib/layout';
 import { PluginHost } from '@/lib/plugin/host';
+import { logWarning } from '@/lib/log';
 import { Hero } from '@/components/sections/Hero';
 import { Cover } from '@/components/sections/Cover';
 import { Story } from '@/components/sections/Story';
@@ -111,10 +112,10 @@ export function initializeRegistries() {
   // This keeps the client bundle free of fs-dependent code.
 
   // Sync any custom layouts from DB into memory registry
-  syncLayoutsFromDB().catch(() => {});
+  syncLayoutsFromDB().catch((e) => logWarning('initializeRegistries: syncLayoutsFromDB', e));
 
   // Initialize plugin host with builtin plugins (P7)
-  initBuiltinPlugins().catch(() => {});
+  initBuiltinPlugins().catch((e) => logWarning('initializeRegistries: initBuiltinPlugins', e));
 }
 
 async function initBuiltinPlugins() {
