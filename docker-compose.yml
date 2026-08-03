@@ -7,8 +7,9 @@ services:
       - "3001:3000"
     environment:
       - LUMINA_DB_PATH=/data/lumina.db
-      - LUMINA_JWT_SECRET=${LUMINA_JWT_SECRET:-change-me-in-production}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      # No defaults: compose fails fast rather than booting with known credentials.
+      - LUMINA_JWT_SECRET=${LUMINA_JWT_SECRET:?LUMINA_JWT_SECRET is required}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:?ADMIN_PASSWORD_HASH is required}
       - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL:-https://lumina.prvtech.site}
     volumes:
       - lumina_data:/data
