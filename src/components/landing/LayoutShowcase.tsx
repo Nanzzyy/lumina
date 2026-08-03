@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Reveal } from './Reveal';
+import { getJsonOr } from '@/lib/utils/api-client';
 
 interface LayoutItem {
   id: string;
@@ -18,13 +19,7 @@ export function LayoutShowcase() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/layouts')
-      .then((r) => r.json())
-      .then((data) => {
-        setLayouts(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    getJsonOr<LayoutItem[]>('/api/layouts', []).then(setLayouts).finally(() => setLoading(false));
   }, []);
 
   return (

@@ -10,6 +10,7 @@ import {
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { useAutoplayMusic } from './_music';
+import { useCopyFeedback } from '@/hooks';
 
 /* ─── Motion Tokens ─── */
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
@@ -219,7 +220,7 @@ export function UndanganPernikahanHutan({ content, slug, preview }: MonolithicTe
   const countdown = useCountdown(isoDate);
   const [activeTab, setActiveTab] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const { copiedKey: copiedIdx, copy } = useCopyFeedback(2500);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const reduce = useReducedMotion();
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -229,7 +230,6 @@ export function UndanganPernikahanHutan({ content, slug, preview }: MonolithicTe
 
   const open = () => { setIsOpen(true); setIsPlaying(true); audioRef.current?.play().catch(() => {}); };
   const toggleMusic = () => { if (!audioRef.current) return; if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {}); setIsPlaying(!isPlaying); };
-  const copy = (text: string, idx: number) => { navigator.clipboard?.writeText(text); setCopiedIdx(idx); setTimeout(() => setCopiedIdx(null), 2500); };
   const activeEvt = events[activeTab] || events[0];
 
   /* ── COVER ── */

@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils/cn';
 import { OrnamentCanvas, OrnamentPreview } from '@/components/studio/OrnamentCanvas';
 import { Globe } from 'lucide-react';
 import { IframePreview } from '@/components/studio/IframePreview';
+import { useCopyFeedback } from '@/hooks';
+import { deleteJson, getJsonOr, postJson } from '@/lib/utils/api-client';
 
 type EditorTab = 'content' | 'theme' | 'layout' | 'preview';
 
@@ -494,12 +496,8 @@ function GuestListEditor({ content, onChange, slug }: { content: InvitationConte
   const list = content.guestList || [];
   const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const base = `${origin}/i/${slug}`;
-  const [copied, setCopied] = useState<string | null>(null);
-  const copy = (key: string, text: string) => {
-    navigator.clipboard?.writeText(text);
-    setCopied(key);
-    setTimeout(() => setCopied(null), 2000);
-  };
+  const { copiedKey: copied, copy: copyValue } = useCopyFeedback<string>(2000);
+  const copy = (key: string, text: string) => copyValue(text, key);
 
   const update = (i: number, v: string) => {
     const next = [...list]; next[i] = v;
@@ -762,10 +760,7 @@ function LayoutTab({ invitation, content, layout, onLayoutChange }: {
   const [layouts, setLayouts] = useState<{ id: string; name: string; config: any }[]>([]);
 
   useEffect(() => {
-    fetch('/api/layouts')
-      .then((r) => r.json())
-      .then(setLayouts)
-      .catch(() => {});
+    getJsonOr<{ id: string; name: string; config: any }[]>('/api/layouts', []).then(setLayouts);
   }, []);
 
   return (
@@ -1304,26 +1299,19 @@ export default function StudioEditorPage() {
 /** Publish toggle with snapshot-based publish/unpublish and copy-link button. */
 function PublishToggle({ slug, published, onToggle }: { slug: string; published?: boolean; onToggle: (val: boolean) => void }) {
   const [pub, setPub] = useState(published ?? false);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback(2000);
+  const copied = copiedKey !== null;
   const [loading, setLoading] = useState(false);
 
   const toggle = async () => {
     if (loading) return;
     setLoading(true);
     try {
-      if (!pub) {
-        // Publish — snapshots the current data
-        const res = await fetch(`/api/invitations/${slug}/publish`, { method: 'POST' });
-        if (!res.ok) return;
-        setPub(true);
-        onToggle(true);
-      } else {
-        // Unpublish — clears snapshot and takes down public routes
-        const res = await fetch(`/api/invitations/${slug}/publish`, { method: 'DELETE' });
-        if (!res.ok) return;
-        setPub(false);
-        onToggle(false);
-      }
+      // Publish snapshots the current data; unpublish clears it and takes down public routes.
+      if (!pub) await postJson(`/api/invitations/${slug}/publish`, {});
+      else await deleteJson(`/api/invitations/${slug}/publish`);
+      setPub(!pub);
+      onToggle(!pub);
     } catch {
       // Silently fail; user can retry
     } finally {
@@ -1331,12 +1319,7 @@ function PublishToggle({ slug, published, onToggle }: { slug: string; published?
     }
   };
 
-  const copyLink = () => {
-    const url = `${window.location.origin}/invitation/${slug}`;
-    navigator.clipboard?.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const copyLink = () => copy(`${window.location.origin}/invitation/${slug}`);
 
   return (
     <div className="flex items-center gap-1.5">

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Button } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
+import { getJsonOr, postJson } from '@/lib/utils/api-client';
 
 interface WishEntry {
   id: string;
@@ -22,12 +23,9 @@ export function GuestBook(props: SectionComponentProps) {
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/wishes?slug=${encodeURIComponent(slug)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setEntries(data);
-      })
-      .catch(() => {});
+    getJsonOr<WishEntry[]>(`/api/wishes?slug=${encodeURIComponent(slug)}`, []).then(data => {
+      if (Array.isArray(data)) setEntries(data);
+    });
   }, [slug]);
 
   if (!enabled) return null;
@@ -36,16 +34,13 @@ export function GuestBook(props: SectionComponentProps) {
     e.preventDefault();
     if (!formData.name.trim() || !formData.message.trim() || !slug) return;
     try {
-      const res = await fetch('/api/wishes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, name: formData.name.trim(), message: formData.message.trim() }),
+      const newEntry = await postJson<WishEntry>('/api/wishes', {
+        slug,
+        name: formData.name.trim(),
+        message: formData.message.trim(),
       });
-      if (res.ok) {
-        const newEntry = await res.json();
-        setEntries(p => [newEntry, ...p]);
-        setFormData({ name: '', message: '' });
-      }
+      setEntries(p => [newEntry, ...p]);
+      setFormData({ name: '', message: '' });
     } catch {}
   };
 

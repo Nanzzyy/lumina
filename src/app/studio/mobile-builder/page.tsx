@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Smartphone } from 'lucide-react';
+import { getJsonOr } from '@/lib/utils/api-client';
 
 interface Invitation {
   slug: string;
@@ -19,12 +20,8 @@ export default function MobileBuilderListPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    fetch('/api/invitations')
-      .then((r) => r.json())
-      .then((list: Invitation[]) => {
-        setInvites(list.filter((i) => i.templateId === 'mobile-canvas'));
-      })
-      .catch(() => {})
+    getJsonOr<Invitation[]>('/api/invitations', [])
+      .then((list) => setInvites(list.filter((i) => i.templateId === 'mobile-canvas')))
       .finally(() => setLoaded(true));
   }, []);
 

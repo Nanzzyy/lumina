@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getJsonOr, postJson } from '@/lib/utils/api-client';
 
 interface WidgetItem {
   id: string;
@@ -18,7 +19,7 @@ export default function WidgetsBrowser() {
   const [creating, setCreating] = useState(false);
 
   const refresh = () => {
-    fetch('/api/widgets').then((r) => r.json()).then(setWidgets).catch(() => {}).finally(() => setLoading(false));
+    getJsonOr<WidgetItem[]>('/api/widgets', []).then(setWidgets).finally(() => setLoading(false));
   };
 
   useEffect(() => { refresh(); }, []);
@@ -27,17 +28,12 @@ export default function WidgetsBrowser() {
     if (creating) return;
     setCreating(true);
     try {
-      const res = await fetch('/api/widgets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: 'New Widget',
-          description: 'Composite widget definition',
-          category: 'section',
-          definition: { kind: 'composite', type: 'custom', placement: { x: 0, y: 0, w: 12, h: 5 }, children: [] },
-        }),
+      const w = await postJson<{ id?: string }>('/api/widgets', {
+        name: 'New Widget',
+        description: 'Composite widget definition',
+        category: 'section',
+        definition: { kind: 'composite', type: 'custom', placement: { x: 0, y: 0, w: 12, h: 5 }, children: [] },
       });
-      const w = await res.json();
       if (w?.id) router.push(`/studio/widgets/${w.id}`);
     } catch {
       alert('Failed to create widget');

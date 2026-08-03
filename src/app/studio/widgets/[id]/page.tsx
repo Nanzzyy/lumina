@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { TreeLayoutBuilder } from '@/components/studio/canvas/TreeLayoutBuilder';
 import type { LayoutNode } from '@/lib/layout/tree';
+import { getJsonOr, putJson } from '@/lib/utils/api-client';
 
 export default function WidgetEditorPage() {
   const router = useRouter();
@@ -15,10 +16,8 @@ export default function WidgetEditorPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/widgets/${id}`)
-      .then((r) => r.json())
+    getJsonOr<typeof widget>(`/api/widgets/${id}`, null)
       .then((w) => { if (w?.id) setWidget(w); })
-      .catch(() => {})
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -34,14 +33,10 @@ export default function WidgetEditorPage() {
     if (saving) return;
     setSaving(true);
     try {
-      await fetch(`/api/widgets/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: data.name || widget.name,
-          description: data.description,
-          definition: { ...widget.definition, children: data.nodes },
-        }),
+      await putJson(`/api/widgets/${id}`, {
+        name: data.name || widget.name,
+        description: data.description,
+        definition: { ...widget.definition, children: data.nodes },
       });
       router.push('/studio/widgets');
     } catch {

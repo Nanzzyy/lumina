@@ -1,45 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { getInvitation, updateInvitation, deleteInvitation } from '@/lib/db';
 import { updateInvitationSchema } from '@/lib/validation';
-import { verifySession, unauthorized } from '@/lib/auth';
+import { authedRoute, json, ok, parseBody, requireFound } from '@/lib/api/respond';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { slug } = await params;
-  try {
-    const inv = getInvitation(slug);
-    if (!inv) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(inv);
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+type Params = { slug: string };
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { slug } = await params;
-  try {
-    const body = await req.json();
-    const parsed = updateInvitationSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 });
-    }
-    const { title, templateId, layoutId, content, themeOverrides, published } = parsed.data;
-    const updated = updateInvitation(slug, { title, templateId, layoutId, content, themeOverrides, published });
-    if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json(updated);
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const GET = authedRoute<Params>(async (_req, { slug }) => json(requireFound(getInvitation(slug))));
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
-  if (!verifySession(req)) return unauthorized();
-  const { slug } = await params;
-  try {
-    deleteInvitation(slug);
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+export const PUT = authedRoute<Params>(async (req, { slug }) => {
+  const { title, templateId, layoutId, content, themeOverrides, published } = await parseBody(
+    req,
+    updateInvitationSchema,
+  );
+  return json(
+    requireFound(updateInvitation(slug, { title, templateId, layoutId, content, themeOverrides, published })),
+  );
+});
+
+export const DELETE = authedRoute<Params>(async (_req, { slug }) => {
+  deleteInvitation(slug);
+  return ok();
+});

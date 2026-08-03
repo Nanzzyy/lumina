@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import { getJsonOr } from '@/lib/utils/api-client';
 
 export default function LayoutDetailPage() {
   const params = useParams();
@@ -11,11 +12,7 @@ export default function LayoutDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`/api/layouts/${id}`)
-      .then((r) => r.json())
-      .then(setLayout)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    getJsonOr(`/api/layouts/${id}`, null).then(setLayout).finally(() => setLoading(false));
   }, [id]);
 
   if (loading) return <div className="p-8 text-zinc-500">Loading...</div>;

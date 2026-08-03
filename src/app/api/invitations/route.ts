@@ -1,44 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { InvitationRow } from '@/lib/db';
 import { listInvitations, createInvitation } from '@/lib/db';
 import { createInvitationSchema } from '@/lib/validation';
-import { verifySession, unauthorized } from '@/lib/auth';
+import { authedRoute, conflict, created, json, parseBody } from '@/lib/api/respond';
+import { serializeInvitationRow } from '@/lib/api/serialize';
 
-export async function GET(req: NextRequest) {
-  if (!verifySession(req)) return unauthorized();
+export const GET = authedRoute(async () =>
+  json((listInvitations() as InvitationRow[]).map(serializeInvitationRow)),
+);
+
+export const POST = authedRoute(async (req) => {
+  const { slug, title, templateId, layoutId, content, themeOverrides, published } = await parseBody(
+    req,
+    createInvitationSchema,
+  );
   try {
-    const list = listInvitations();
-    return NextResponse.json(list.map((r: any) => ({
-      id: r.id,
-      slug: r.slug,
-      title: r.title,
-      templateId: r.template_id,
-      layoutId: r.layout_id,
-      content: JSON.parse(r.content),
-      themeOverrides: JSON.parse(r.theme_overrides),
-      published: !!r.published,
-      createdAt: r.created_at,
-      updatedAt: r.updated_at,
-    })));
+    return created(
+      createInvitation({ slug, title: title || slug, templateId, layoutId, content, themeOverrides, published }),
+    );
   } catch (e) {
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    if (e instanceof Error && e.message.includes('UNIQUE')) throw conflict('Slug already exists');
+    throw e;
   }
-}
-
-export async function POST(req: NextRequest) {
-  if (!verifySession(req)) return unauthorized();
-  try {
-    const body = await req.json();
-    const parsed = createInvitationSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: 'Validation failed', details: parsed.error.flatten() }, { status: 400 });
-    }
-    const { slug, title, templateId, layoutId, content, themeOverrides, published } = parsed.data;
-    const result = createInvitation({ slug, title: title || slug, templateId, layoutId, content, themeOverrides, published });
-    return NextResponse.json(result, { status: 201 });
-  } catch (e: any) {
-    if (e?.message?.includes('UNIQUE')) {
-      return NextResponse.json({ error: 'Slug already exists' }, { status: 409 });
-    }
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
-}
+});

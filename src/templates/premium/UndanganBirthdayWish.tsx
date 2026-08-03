@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { MonolithicTemplateProps } from '@/lib/template/types';
 import { Send, Gift, Copy, Check, Camera, Heart, Sparkles, ChevronDown } from 'lucide-react';
 import { isVideo, useRsvpWishes, useGuestName, displayDateFrom, pickMedia } from './shared';
+import { useCopyFeedback } from '@/hooks';
 
 const DEFAULTS = {
   p1: { nick: 'Sahabat', full: 'Sahabat Tersayang', ig: '@sahabat' },
@@ -50,7 +51,7 @@ export function UndanganBirthdayWish({ content, slug }: MonolithicTemplateProps)
 
   const guestName = useGuestName('Tamu Spesial');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { copiedKey: copiedIndex, copy } = useCopyFeedback(3000);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -84,7 +85,6 @@ export function UndanganBirthdayWish({ content, slug }: MonolithicTemplateProps)
     if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {});
     setIsPlaying(!isPlaying);
   };
-  const copy = (text: string, index: number) => { navigator.clipboard?.writeText(text); setCopiedIndex(index); setTimeout(() => setCopiedIndex(null), 3000); };
 
   return (
     <div className="font-wish-sans min-h-screen bg-gradient-to-b from-[#0B0F19] via-[#1E1B4B] to-[#0B0F19] text-white overflow-x-hidden">

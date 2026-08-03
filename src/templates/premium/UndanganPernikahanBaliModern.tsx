@@ -9,7 +9,9 @@ import {
   CalendarPlus, AtSign, Quote,
 } from 'lucide-react';
 import { isVideo, useRsvpWishes, useCountdown, useGuestName, displayDateFrom, pickMedia } from './shared';
+import { postJson } from '@/lib/utils/api-client';
 import { useAutoplayMusic } from './_music';
+import { useCopyFeedback } from '@/hooks';
 
 /**
  * "Bali Modern" — split-screen Bali wedding invitation.
@@ -187,7 +189,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
   const [storyIdx, setStoryIdx] = useState(0);
   const [galleryIdx, setGalleryIdx] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { copiedKey: copiedIndex, copy } = useCopyFeedback(2500);
   const [wishText, setWishText] = useState('');
   const [wishName, setWishName] = useState('');
   const [wishPage, setWishPage] = useState(1);
@@ -246,7 +248,6 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
     if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {});
     setIsPlaying(!isPlaying);
   };
-  const copy = (text: string, index: number) => { navigator.clipboard?.writeText(text); setCopiedIndex(index); setTimeout(() => setCopiedIndex(null), 2500); };
   const activeEvent = events[0];
   const calendarUrl = useMemo(() => {
     const d = new Date(isoDate);
@@ -265,22 +266,16 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
     e.preventDefault();
     if (!slug || !wishName.trim() || !wishText.trim()) return;
     try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          slug,
-          name: wishName.trim(),
-          status: 'hadir',
-          guests: 1,
-          message: wishText.trim(),
-        }),
+      await postJson('/api/rsvp', {
+        slug,
+        name: wishName.trim(),
+        status: 'hadir',
+        guests: 1,
+        message: wishText.trim(),
       });
-      if (res.ok) {
-        setWishText('');
-        setWishName('');
-        refresh();
-      }
+      setWishText('');
+      setWishName('');
+      refresh();
     } catch { /* ignore */ }
   };
 

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
 import { useAutoplayMusic } from './_music';
+import { useCopyFeedback } from '@/hooks';
 
 /* ─── Colors ─── */
 const PEACH = '#D4A574';
@@ -238,7 +239,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
   const countdown = useCountdown(isoDate);
   const [activeTab, setActiveTab] = useState(0);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { copiedKey: copiedIndex, copy } = useCopyFeedback(2500);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useAutoplayMusic(audioRef, setIsPlaying);
@@ -247,7 +248,6 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
 
   const open = () => { setIsOpen(true); setIsPlaying(true); audioRef.current?.play().catch(() => {}); };
   const toggleMusic = () => { if (!audioRef.current) return; if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {}); setIsPlaying(!isPlaying); };
-  const copy = (text: string, idx: number) => { navigator.clipboard?.writeText(text); setCopiedIndex(idx); setTimeout(() => setCopiedIndex(null), 2500); };
   const activeEvt = events[activeTab] || events[0];
 
   /* ── Cover ── */

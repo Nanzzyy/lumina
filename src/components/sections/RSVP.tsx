@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Button, Icon } from '@/components/primitives';
 import { cn } from '@/lib/utils/cn';
+import { getJsonOr, postJson } from '@/lib/utils/api-client';
 
 interface RSVPEntry {
   id: string;
@@ -26,29 +27,25 @@ export function RSVP(props: SectionComponentProps) {
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setConfirmations(data);
-      })
-      .catch(() => {});
+    getJsonOr<RSVPEntry[]>(`/api/rsvp?slug=${encodeURIComponent(slug)}`, []).then(data => {
+      if (Array.isArray(data)) setConfirmations(data);
+    });
   }, [slug]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!formData.name.trim() || !slug) return;
     try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, name: formData.name.trim(), message: formData.message.trim(), status: 'hadir', guests: 1 }),
+      const newEntry = await postJson<RSVPEntry>('/api/rsvp', {
+        slug,
+        name: formData.name.trim(),
+        message: formData.message.trim(),
+        status: 'hadir',
+        guests: 1,
       });
-      if (res.ok) {
-        const newEntry = await res.json();
-        setConfirmations(p => [newEntry, ...p]);
-        setSubmittedName(formData.name.trim());
-        setSubmitted(true);
-      }
+      setConfirmations(p => [newEntry, ...p]);
+      setSubmittedName(formData.name.trim());
+      setSubmitted(true);
     } catch {}
   };
 

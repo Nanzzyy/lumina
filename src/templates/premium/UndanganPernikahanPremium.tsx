@@ -1,9 +1,9 @@
 'use client';
 
-import {
-  useState, useEffect, useRef, type FormEvent
-} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAutoplayMusic } from './_music';
+import { isVideo, useCountdown, useGuestName, useRsvpWishes } from './shared';
+import { useCopyFeedback } from '@/hooks';
 import { motion, type Variants } from 'framer-motion';
 import type { MonolithicTemplateProps } from '@/lib/template/types';
 import type { InvitationContent } from '@/lib/content/types';
@@ -184,98 +184,23 @@ function injectFonts() {
   document.head.appendChild(style);
 }
 
-const STATUS_LABEL: Record<string, string> = { hadir: 'Hadir', tidak_hadir: 'Tidak Hadir', ragu: 'Hadir' };
-
-/** Treat common video extensions as video backgrounds/gallery items (else image). */
-function isVideo(url: string): boolean {
-  return /\.(mp4|webm|mov|m4v|ogg)(\?.*)?$/i.test(url);
-}
-
-interface RsvpRow {
-  id: string;
-  name: string;
-  status: string;
-  guests: number;
-  message?: string;
-  created_at: string;
-}
-
-function timeAgo(iso: string): string {
-  const normalized = /Z|[+-]\d{2}:?\d{2}$/.test(iso) ? iso : `${iso.replace(' ', 'T')}Z`;
-  const then = new Date(normalized).getTime();
-  if (isNaN(then)) return '';
-  const diff = Math.max(0, Date.now() - then);
-  const min = Math.floor(diff / 60_000);
-  if (min < 1) return 'Now';
-  if (min < 60) return `${min}m lalu`;
-  const hr = Math.floor(diff / 3_600_000);
-  if (hr < 24) return `${hr}h lalu`;
-  return `${Math.floor(hr / 24)}d lalu`;
-}
-
 export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateProps) {
   const data = deriveData(content);
 
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [guestName] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'Tamu Undangan';
-    const to = new URLSearchParams(window.location.search).get('to');
-    return to ? decodeURIComponent(to) : 'Tamu Undangan';
-  });
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const guestName = useGuestName(content.guestName);
+  const countdown = useCountdown(data.isoDate);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { copiedKey: copiedIndex, copy: copyToClipboard } = useCopyFeedback(2500);
 
-  const [rsvpForm, setRsvpForm] = useState({ name: '', guests: '1', attendance: 'Hadir', message: '' });
-  const [wishes, setWishes] = useState<Array<{ id: string; name: string; attendance: string; guests: string; message: string; time: string }>>([]);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit: handleRsvpSubmit } = useRsvpWishes(slug);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useAutoplayMusic(audioRef, setIsPlaying);
 
   // Fonts (Cormorant + Montserrat) injected client-side
   useEffect(() => { injectFonts(); }, []);
-
-  // Countdown
-  useEffect(() => {
-    const target = new Date(data.isoDate).getTime();
-    if (isNaN(target)) return;
-    const tick = () => {
-      const diff = target - Date.now();
-      if (diff <= 0) return setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      setCountdown({
-        days: Math.floor(diff / 86_400_000),
-        hours: Math.floor((diff % 86_400_000) / 3_600_000),
-        minutes: Math.floor((diff % 3_600_000) / 60_000),
-        seconds: Math.floor((diff % 60_000) / 1000),
-      });
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [data.isoDate]);
-
-  // Load existing RSVPs (rendered as the wishes list)
-  useEffect(() => {
-    if (!slug) return;
-    fetch(`/api/rsvp?slug=${encodeURIComponent(slug)}`)
-      .then((r) => r.json())
-      .then((list: unknown) => {
-        if (!Array.isArray(list)) return;
-        setWishes(
-          (list as RsvpRow[]).map((e) => ({
-            id: e.id,
-            name: e.name,
-            attendance: STATUS_LABEL[e.status] ?? 'Hadir',
-            guests: String(e.guests ?? 1),
-            message: e.message || '',
-            time: timeAgo(e.created_at),
-          })),
-        );
-      })
-      .catch(() => {});
-  }, [slug]);
 
   const handleOpenInvitation = () => {
     setIsOpen(true);
@@ -288,42 +213,6 @@ export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateP
     if (isPlaying) audioRef.current.pause();
     else audioRef.current.play().catch(() => {});
     setIsPlaying(!isPlaying);
-  };
-
-  const handleRsvpSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!rsvpForm.name.trim() || !rsvpForm.message.trim() || !slug) return;
-    const status = rsvpForm.attendance === 'Tidak Hadir' ? 'tidak_hadir' : 'hadir';
-    try {
-      const res = await fetch('/api/rsvp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          slug,
-          name: rsvpForm.name.trim(),
-          status,
-          guests: Number(rsvpForm.guests) || 1,
-          message: rsvpForm.message.trim(),
-        }),
-      });
-      if (!res.ok) return;
-      const created = await res.json();
-      setWishes((w) => [
-        { id: created.id, name: created.name, attendance: STATUS_LABEL[created.status] ?? 'Hadir', guests: String(created.guests ?? 1), message: created.message || '', time: 'Now' },
-        ...w,
-      ]);
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setIsSubmitted(false);
-        setRsvpForm({ name: '', guests: '1', attendance: 'Hadir', message: '' });
-      }, 3000);
-    } catch { /* ignore */ }
-  };
-
-  const copyToClipboard = (text: string, index: number) => {
-    navigator.clipboard?.writeText(text);
-    setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2500);
   };
 
   const renderMedia = (src: string, idx: number, fill: boolean) => (

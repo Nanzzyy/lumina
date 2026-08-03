@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { initializeRegistries } from '@/lib/registry';
+import { getJsonOr } from '@/lib/utils/api-client';
 
 initializeRegistries();
 
@@ -26,11 +27,7 @@ export default function LayoutsBrowser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/layouts')
-      .then((r) => r.json())
-      .then(setLayouts)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    getJsonOr<LayoutItem[]>('/api/layouts', []).then(setLayouts).finally(() => setLoading(false));
   }, []);
 
   return (

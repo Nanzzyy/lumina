@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
 import { useAutoplayMusic } from './_music';
+import { useCopyFeedback } from '@/hooks';
 
 /* ─── Colors ─── */
 const GOLD = '#8a7a4a';
@@ -167,7 +168,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
   const countdown = useCountdown(isoDate);
   const [activeTab, setActiveTab] = useState(0);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const { copiedKey: copiedIdx, copy } = useCopyFeedback(2500);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useAutoplayMusic(audioRef, setIsPlaying);
@@ -180,7 +181,6 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
     if (isPlaying) audioRef.current.pause(); else audioRef.current?.play().catch(() => {});
     setIsPlaying(!isPlaying);
   };
-  const copy = (text: string, idx: number) => { navigator.clipboard?.writeText(text); setCopiedIdx(idx); setTimeout(() => setCopiedIdx(null), 2500); };
   const activeEvt = events[activeTab] || events[0];
 
   /* ── COVER ── */

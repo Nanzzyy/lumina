@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { isVideo, useRsvpWishes, useCountdown, useGuestName, displayDateFrom, pickMedia } from './shared';
 import { useAutoplayMusic } from './_music';
+import { useCopyFeedback } from '@/hooks';
 
 const DEFAULTS = {
   couple: {
@@ -113,7 +114,7 @@ export function UndanganPernikahanTerracotta({ content, slug }: MonolithicTempla
   const countdown = useCountdown(isoDate);
   const [activeTab, setActiveTab] = useState('');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const { copiedKey: copiedIndex, copy } = useCopyFeedback(2500);
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   useAutoplayMusic(audioRef, setIsPlaying);
@@ -126,7 +127,6 @@ export function UndanganPernikahanTerracotta({ content, slug }: MonolithicTempla
     if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {});
     setIsPlaying(!isPlaying);
   };
-  const copy = (text: string, index: number) => { navigator.clipboard?.writeText(text); setCopiedIndex(index); setTimeout(() => setCopiedIndex(null), 2500); };
 
   const currentTab = activeTab || events[0]?.title || '';
   const activeEvent = events.find((e) => e.title === currentTab) || events[0];

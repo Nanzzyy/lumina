@@ -6,6 +6,8 @@ import { useStudioStore } from '@/lib/studio/store';
 import { getTemplate, TemplateRenderer } from '@/lib/template';
 import { ArrowLeft, Save, Smartphone, Heart, Calendar, MapPin, Clock, Image, Music, Quote, Gift, MessageSquare, Star, Sparkles, Globe, Upload } from 'lucide-react';
 import type { InvitationContent, StoryMoment, ScheduleItem, GiftItem } from '@/lib/content/types';
+import { useCopyFeedback } from '@/hooks';
+import { deleteJson, postJson, uploadFile } from '@/lib/utils/api-client';
 
 export default function MobileEditorPage() {
   const params = useParams();
@@ -178,10 +180,8 @@ function UploadBtn({ onUploaded, label = 'Upload' }: { onUploaded: (url: string)
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      if (!res.ok) return;
-      const data = await res.json();
-      onUploaded(data.url);
+      const { url } = await uploadFile(fd);
+      onUploaded(url);
     } catch {}
     setLoading(false);
     e.target.value = '';
@@ -393,15 +393,16 @@ function MusicForm({ content, setContent }: { content: InvitationContent; setCon
 /* ─── Publish Toggle ─── */
 function PublishToggle({ slug, invitation }: { slug: string; invitation: { published?: boolean } }) {
   const [pub, setPub] = useState(invitation.published ?? false);
-  const [copied, setCopied] = useState(false);
+  const { copiedKey, copy } = useCopyFeedback(2000);
+  const copied = copiedKey !== null;
   const [loading, setLoading] = useState(false);
 
   const toggle = async () => {
     if (loading) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/invitations/${slug}/publish`, { method: pub ? 'DELETE' : 'POST' });
-      if (!res.ok) return;
+      if (pub) await deleteJson(`/api/invitations/${slug}/publish`);
+      else await postJson(`/api/invitations/${slug}/publish`, {});
       setPub(!pub);
     } finally {
       setLoading(false);
@@ -409,7 +410,7 @@ function PublishToggle({ slug, invitation }: { slug: string; invitation: { publi
   };
 
   const url = `${window.location.origin}/invitation/${slug}`;
-  const copyLink = () => { navigator.clipboard?.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copyLink = () => copy(url);
 
   return (
     <div className="flex items-center gap-2">

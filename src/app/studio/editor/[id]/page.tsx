@@ -23,6 +23,7 @@ import { listComponents, createNodeFromDef } from '@editor/component-registry';
 import { registerBuiltinComponents } from '@/components/studio/editor/register-builtin-components';
 import LayerPanel from '@/components/studio/editor/LayerPanel';
 import { buildSampleInvitation } from '@/lib/os/sample-invitation';
+import { HttpError, postJson } from '@/lib/utils/api-client';
 
 // Register first-party primitive plugins once (idempotent).
 registerBuiltinComponents();
@@ -88,16 +89,10 @@ export default function EditorPage() {
     setPublishStatus(null);
     const slug = doc.project.slug;
     try {
-      const res = await fetch(`/api/documents/${encodeURIComponent(slug)}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(doc),
-      });
-      if (res.status === 401) setPublishStatus('Login required');
-      else if (!res.ok) setPublishStatus('Publish failed');
-      else setPublishStatus(`Live → /os/${slug}`);
-    } catch {
-      setPublishStatus('Publish failed');
+      await postJson(`/api/documents/${encodeURIComponent(slug)}`, doc);
+      setPublishStatus(`Live → /os/${slug}`);
+    } catch (e) {
+      setPublishStatus(e instanceof HttpError && e.status === 401 ? 'Login required' : 'Publish failed');
     } finally {
       setPublishing(false);
     }
