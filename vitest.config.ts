@@ -7,6 +7,13 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts', 'bench/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      // Core logic only — components/routes are outside the node-test boundary (R7).
+      include: ['src/lib/**'],
+      exclude: ['src/lib/**/__fixtures__/**'],
+      reporter: ['text', 'json-summary'],
+    },
   },
   resolve: {
     alias: {
