@@ -1,4 +1,5 @@
 import type { LayoutDefinition } from './types';
+import { logWarning } from '@/lib/log';
 
 const registry = new Map<string, LayoutDefinition>();
 
@@ -37,7 +38,8 @@ export async function syncLayoutsFromDB(): Promise<void> {
         });
       }
     }
-  } catch {
-    // Silently fail — fallback to in-memory
+  } catch (e) {
+    // Non-fatal — fall back to the in-memory registry, but record why.
+    logWarning('syncLayoutsFromDB', e);
   }
 }

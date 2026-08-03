@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createWish, listWishes } from '@/lib/db';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { logError } from '@/lib/log';
 
 export async function POST(req: NextRequest) {
   // Guest-facing → public, but rate-limited per IP to stop spam/flooding.
@@ -19,7 +20,8 @@ export async function POST(req: NextRequest) {
     });
     if (!wish) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(wish, { status: 201 });
-  } catch {
+  } catch (e) {
+    logError('POST /api/wishes', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -30,7 +32,8 @@ export async function GET(req: NextRequest) {
   try {
     const list = listWishes(slug);
     return NextResponse.json(list);
-  } catch {
+  } catch (e) {
+    logError('GET /api/wishes', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storeAsset } from '@/lib/assets';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError } from '@/lib/log';
 
 // SVG excluded: served verbatim from /uploads with no CSP → embedded <script> = stored XSS.
 // ponytail: re-enable via a sanitizing proxy (DOMPurify) if SVG upload is ever needed.
@@ -42,7 +43,8 @@ export async function POST(req: NextRequest) {
       hash: stored.hash,
       duplicated: stored.duplicated,
     });
-  } catch {
+  } catch (e) {
+    logError('POST /api/upload', e);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
 }

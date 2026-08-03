@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { logError } from '@/lib/log';
 
 const templateSourceMap: Record<string, string> = {
   'undangan-flora': 'src/templates/premium/UndanganPernikahanFlora.tsx',
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const source = fs.readFileSync(abs, 'utf-8');
     return NextResponse.json({ id, source, filename: path.basename(rel) });
   } catch (e) {
+    logError('GET /api/templates/[id]/source', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

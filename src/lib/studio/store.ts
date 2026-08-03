@@ -68,7 +68,10 @@ export function useStudioStore() {
         createdAt: i.createdAt,
         updatedAt: i.updatedAt,
       })));
-    } catch { /* will retry on next action */ }
+    } catch (e) {
+      // Non-fatal — will retry on next action, but surface why it failed.
+      console.error('[StudioStore] failed to load invitations', e);
+    }
   }, []);
 
   useEffect(() => {

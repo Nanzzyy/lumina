@@ -102,7 +102,7 @@ export function TreeRenderer({ template, layout, content, scopeClass, hideOrname
       .then((list: { id: string; definition: LayoutNode }[]) => {
         if (alive) setWidgets(new Map(list.map((w) => [w.id, w.definition])));
       })
-      .catch(() => {});
+      .catch((err) => console.error('[TreeRenderer] failed to load widgets', err));
     return () => { alive = false; };
   }, []);
 

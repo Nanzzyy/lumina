@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getInvitation, updateInvitation, deleteInvitation } from '@/lib/db';
 import { updateInvitationSchema } from '@/lib/validation';
 import { verifySession, unauthorized } from '@/lib/auth';
+import { logError } from '@/lib/log';
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   if (!verifySession(req)) return unauthorized();
@@ -10,7 +11,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
     const inv = getInvitation(slug);
     if (!inv) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(inv);
-  } catch {
+  } catch (e) {
+    logError(`GET /api/invitations/${slug}`, e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -28,7 +30,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
     const updated = updateInvitation(slug, { title, templateId, layoutId, content, themeOverrides, published });
     if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(updated);
-  } catch {
+  } catch (e) {
+    logError(`PUT /api/invitations/${slug}`, e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -39,7 +42,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ s
   try {
     deleteInvitation(slug);
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    logError(`DELETE /api/invitations/${slug}`, e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

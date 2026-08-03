@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createRSVP, listRSVPs } from '@/lib/db';
 import { rateLimit, clientIp } from '@/lib/rate-limit';
+import { logError } from '@/lib/log';
 
 const VALID_STATUSES = ['hadir', 'tidak_hadir', 'ragu'];
 
@@ -21,7 +22,8 @@ export async function POST(req: NextRequest) {
     });
     if (!rsvp) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     return NextResponse.json(rsvp, { status: 201 });
-  } catch {
+  } catch (e) {
+    logError('POST /api/rsvp', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -32,7 +34,8 @@ export async function GET(req: NextRequest) {
   try {
     const list = listRSVPs(slug);
     return NextResponse.json(list);
-  } catch {
+  } catch (e) {
+    logError('GET /api/rsvp', e);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

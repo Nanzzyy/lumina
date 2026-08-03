@@ -179,12 +179,19 @@ function UploadBtn({ onUploaded, label = 'Upload' }: { onUploaded: (url: string)
       const fd = new FormData();
       fd.append('file', file);
       const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      if (!res.ok) return;
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Upload failed (${res.status})`);
+      }
       const data = await res.json();
       onUploaded(data.url);
-    } catch {}
-    setLoading(false);
-    e.target.value = '';
+    } catch (err) {
+      console.error('[UploadBtn] upload failed', err);
+      alert('Gagal mengunggah gambar. Silakan coba lagi.');
+    } finally {
+      setLoading(false);
+      e.target.value = '';
+    }
   };
   return (
     <>

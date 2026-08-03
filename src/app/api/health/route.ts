@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Database from 'better-sqlite3';
 import path from 'path';
+import { logError } from '@/lib/log';
 
 const startTime = Date.now();
 let dbConnected = false;
@@ -12,8 +13,9 @@ try {
   db.prepare('SELECT 1').get();
   db.close();
   dbConnected = true;
-} catch {
+} catch (e) {
   dbConnected = false;
+  logError('health: db connection', e);
 }
 
 export async function GET() {

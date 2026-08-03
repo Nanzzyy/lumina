@@ -71,8 +71,14 @@ export default function StudioDashboard() {
                       onClick={async () => {
                         if (!confirm(`Hapus "${inv.title}"?`)) return;
                         setDeleting(inv.slug);
-                        try { await remove(inv.slug); } catch {}
-                        setDeleting(null);
+                        try {
+                          await remove(inv.slug);
+                        } catch (err) {
+                          console.error('[Studio] delete failed', err);
+                          alert('Gagal menghapus undangan. Silakan coba lagi.');
+                        } finally {
+                          setDeleting(null);
+                        }
                       }}
                       disabled={deleting === inv.slug}
                       className="px-3 py-1.5 text-xs text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors disabled:opacity-40">
