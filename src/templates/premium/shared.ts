@@ -343,5 +343,55 @@ export function MonolithicCustomization({
     };
   }, [content, templateId]);
 
+  // Some premium templates mount their main sections only after the cover is
+  // opened. Re-apply visibility and chapter numbers when that subtree arrives.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof MutationObserver === 'undefined') return;
+    const sectionKeys = templateId === 'undangan-bali-modern'
+      ? ['hero', 'couple', 'countdown', 'event', 'story', 'gallery', 'gift', 'rsvp']
+      : templateId === 'melati'
+      ? ['hero', 'intro', 'couple', 'countdown', 'story', 'gallery', 'video', 'quote', 'event', 'dresscode', 'liveStream', 'rundown', 'gift', 'rsvp']
+      : templateId === 'hana'
+      ? ['hero', 'quote', 'couple', 'countdown', 'story', 'event', 'gallery', 'gift', 'rsvp']
+      : ['hero', 'quote', 'couple', 'countdown', 'story', 'event', 'gallery', 'rsvp', 'gift'];
+    const visibility = content.sectionVisibility || {};
+    let frame = 0;
+    const applyToMountedSections = () => {
+      const sections = Array.from(root.querySelectorAll<HTMLElement>('section'))
+        .filter((section) => !section.parentElement?.closest('section'));
+      sections.forEach((section, index) => {
+        const declaredKey = section.dataset.luminaSection || section.id;
+        const key = {
+          'couuple-information': 'couple',
+          'save-the-date': 'countdown',
+          'wedding-venue': 'event',
+          'wedding-gift-section': 'gift',
+        }[declaredKey] || declaredKey || sectionKeys[index];
+        if (key && visibility[key] === false) section.style.setProperty('display', 'none', 'important');
+      });
+      let chapterNumber = 1;
+      sections
+        .filter((section) => getComputedStyle(section).display !== 'none')
+        .forEach((section) => {
+          section.querySelectorAll<HTMLElement>('[data-lumina-section-number]').forEach((marker) => {
+            const value = String(chapterNumber).padStart(2, '0');
+            if (marker.textContent !== value) marker.textContent = value;
+            chapterNumber += 1;
+          });
+        });
+    };
+    const observer = new MutationObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(applyToMountedSections);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    applyToMountedSections();
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [content, templateId]);
+
   return createElement('div', { ref: setRoot, className: 'lumina-monolithic-customization' }, children);
 }
