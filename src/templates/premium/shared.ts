@@ -280,7 +280,11 @@ export function MonolithicCustomization({
       cover.style.setProperty('background-position', 'center', 'important');
     }
 
-    const sections = Array.from(root.querySelectorAll<HTMLElement>('section'));
+    // Only count page sections. Some templates may use a nested <section> for
+    // a card or an embedded layout; that must not consume a page number or
+    // shift the semantic background/visibility mapping.
+    const sections = Array.from(root.querySelectorAll<HTMLElement>('section'))
+      .filter((section) => !section.parentElement?.closest('section'));
     sections.forEach((section, index) => {
       const declaredKey = section.dataset.luminaSection || section.id;
       const key = {
@@ -305,6 +309,21 @@ export function MonolithicCustomization({
         footer.style.setProperty('display', 'none', 'important');
       }
     }
+
+    // Chapter/badge markers are authored by each visual template, but their
+    // sequence belongs to the active page. Renumber only marker elements so
+    // story-item numbers and countdown digits remain untouched when a section
+    // is hidden.
+    let chapterNumber = 1;
+    sections
+      .filter((section) => getComputedStyle(section).display !== 'none')
+      .forEach((section) => {
+        const markers = section.querySelectorAll<HTMLElement>('[data-lumina-section-number]');
+        markers.forEach((marker) => {
+          marker.textContent = String(chapterNumber).padStart(2, '0');
+          chapterNumber += 1;
+        });
+      });
 
     const pageBackground = backgrounds.global || backgrounds.page;
     if (pageBackground) {

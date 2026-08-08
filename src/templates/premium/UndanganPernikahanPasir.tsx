@@ -230,11 +230,9 @@ function HeatShimmer({ reduce }: { reduce: boolean }) {
 }
 
 /** Outlined blocky chapter numeral. */
-function ChapterNo({ n }: { n: string }) {
+function ChapterNo() {
   return (
-    <span className="font-display font-semibold leading-none" style={{ color: ADOBE, fontSize: '2.6rem', WebkitTextStroke: `1px ${ADOBE}`, WebkitTextFillColor: 'transparent' }} aria-hidden="true">
-      {n}
-    </span>
+    <span data-lumina-section-number className="font-display font-semibold leading-none" style={{ color: ADOBE, fontSize: '2.6rem', WebkitTextStroke: `1px ${ADOBE}`, WebkitTextFillColor: 'transparent' }} aria-hidden="true" />
   );
 }
 
@@ -383,7 +381,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vFade}>
         <div className="max-w-5xl mx-auto px-6 py-28 relative z-10">
           <div className="flex items-center gap-4 mb-10">
-            <ChapterNo n="01" />
+            <ChapterNo />
             <div className="flex-1"><StepPattern color={ADOBE} /></div>
           </div>
           <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight mb-3" style={{ color: INK }}>Dua Jiwa, Satu Kiblat</h2>
@@ -433,7 +431,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
         <Cactus className="absolute right-8 bottom-8 w-9 h-16" color={`${INK}11`} />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <div className="flex items-center gap-4 mb-10 justify-center">
-            <ChapterNo n="02" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em] font-bold" style={{ color: INK }}>Menuju Hari Bahagia</p>
           </div>
           <div className="grid grid-cols-4 gap-2 md:gap-4">
@@ -474,7 +472,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="03" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em] font-bold" style={{ color: INK }}>Perjalanan Cinta</p>
           </div>
           <h2 className="font-display text-4xl font-semibold tracking-tight mb-16" style={{ color: INK }}>Mengarungi Padang</h2>
@@ -505,7 +503,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
         <SunMotif className="absolute -right-8 bottom-0 w-72 h-72" color={SAND} opacity={0.05} />
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="04" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em] font-bold" style={{ color: `${SAND}99` }}>Informasi Acara</p>
           </div>
           <h2 className="font-display text-4xl font-semibold tracking-tight mb-12" style={{ color: SAND }}>Waktu &amp; Lokasi</h2>
@@ -546,7 +544,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
         <HeatShimmer reduce={!!reduce} />
         <div className="max-w-3xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="05" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em] font-bold" style={{ color: INK }}>Galeri Foto</p>
           </div>
           <h2 className="font-display text-4xl font-semibold tracking-tight mb-12" style={{ color: INK }}>Kenangan Indah</h2>
@@ -587,7 +585,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
         <div className="max-w-xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="06" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em] font-bold" style={{ color: INK }}>Doa &amp; Ucapan</p>
           </div>
           <h2 className="font-display text-4xl font-semibold tracking-tight mb-10" style={{ color: INK }}>Kirim Ucapan</h2>
@@ -650,7 +648,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
           initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
           <div className="max-w-2xl mx-auto relative z-10">
             <div className="flex items-center gap-4 mb-3">
-              <ChapterNo n="07" />
+              <ChapterNo />
               <p className="font-display text-sm uppercase tracking-[0.3em] font-bold" style={{ color: INK }}>Tanda Kasih</p>
             </div>
             <h2 className="font-display text-4xl font-semibold tracking-tight mb-4" style={{ color: INK }}>Kado Digital</h2>

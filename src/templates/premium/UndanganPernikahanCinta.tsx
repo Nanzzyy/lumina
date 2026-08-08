@@ -201,9 +201,9 @@ function PetalFall({ reduce }: { reduce: boolean }) {
 }
 
 /** Outlined roman numeral — section marker. */
-function RomanNo({ n }: { n: string }) {
+function RomanNo() {
   return (
-    <span className="font-display font-light leading-none tracking-widest" style={{ color: CHAMPAGNE, fontSize: '1.6rem' }} aria-hidden="true">{n}</span>
+    <span data-lumina-section-number className="font-display font-light leading-none tracking-widest" style={{ color: CHAMPAGNE, fontSize: '1.6rem' }} aria-hidden="true" />
   );
 }
 

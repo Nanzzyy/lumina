@@ -179,12 +179,10 @@ function SunDivider({ color = CORAL }: { color?: string }) {
 }
 
 /** Section number badge — sun ring with numeral. */
-function SunBadge({ n }: { n: string }) {
+function SunBadge() {
   return (
-    <span className="inline-flex items-center justify-center font-display w-12 h-12 rounded-full text-base"
-      style={{ color: INK, backgroundColor: GOLD, boxShadow: `0 6px 18px -8px ${CORAL}` }} aria-hidden="true">
-      {n}
-    </span>
+    <span data-lumina-section-number className="inline-flex items-center justify-center font-display w-12 h-12 rounded-full text-base"
+      style={{ color: INK, backgroundColor: GOLD, boxShadow: `0 6px 18px -8px ${CORAL}` }} aria-hidden="true" />
   );
 }
 
@@ -446,7 +444,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
         <SunField reduce={!!reduce} />
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-4 justify-center">
-            <SunBadge n="01" />
+            <SunBadge />
             <p className="font-body text-sm uppercase tracking-[0.3em] font-bold" style={{ color: MUTED }}>Perjalanan Cinta</p>
           </div>
           <h2 className="font-display text-4xl text-center tracking-tight mb-14" style={{ color: INK }}>Cerita Kami</h2>
@@ -477,7 +475,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
         <PalmFrond className="absolute top-4 right-0 w-44 h-20 rotate-[15deg]" color={OCEAN} flip />
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-4 justify-center">
-            <SunBadge n="02" />
+            <SunBadge />
             <p className="font-body text-sm uppercase tracking-[0.3em] font-bold" style={{ color: MUTED }}>Informasi Acara</p>
           </div>
           <h2 className="font-display text-4xl text-center tracking-tight mb-12" style={{ color: INK }}>Waktu &amp; Lokasi</h2>
@@ -520,7 +518,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
         <SunField reduce={!!reduce} />
         <div className="max-w-3xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-4 justify-center">
-            <SunBadge n="03" />
+            <SunBadge />
             <p className="font-body text-sm uppercase tracking-[0.3em] font-bold" style={{ color: MUTED }}>Galeri Foto</p>
           </div>
           <h2 className="font-display text-4xl text-center tracking-tight mb-12" style={{ color: INK }}>Kenangan Indah</h2>
@@ -562,7 +560,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
         <Hibiscus className="absolute top-8 left-6 w-16 h-16 -rotate-12" color={CORAL} center={GOLD} />
         <div className="max-w-xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-4 justify-center">
-            <SunBadge n="04" />
+            <SunBadge />
             <p className="font-body text-sm uppercase tracking-[0.3em] font-bold" style={{ color: MUTED }}>Doa &amp; Ucapan</p>
           </div>
           <h2 className="font-display text-4xl text-center tracking-tight mb-10" style={{ color: INK }}>Kirim Ucapan</h2>
@@ -627,7 +625,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
           <SunField reduce={!!reduce} />
           <div className="max-w-2xl mx-auto relative z-10">
             <div className="flex items-center gap-4 mb-4 justify-center">
-              <SunBadge n="05" />
+              <SunBadge />
               <p className="font-body text-sm uppercase tracking-[0.3em] font-bold" style={{ color: MUTED }}>Tanda Kasih</p>
             </div>
             <h2 className="font-display text-4xl text-center tracking-tight mb-3" style={{ color: INK }}>Kado Digital</h2>

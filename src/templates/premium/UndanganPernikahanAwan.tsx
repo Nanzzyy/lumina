@@ -165,11 +165,11 @@ function CloudDivider({ color = PERI }: { color?: string }) {
 }
 
 /** Soft cloud-pill section number marker. */
-function SectionNo({ n }: { n: string }) {
+function SectionNo() {
   return (
-    <span className="inline-flex items-center justify-center rounded-full font-display font-semibold tabular-nums"
+    <span data-lumina-section-number className="inline-flex items-center justify-center rounded-full font-display font-semibold tabular-nums"
       style={{ minWidth: '2.6rem', height: '2.6rem', padding: '0 0.9rem', color: INK, backgroundColor: `${PERI}55`, boxShadow: `0 8px 20px -10px ${PERI}88` }}
-      aria-hidden="true">{n}</span>
+      aria-hidden="true" />
   );
 }
 

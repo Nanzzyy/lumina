@@ -175,11 +175,9 @@ function WindStreaks({ reduce }: { reduce: boolean }) {
 }
 
 /** Outlined chapter numeral — editorial section marker. */
-function ChapterNo({ n }: { n: string }) {
+function ChapterNo() {
   return (
-    <span className="font-display font-light leading-none" style={{ color: VERMILLION, fontSize: '3rem', WebkitTextStroke: `1px ${VERMILLION}`, WebkitTextFillColor: 'transparent' }} aria-hidden="true">
-      {n}
-    </span>
+    <span data-lumina-section-number className="font-display font-light leading-none" style={{ color: VERMILLION, fontSize: '3rem', WebkitTextStroke: `1px ${VERMILLION}`, WebkitTextFillColor: 'transparent' }} aria-hidden="true" />
   );
 }
 
@@ -316,7 +314,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vFade}>
         <div className="max-w-5xl mx-auto px-6 py-28 relative z-10">
           <div className="flex items-center gap-4 mb-14">
-            <ChapterNo n="01" />
+            <ChapterNo />
             <div className="flex-1"><BrushStroke color={VERMILLION} /></div>
           </div>
           <h2 className="font-display text-4xl md:text-5xl font-light tracking-tight mb-3" style={{ color: BONE }}>Dua Jiwa, Satu Jalan</h2>
@@ -360,7 +358,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
         <WindStreaks reduce={!!reduce} />
         <div className="max-w-3xl mx-auto text-center relative z-10">
           <div className="flex items-center gap-4 mb-10 justify-center">
-            <ChapterNo n="02" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SUMI }}>Menuju Hari Bahagia</p>
           </div>
           <div className="grid grid-cols-4 gap-2 md:gap-6">
@@ -398,7 +396,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="03" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SUMI }}>Perjalanan Cinta</p>
           </div>
           <h2 className="font-display text-4xl font-light tracking-tight mb-16" style={{ color: INK }}>Cerita Kami</h2>
@@ -423,7 +421,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
         <KanjiMark kanji="会" className="absolute -right-8 bottom-0 text-[16rem]" color={BONE} opacity={0.04} />
         <div className="max-w-2xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="04" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: `${BONE}88` }}>Informasi Acara</p>
           </div>
           <h2 className="font-display text-4xl font-light tracking-tight mb-12" style={{ color: BONE }}>Waktu &amp; Lokasi</h2>
@@ -462,7 +460,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
         <div className="max-w-3xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="05" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SUMI }}>Galeri Foto</p>
           </div>
           <h2 className="font-display text-4xl font-light tracking-tight mb-12" style={{ color: INK }}>Kenangan Indah</h2>
@@ -502,7 +500,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
         initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
         <div className="max-w-xl mx-auto relative z-10">
           <div className="flex items-center gap-4 mb-3">
-            <ChapterNo n="06" />
+            <ChapterNo />
             <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SUMI }}>Doa &amp; Ucapan</p>
           </div>
           <h2 className="font-display text-4xl font-light tracking-tight mb-10" style={{ color: INK }}>Kirim Ucapan</h2>
@@ -565,7 +563,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
           initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} variants={vUp}>
           <div className="max-w-2xl mx-auto relative z-10">
             <div className="flex items-center gap-4 mb-3">
-              <ChapterNo n="07" />
+              <ChapterNo />
               <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SUMI }}>Tanda Kasih</p>
             </div>
             <h2 className="font-display text-4xl font-light tracking-tight mb-4" style={{ color: INK }}>Kado Digital</h2>

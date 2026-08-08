@@ -207,11 +207,9 @@ function FallingSnow({ reduce }: { reduce: boolean }) {
 }
 
 /** Outlined crystal numeral — section marker with frost underline. */
-function CrystalNo({ n }: { n: string }) {
+function CrystalNo() {
   return (
-    <span className="font-display font-light leading-none" style={{ color: LAVENDER, fontSize: '3rem', WebkitTextStroke: `1px ${LAVENDER}`, WebkitTextFillColor: 'transparent' }} aria-hidden="true">
-      {n}
-    </span>
+    <span data-lumina-section-number className="font-display font-light leading-none" style={{ color: LAVENDER, fontSize: '3rem', WebkitTextStroke: `1px ${LAVENDER}`, WebkitTextFillColor: 'transparent' }} aria-hidden="true" />
   );
 }
 
@@ -413,7 +411,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
         </motion.div>
         <div className="max-w-lg mx-auto text-center relative z-10">
           <div className="flex items-center gap-4 mb-3 justify-center">
-            <CrystalNo n="01" />
+            <CrystalNo />
             <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: `${ICE}AA` }}>Menuju Hari Bahagia</p>
           </div>
           <h2 className="font-display text-3xl font-light tracking-tight mb-12" style={{ color: ICE }}>Hitung Mengakhir</h2>
@@ -455,7 +453,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
         <div className="max-w-xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <div className="flex items-center gap-4 mb-3 justify-center">
-              <CrystalNo n="02" />
+              <CrystalNo />
               <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SLATE2 }}>Perjalanan Cinta</p>
             </div>
             <h2 className="font-display text-4xl font-light tracking-tight" style={{ color: SLATE }}>Cerita Kami</h2>
@@ -498,7 +496,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
         <div className="max-w-xl mx-auto relative z-10">
           <div className="text-center mb-10">
             <div className="flex items-center gap-4 mb-3 justify-center">
-              <CrystalNo n="03" />
+              <CrystalNo />
               <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SLATE2 }}>Informasi Acara</p>
             </div>
             <h2 className="font-display text-4xl font-light tracking-tight" style={{ color: SLATE }}>Waktu &amp; Lokasi</h2>
@@ -542,7 +540,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
         <div className="max-w-3xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <div className="flex items-center gap-4 mb-3 justify-center">
-              <CrystalNo n="04" />
+              <CrystalNo />
               <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SLATE2 }}>Galeri Foto</p>
             </div>
             <h2 className="font-display text-4xl font-light tracking-tight" style={{ color: SLATE }}>Kenangan Indah</h2>
@@ -587,7 +585,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
         <div className="max-w-xl mx-auto relative z-10">
           <div className="text-center mb-10">
             <div className="flex items-center gap-4 mb-3 justify-center">
-              <CrystalNo n="05" />
+              <CrystalNo />
               <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SLATE2 }}>Doa &amp; Ucapan</p>
             </div>
             <h2 className="font-display text-4xl font-light tracking-tight" style={{ color: SLATE }}>Kirim Ucapan</h2>
@@ -655,7 +653,7 @@ export function UndanganPernikahanYuki({ content, slug, preview }: MonolithicTem
           <div className="max-w-2xl mx-auto relative z-10">
             <div className="text-center mb-10">
               <div className="flex items-center gap-4 mb-3 justify-center">
-                <CrystalNo n="06" />
+                <CrystalNo />
                 <p className="font-display text-sm uppercase tracking-[0.3em]" style={{ color: SLATE2 }}>Tanda Kasih</p>
               </div>
               <h2 className="font-display text-4xl font-light tracking-tight mb-4" style={{ color: SLATE }}>Kado Digital</h2>
