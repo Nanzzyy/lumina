@@ -96,8 +96,12 @@ function deriveData(content: InvitationContent) {
   const stories = (content.stories || [])
     .filter((story) => story.title || story.desc || story.image)
     .map((s, i) => ({ ...s, image: s.image || DEFAULTS.stories[i % DEFAULTS.stories.length]?.image }));
-  const gallery = (content.gallery?.images || [])
-    .filter((src): src is string => typeof src === 'string' && src.trim().length > 0);
+  const gallery = [...new Set(content.gallery?.images || [])]
+    .filter((src): src is string => (
+      typeof src === 'string'
+      && src.trim().length > 0
+      && !/drive\.google\.com\/thumbnail\?id=(?:&|$)/i.test(src.trim())
+    ));
   const gifts = (content.gift?.items?.length
     ? content.gift.items.map((g) => ({ bank: g.bank || g.name || '', number: g.number || '', owner: g.owner || g.note || '' }))
     : []).filter((g) => g.bank || g.number);

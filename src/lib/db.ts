@@ -3,6 +3,7 @@ import path from 'path';
 import { normalizeLayout } from './layout/migrate';
 import type { LayoutDefinition } from './layout/types';
 import type { Document, Page, Frame, ProjectStatus, Node } from './core/document';
+import { BAGUS_TARI_GALLERY_ASSETS } from '@/data/invitations/bagus-tari-gallery';
 
 /** ADR-001/009: DB path is env-configurable (externalize for prod / object storage later). */
 const DB_PATH = process.env.LUMINA_DB_PATH ?? path.join(process.cwd(), 'dev.db');
@@ -246,6 +247,49 @@ function migrate() {
   if (wcount.count === 0) {
     seedBuiltinWidgets(d);
   }
+  injectBagusTariGallery(d);
+}
+
+/**
+ * Add curated assets to the published Bagus-Tari invitation once they ship
+ * with the application. The migration updates both live content and its
+ * published snapshot, and is safe to run repeatedly.
+ */
+function injectBagusTariGallery(d: Database.Database): void {
+  const row = d.prepare(
+    'SELECT content, published_snapshot FROM invitations WHERE slug = ?',
+  ).get('bagus-tari-bali-modern') as { content: string; published_snapshot: string | null } | undefined;
+  if (!row) return;
+
+  const appendAssets = (raw: string): { value: Record<string, any>; changed: boolean } => {
+    let value: Record<string, any>;
+    try { value = JSON.parse(raw) as Record<string, any>; } catch { value = {}; }
+    const gallery = value.gallery && typeof value.gallery === 'object' ? value.gallery : {};
+    const existing = Array.isArray(gallery.images)
+      ? gallery.images.filter((src: unknown) => (
+        typeof src === 'string'
+        && src.trim()
+        && !/drive\.google\.com\/thumbnail\?id=(?:&|$)/i.test(src.trim())
+      ))
+      : [];
+    const images = [...new Set([...existing, ...BAGUS_TARI_GALLERY_ASSETS])];
+    const changed = images.length !== existing.length || images.some((src, index) => src !== existing[index]);
+    return { value: { ...value, gallery: { ...gallery, images } }, changed };
+  };
+
+  const content = appendAssets(row.content);
+  let snapshotRaw = row.published_snapshot;
+  let snapshotChanged = false;
+  if (snapshotRaw) {
+    const snapshot = appendAssets(snapshotRaw);
+    snapshotRaw = JSON.stringify(snapshot.value);
+    snapshotChanged = snapshot.changed;
+  }
+  if (!content.changed && !snapshotChanged) return;
+
+  d.prepare(
+    'UPDATE invitations SET content = ?, published_snapshot = ?, updated_at = datetime(\'now\') WHERE slug = ?',
+  ).run(JSON.stringify(content.value), snapshotRaw, 'bagus-tari-bali-modern');
 }
 
 /** Single-admin default workspace (multi-user RBAC lands in P7). Idempotent. */
