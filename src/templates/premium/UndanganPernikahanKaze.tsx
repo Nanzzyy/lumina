@@ -110,6 +110,11 @@ function deriveData(content: InvitationContent) {
   return { p1, p2, isoDate, displayDate, location, events, stories, gallery, gifts, quote, audio, media };
 }
 
+function youtubeIdFromUrl(value: string): string | null {
+  const match = value.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{6,})/i);
+  return match?.[1] || null;
+}
+
 function injectStyles() {
   if (typeof window === 'undefined' || document.getElementById('kaze-inv')) return;
   const s = document.createElement('style');
@@ -185,6 +190,7 @@ function ChapterNo() {
 export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTemplateProps) {
   const data = deriveData(content);
   const { p1, p2, isoDate, displayDate, location, events, stories, gallery, gifts, quote, audio, media } = data;
+  const youtubeMusicId = youtubeIdFromUrl(audio);
 
   const [isOpen, setIsOpen] = useState(preview ?? false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -196,12 +202,30 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
   const { wishes, rsvpForm, setRsvpForm, isSubmitted, submit } = useRsvpWishes(slug);
   const reduce = useReducedMotion();
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const youtubeMusicRef = useRef<HTMLIFrameElement | null>(null);
   useAutoplayMusic(audioRef, setIsPlaying);
 
   useEffect(() => { injectStyles(); }, []);
 
-  const open = () => { setIsOpen(true); setIsPlaying(true); audioRef.current?.play().catch(() => {}); };
-  const toggleMusic = () => { if (!audioRef.current) return; if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {}); setIsPlaying(!isPlaying); };
+  const youtubeCommand = (func: 'playVideo' | 'pauseVideo') => {
+    youtubeMusicRef.current?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), '*');
+  };
+  const open = () => {
+    setIsOpen(true);
+    setIsPlaying(true);
+    if (youtubeMusicId) window.setTimeout(() => youtubeCommand('playVideo'), 250);
+    else audioRef.current?.play().catch(() => {});
+  };
+  const toggleMusic = () => {
+    if (youtubeMusicId) {
+      if (isPlaying) youtubeCommand('pauseVideo'); else youtubeCommand('playVideo');
+      setIsPlaying(!isPlaying);
+      return;
+    }
+    if (!audioRef.current) return;
+    if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {});
+    setIsPlaying(!isPlaying);
+  };
   const copy = (text: string, idx: number) => { navigator.clipboard?.writeText(text); setCopiedIdx(idx); setTimeout(() => setCopiedIdx(null), 2500); };
   const activeEvt = events[activeTab] || events[0];
 
@@ -252,7 +276,15 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
   /* ── MAIN ─── */
   return (
     <div className="font-body min-h-screen relative overflow-x-hidden" style={{ backgroundColor: BONE, color: INK }}>
-      <audio ref={audioRef} src={audio} loop />
+      {youtubeMusicId ? (
+        <iframe
+          ref={youtubeMusicRef}
+          src={`https://www.youtube.com/embed/${youtubeMusicId}?enablejsapi=1&autoplay=0&loop=1&playlist=${youtubeMusicId}&controls=0&rel=0`}
+          title="Lagu undangan"
+          allow="autoplay; encrypted-media"
+          className="fixed left-0 top-0 h-px w-px opacity-0 pointer-events-none"
+        />
+      ) : <audio ref={audioRef} src={audio} loop />}
 
       <button onClick={toggleMusic}
         className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center transition-all duration-200 hover:scale-110"
@@ -322,9 +354,9 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
 
           <div className="space-y-20">
             {[
-              { person: p1, img: media.p1, label: 'Mempelai Pria', flip: false },
-              { person: p2, img: media.p2, label: 'Mempelai Wanita', flip: true },
-            ].map(({ person, img, label, flip }, idx) => (
+              { person: p1, img: media.p1, label: 'Mempelai Pria', parentLabel: 'Putra dari', flip: false },
+              { person: p2, img: media.p2, label: 'Mempelai Wanita', parentLabel: 'Putri dari', flip: true },
+            ].map(({ person, img, label, parentLabel, flip }, idx) => (
               <motion.div key={label} className={`grid md:grid-cols-2 gap-8 items-center ${flip ? 'md:[&>*:first-child]:order-2' : ''}`}
                 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: DUR, ease: EASE, delay: idx * 0.1 }}>
@@ -340,7 +372,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
                   <div className={`flex items-center gap-3 ${flip ? '' : 'md:justify-end'}`}>
                     <span className="block w-8 h-px" style={{ background: VERMILLION }} />
                     <div>
-                      <p className="text-[10px] uppercase tracking-wider font-body" style={{ color: MUTED }}>Putra/i dari</p>
+                      <p className="text-[10px] uppercase tracking-wider font-body" style={{ color: MUTED }}>{parentLabel}</p>
                       <p className="text-xs font-body font-medium mt-0.5" style={{ color: BONE }}>{person.father}</p>
                       <p className="text-xs font-body" style={{ color: `${BONE}AA` }}>&amp; {person.mother}</p>
                     </div>
@@ -613,7 +645,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
           </motion.div>
         </div>
         <div className="border-t mt-16 pt-8 text-center" style={{ borderColor: `${BONE}11` }}>
-          <p className="text-[8px] uppercase tracking-[0.4em] font-body" style={{ color: `${BONE}44` }}>© 2027 {p1.nick} &amp; {p2.nick}. Kaze Series.</p>
+          <p className="text-[8px] uppercase tracking-[0.4em] font-body" style={{ color: `${BONE}44` }}>© {new Date(isoDate).getFullYear()} {p1.nick} &amp; {p2.nick}. Kaze Series.</p>
         </div>
       </footer>
     </div>
