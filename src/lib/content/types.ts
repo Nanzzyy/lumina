@@ -132,9 +132,19 @@ export interface MapsContent {
   embedUrl?: string;
 }
 
+/** Optional supporter or other party shown alongside the Lumina credit. */
+export interface SupporterContent {
+  name: string;
+  instagram?: string;
+  /** Whether to show the Instagram icon/link when an account is provided. */
+  showInstagram?: boolean;
+  enabled?: boolean;
+}
+
 export interface FooterContent {
   text: string;
   showCredit?: boolean;
+  supporters?: SupporterContent[];
 }
 
 /** Per-section background appearance */

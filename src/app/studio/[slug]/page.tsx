@@ -426,7 +426,15 @@ function OGEditor({ content, onChange }: { content: InvitationContent; onChange:
 }
 
 function QuoteFooterEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
-  const qt = content.quote || { text: "" }; const ft = content.footer || { text: "", showCredit: true };
+  const qt = content.quote || { text: "" };
+  const ft: InvitationContent['footer'] = content.footer || { text: "", showCredit: true };
+  const supporters = ft.supporters || [];
+  const updateSupporter = (index: number, patch: Partial<import('@/lib/content/types').SupporterContent>) => {
+    const next = supporters.map((supporter, i) => i === index ? { ...supporter, ...patch } : supporter);
+    onChange({ ...content, footer: { ...ft, supporters: next } });
+  };
+  const addSupporter = () => onChange({ ...content, footer: { ...ft, supporters: [...supporters, { name: '', showInstagram: true }] } });
+  const removeSupporter = (index: number) => onChange({ ...content, footer: { ...ft, supporters: supporters.filter((_, i) => i !== index) } });
   return (
     <div className="space-y-6">
       <div className="p-4 bg-zinc-50 rounded-lg">
@@ -445,6 +453,35 @@ function QuoteFooterEditor({ content, onChange }: { content: InvitationContent; 
             <label className="text-sm text-zinc-700">Show Credit</label>
             <input type="checkbox" checked={ft.showCredit ?? true} onChange={(e) => onChange({ ...content, footer: { ...content.footer, showCredit: e.target.checked } })}
               className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
+          </div>
+          <div className="pt-4 mt-4 border-t border-zinc-200">
+            <h4 className="text-sm font-semibold text-zinc-700">Supporter / Pihak Lain (Opsional)</h4>
+            <p className="text-[11px] text-zinc-400 mt-1 mb-3">Tambahkan pihak lain selain Lumina yang ingin ditampilkan di footer undangan.</p>
+            <div className="space-y-3">
+              {supporters.map((supporter, index) => (
+                <div key={index} className="rounded-lg border border-zinc-200 bg-white p-3 space-y-3">
+                  <div className="flex gap-2 items-start">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1">
+                      <div>
+                        <label className="block text-[11px] text-zinc-500 mb-1">Nama supporter / pihak</label>
+                        <Input value={supporter.name || ''} onChange={(v) => updateSupporter(index, { name: v })} placeholder="Contoh: Fotografer" />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] text-zinc-500 mb-1">Instagram (opsional)</label>
+                        <Input value={supporter.instagram || ''} onChange={(v) => updateSupporter(index, { instagram: v })} placeholder="@username atau https://instagram.com/..." />
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => removeSupporter(index)} className="mt-7 text-zinc-400 hover:text-red-500" aria-label="Hapus supporter">×</button>
+                  </div>
+                  <label className="inline-flex items-center gap-2 text-xs text-zinc-600">
+                    <input type="checkbox" checked={supporter.showInstagram !== false} onChange={(e) => updateSupporter(index, { showInstagram: e.target.checked })}
+                      className="w-4 h-4 rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]" />
+                    Tampilkan logo Instagram
+                  </label>
+                </div>
+              ))}
+              <button type="button" onClick={addSupporter} className="text-sm text-[var(--colors-primary)] hover:text-[var(--colors-primary-hover)] transition-colors">+ Tambah supporter / pihak lain</button>
+            </div>
           </div>
         </div>
       </div>

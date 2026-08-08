@@ -71,7 +71,7 @@ function deriveData(content: InvitationContent) {
     father: c.partner1Father || DEFAULTS.couple.p1.father,
     mother: c.partner1Mother || DEFAULTS.couple.p1.mother,
     ig: c.partner1Instagram || DEFAULTS.couple.p1.ig,
-    childOrder: c.partner1ChildOrder || DEFAULTS.couple.p1.childOrder,
+    childOrder: c.partner1ChildOrder ?? DEFAULTS.couple.p1.childOrder,
     desc: c.partner1Desc || DEFAULTS.couple.p1.desc,
   };
   const p2 = {
@@ -80,7 +80,7 @@ function deriveData(content: InvitationContent) {
     father: c.partner2Father || DEFAULTS.couple.p2.father,
     mother: c.partner2Mother || DEFAULTS.couple.p2.mother,
     ig: c.partner2Instagram || DEFAULTS.couple.p2.ig,
-    childOrder: c.partner2ChildOrder || DEFAULTS.couple.p2.childOrder,
+    childOrder: c.partner2ChildOrder ?? DEFAULTS.couple.p2.childOrder,
     desc: c.partner2Desc || DEFAULTS.couple.p2.desc,
   };
   const isoDate = content.event?.date || DEFAULTS.date;
@@ -90,10 +90,14 @@ function deriveData(content: InvitationContent) {
     : []).filter((e) => e.title);
   const heroSlideOverrides = content.media?.heroSlides?.filter(Boolean) || [];
   const heroSlides = heroSlideOverrides.length ? heroSlideOverrides : [];
-  const stories = content.stories?.length
-    ? content.stories.map((s, i) => ({ ...s, image: s.image || DEFAULTS.stories[i % DEFAULTS.stories.length]?.image }))
-    : [];
-  const gallery = content.gallery?.images?.length ? content.gallery.images : [];
+  // Story timeline and gallery are intentionally independent data sources.
+  // Do not fall back from one to the other: an empty story must not hide or
+  // rename the gallery section through the customization layer.
+  const stories = (content.stories || [])
+    .filter((story) => story.title || story.desc || story.image)
+    .map((s, i) => ({ ...s, image: s.image || DEFAULTS.stories[i % DEFAULTS.stories.length]?.image }));
+  const gallery = (content.gallery?.images || [])
+    .filter((src): src is string => typeof src === 'string' && src.trim().length > 0);
   const gifts = (content.gift?.items?.length
     ? content.gift.items.map((g) => ({ bank: g.bank || g.name || '', number: g.number || '', owner: g.owner || g.note || '' }))
     : []).filter((g) => g.bank || g.number);
@@ -161,9 +165,17 @@ const extractYoutubeId = (url: string) => {
   return m ? m[1] : null;
 };
 
+function supporterInstagramUrl(value: string): string {
+  const trimmed = value.trim();
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://www.instagram.com/${trimmed.replace(/^@+/, '')}`;
+}
+
 export function UndanganPernikahanBaliModern({ content, slug, preview }: MonolithicTemplateProps) {
   const data = deriveData(content);
   const { p1, p2, isoDate, displayDate, events, heroSlides, stories, gallery, gifts, quote, audio, media, footerMedia, bgVideo, youtubeIds } = data;
+  const youtubeMusicId = extractYoutubeId(audio);
+  const supporters = (content.footer?.supporters || []).filter((supporter) => supporter.enabled !== false && supporter.name?.trim());
 
   const [inIframe] = useState(() => typeof window !== 'undefined' && window.self !== window.top);
   const [isOpen, setIsOpen] = useState(false);
@@ -195,6 +207,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
   const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
   const { wishes, rsvpForm, setRsvpForm, refresh } = useRsvpWishes(slug);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const youtubeMusicRef = useRef<HTMLIFrameElement | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   useAutoplayMusic(audioRef, setIsPlaying);
 
@@ -240,8 +253,21 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
   // Hero and love-story slides are separate fields, not reused from gallery.
   const galleryGroups: string[][] = [];
   for (let i = 0; i < gallery.length; i += 4) galleryGroups.push(gallery.slice(i, i + 4));
-  const open = () => { setIsOpen(true); setIsPlaying(true); audioRef.current?.play().catch(() => {}); };
+  const youtubeCommand = (func: 'playVideo' | 'pauseVideo') => {
+    youtubeMusicRef.current?.contentWindow?.postMessage(JSON.stringify({ event: 'command', func, args: [] }), '*');
+  };
+  const open = () => {
+    setIsOpen(true);
+    setIsPlaying(true);
+    if (youtubeMusicId) window.setTimeout(() => youtubeCommand('playVideo'), 250);
+    else audioRef.current?.play().catch(() => {});
+  };
   const toggleMusic = () => {
+    if (youtubeMusicId) {
+      if (isPlaying) youtubeCommand('pauseVideo'); else youtubeCommand('playVideo');
+      setIsPlaying(!isPlaying);
+      return;
+    }
     if (!audioRef.current) return;
     if (isPlaying) audioRef.current.pause(); else audioRef.current.play().catch(() => {});
     setIsPlaying(!isPlaying);
@@ -286,7 +312,15 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
 
   return (
     <div ref={rootRef} className={`font-bm-roboto text-white ${rootHeight} relative bg-black lg:overflow-hidden`}>
-      <audio ref={audioRef} src={audio} loop />
+      {youtubeMusicId ? (
+        <iframe
+          ref={youtubeMusicRef}
+          src={`https://www.youtube.com/embed/${youtubeMusicId}?enablejsapi=1&autoplay=0&loop=1&playlist=${youtubeMusicId}&controls=0&rel=0`}
+          title="Lagu undangan"
+          allow="autoplay; encrypted-media"
+          className="fixed left-0 top-0 h-px w-px opacity-0 pointer-events-none"
+        />
+      ) : <audio ref={audioRef} src={audio} loop />}
 
       {/* ── MOBILE & DESKTOP KANAN: full-bleed bg video ── */}
       <video
@@ -328,7 +362,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
           <div className="relative z-10">
 
         {/* ── HERO ── */}
-        <section id="hero" className={`relative ${heroHeight} flex flex-col justify-center px-6 md:px-12 py-20 bg-black/40`}>
+        <section id="hero" data-lumina-section="hero" className={`relative ${heroHeight} flex flex-col justify-center px-6 md:px-12 py-20 bg-black/40`}>
           <div className="relative z-10 text-center">
             <p data-bm-reveal="down" className="font-bm-montserrat text-[11px] md:text-xs uppercase tracking-[6px] text-white/80 font-light">The Wedding of</p>
             <h1 data-bm-reveal="down" style={{ transitionDelay: '200ms' }} className="mt-5 font-bm-parisienne text-5xl md:text-6xl text-white leading-none">{p1.nick} <span className="text-3xl text-white/60 italic">&amp;</span> {p2.nick}</h1>
@@ -357,7 +391,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
         </section>
 
         {/* ── COUPLE INFO — Om Swastyastu ── */}
-        <section id="couuple-information" className="relative py-14 md:py-24 px-6 bg-black/50">
+        <section id="couuple-information" data-lumina-section="couple" className="relative py-14 md:py-24 px-6 bg-black/50">
           <div className="max-w-3xl mx-auto text-center">
             <p data-bm-reveal="up" className="font-bm-montserrat text-[10px] uppercase tracking-[6px] text-white/60 font-light">Om Swastyastu</p>
             <h2 data-bm-reveal="up" style={{ transitionDelay: '150ms' }} className="mt-3 font-bm-parisienne text-4xl md:text-5xl text-white">Om Awighnam Astu Namo Sidham</h2>
@@ -372,18 +406,17 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
                   </div>
                   <span className="font-bm-montserrat text-[11px] md:text-xs uppercase tracking-[6px] text-white/50 font-medium">{role}</span>
                   <h3 className="font-bm-parisienne text-4xl md:text-5xl xl:text-6xl text-white">{d.full}</h3>
-                  <p className="font-bm-roboto text-sm md:text-base text-white/65 font-light">{d.childOrder} dari<br /><span className="text-white/90">{d.father}</span> &amp; <span className="text-white/90">{d.mother}</span></p>
+                  <p className="font-bm-roboto text-sm md:text-base text-white/65 font-light">{d.childOrder ? `${d.childOrder} dari` : role === 'The Groom' ? 'Putra dari' : 'Putri dari'}<br /><span className="text-white/90">{d.father}</span> &amp; <span className="text-white/90">{d.mother}</span></p>
                   {d.desc && <p className="font-bm-roboto text-xs md:text-sm text-white/55 font-light max-w-md leading-relaxed">{d.desc}</p>}
                   {d.ig && <a href={`https://instagram.com/${d.ig.replace('@', '')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-bm-montserrat text-xs uppercase tracking-widest text-white/70 hover:text-white transition-colors"><AtSign className="w-4 h-4" />{d.ig.replace('@', '')}</a>}
                 </div>
               ))}
             </div>
-            <p className="mt-12 font-bm-roboto text-xs text-white/50 font-light italic">Manusa Yadnya Pawiwahan</p>
           </div>
         </section>
 
         {/* ── SAVE THE DATE + COUNTDOWN ── */}
-        <section id="save-the-date" className="relative py-14 md:py-24 px-6 bg-black/40">
+        <section id="save-the-date" data-lumina-section="countdown" className="relative py-14 md:py-24 px-6 bg-black/40">
           <div className="max-w-xl mx-auto text-center">
             <p data-bm-reveal="up" className="font-bm-montserrat text-[10px] uppercase tracking-[6px] text-white/60 font-light">Save The Date</p>
             <h2 data-bm-reveal="up" style={{ transitionDelay: '150ms' }} className="mt-3 font-bm-parisienne text-4xl md:text-5xl text-white">{displayDate}</h2>
@@ -403,7 +436,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
 
         {/* ── WEDDING VENUE / RESEPSI ── */}
         {activeEvent && (
-          <section id="wedding-venue" className="relative py-14 md:py-24 px-6 bg-black/50">
+          <section id="wedding-venue" data-lumina-section="event" className="relative py-14 md:py-24 px-6 bg-black/50">
             <div className="max-w-xl mx-auto text-center">
               <p data-bm-reveal="up" className="font-bm-montserrat text-[10px] uppercase tracking-[6px] text-white/60 font-light">Wedding Venue</p>
               <h2 data-bm-reveal="up" style={{ transitionDelay: '150ms' }} className="mt-3 font-bm-parisienne text-4xl md:text-5xl text-white">{activeEvent.title}</h2>
@@ -425,7 +458,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
 
         {/* ── LOVE STORY ── */}
         {stories.length > 0 && (
-          <section className="relative py-14 md:py-24 px-6 bg-black/40">
+          <section data-lumina-section="story" className="relative py-14 md:py-24 px-6 bg-black/40">
             <div className="max-w-xl mx-auto text-center">
               <p data-bm-reveal="up" className="font-bm-montserrat text-[10px] uppercase tracking-[6px] text-white/60 font-light">Our Love Story</p>
               <h2 data-bm-reveal="up" style={{ transitionDelay: '150ms' }} className="mt-3 font-bm-parisienne text-4xl md:text-5xl text-white">{p1.nick} &amp; {p2.nick}</h2>
@@ -467,7 +500,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
 
         {/* ── OUR MOMENT — gallery (ref 6-col grid) + lightbox ── */}
         {gallery.length > 0 && (
-          <section className="relative py-14 md:py-24 px-6 bg-black/50">
+          <section data-lumina-section="gallery" className="relative py-14 md:py-24 px-6 bg-black/50">
             <div className="max-w-xl mx-auto">
               <div className="flex flex-col text-center">
                 <h2 data-bm-reveal="up" className="font-bm-parisienne text-3xl md:text-4xl leading-none tracking-wider text-white mb-3">Our Moment</h2>
@@ -492,8 +525,8 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
                             <iframe src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=1&loop=1&playlist=${ytId}&controls=0`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full pointer-events-none" />
                           </div>
                         ) : isVideo(src)
-                          ? <video src={src} muted loop playsInline autoPlay className="object-contain bg-black lg:object-cover object-center w-full h-full hover:scale-105 transition-transform ease-in-out duration-500" />
-                          : <img src={src} alt={`Moment ${idx + 1}`} loading="lazy" className={`object-contain bg-black lg:object-cover object-center w-full hover:scale-105 transition-transform ease-in-out duration-500 ${square ? 'h-[180px] lg:h-[200px] md:h-[300px]' : 'max-h-[200px] lg:max-h-[250px] md:max-h-[350px]'}`} />}
+                          ? <video src={src} muted loop playsInline autoPlay className={`object-cover bg-black object-center w-full hover:scale-105 transition-transform ease-in-out duration-500 ${square ? 'h-[180px] lg:h-[200px] md:h-[300px]' : 'h-[200px] lg:h-[250px] md:h-[350px]'}`} />
+                          : <img src={src} alt={`Moment ${idx + 1}`} loading="lazy" className={`object-cover bg-black object-center w-full hover:scale-105 transition-transform ease-in-out duration-500 ${square ? 'h-[180px] lg:h-[200px] md:h-[300px]' : 'h-[200px] lg:h-[250px] md:h-[350px]'}`} />}
                       </div>
                     );
                   })}
@@ -505,7 +538,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
 
         {/* ── WEDDING GIFT ── */}
         {content.gift?.enabled !== false && gifts.length > 0 && (
-          <section id="wedding-gift-section" className="relative py-14 md:py-24 px-6 bg-black/40">
+          <section id="wedding-gift-section" data-lumina-section="gift" className="relative py-14 md:py-24 px-6 bg-black/40">
             <div className="max-w-xl mx-auto text-center">
               <div data-bm-reveal="zoom-out-up" className="inline-flex items-center justify-center w-14 h-14 rounded-full border border-white/20 bg-black/50 backdrop-blur text-white mb-6">
                 <Gift className="w-6 h-6" />
@@ -531,7 +564,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
         )}
 
         {/* ── RSVP / WEDDING WISH — Gabungan konfirmasi & ucapan ── */}
-        <section className="relative py-14 md:py-24 px-6 bg-black/40">
+        <section data-lumina-section="rsvp" className="relative py-14 md:py-24 px-6 bg-black/40">
           <div className="max-w-xl mx-auto text-center">
             <p data-bm-reveal="up" className="font-bm-montserrat text-[10px] uppercase tracking-[6px] text-white/60 font-light">Wedding Wish</p>
             <h2 data-bm-reveal="up" style={{ transitionDelay: '150ms' }} className="mt-3 font-bm-parisienne text-4xl md:text-5xl text-white">Ucapan &amp; Doa</h2>
@@ -593,6 +626,24 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19.6 6.7a4.8 4.8 0 0 1-3.5-1.6A4.8 4.8 0 0 1 14.8 1h-3.2v12.7a2.8 2.8 0 0 1-2.8 2.8 2.8 2.8 0 0 1-2.8-2.8 2.8 2.8 0 0 1 2.8-2.8c.2 0 .4 0 .6.1V7.9a6 6 0 0 0-.6 0A6 6 0 0 0 2.2 13.9a6 6 0 0 0 6 6 6 6 0 0 0 6-6V8.9a8 8 0 0 0 4.8 1.5V7.2c-.5 0-1-.2-1.4-.5z"/></svg>
                 </a>
               </div>
+              {supporters.length > 0 && (
+                <div className="mt-5 pt-4 border-t border-white/15 max-w-md">
+                  <p className="font-bm-montserrat text-[9px] uppercase tracking-[4px] text-white/45">Supporter / Pihak Lain</p>
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+                    {supporters.map((supporter, index) => (
+                      <div key={`${supporter.name}-${index}`} className="inline-flex items-center gap-2 text-white/75">
+                        {index > 0 && <span className="text-white/35" aria-hidden="true">|</span>}
+                        <span className="font-bm-montserrat text-[10px] uppercase tracking-[2px]">{supporter.name}</span>
+                        {supporter.instagram && supporter.showInstagram !== false && (
+                          <a href={supporterInstagramUrl(supporter.instagram)} target="_blank" rel="noreferrer" aria-label={`Instagram ${supporter.name}`} className="text-white/65 hover:text-white transition-colors duration-300">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4a3.8 3.8 0 0 1-1.4-.9 3.8 3.8 0 0 1-.9-1.4c-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.4-.6.8-1 1.4-1.4.4-.4 1-.6 2.2-.8C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7.1.1 5.9.1 5 .3 4.2.6c-.8.3-1.5.8-2.1 1.4C1.5 2.6 1 3.3.7 4.2.3 5 .2 5.9.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.1 1.2.3 2.1.6 2.9.3.8.8 1.5 1.4 2.1.6.6 1.3 1.1 2.1 1.4.8.3 1.7.5 2.9.6 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c1.2-.1 2.1-.3 2.9-.6.8-.3 1.5-.8 2.1-1.4.6-.6 1.1-1.3 1.4-2.1.3-.8.5-1.7.6-2.9.1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.1-1.2-.3-2.1-.6-2.9-.3-.8-1.1-1.4-2.1-1.4C18.9.3 18 .2 16.9.1 15.7 0 15.3 0 12 0zM12 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" /></svg>
+                          </a>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </footer>
