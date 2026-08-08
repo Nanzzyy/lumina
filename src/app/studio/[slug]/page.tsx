@@ -559,8 +559,17 @@ function GuestListEditor({ content, onChange, slug }: { content: InvitationConte
 }
 
 /* ─── Section Background Editor ─── */
-function SectionBackgroundEditor({ content, onChange }: { content: InvitationContent; onChange: (c: InvitationContent) => void }) {
-  const sectionIds = ['hero', 'quote', 'countdown', 'story', 'gallery', 'timeline', 'maps', 'rsvp', 'gift', 'guestbook', 'footer'];
+function SectionBackgroundEditor({ content, onChange, premium = false, premiumTemplateId }: { content: InvitationContent; onChange: (c: InvitationContent) => void; premium?: boolean; premiumTemplateId?: string }) {
+  // Monolithic premium templates share a richer, fixed visual sequence. The
+  // renderer maps these keys to the actual sections without changing the
+  // template's art direction or section layout.
+  const sectionIds = premiumTemplateId === 'undangan-bali-modern'
+    ? ['global', 'hero', 'couple', 'countdown', 'event', 'story', 'gallery', 'gift', 'rsvp', 'footer']
+    : premiumTemplateId === 'melati'
+    ? ['global', 'hero', 'intro', 'couple', 'countdown', 'story', 'gallery', 'video', 'quote', 'event', 'dresscode', 'liveStream', 'rundown', 'gift', 'rsvp', 'footer']
+    : premium
+    ? ['global', 'hero', 'quote', 'couple', 'countdown', 'story', 'event', 'gallery', 'rsvp', 'gift', 'footer']
+    : ['hero', 'quote', 'countdown', 'story', 'gallery', 'timeline', 'maps', 'rsvp', 'gift', 'guestbook', 'footer'];
   const bg = content.sectionBackgrounds || {};
 
   const setBg = (sectionId: string, field: string, value: unknown) => {
@@ -572,14 +581,38 @@ function SectionBackgroundEditor({ content, onChange }: { content: InvitationCon
       },
     });
   };
+  const setVisibility = (sectionId: string, visible: boolean) => {
+    onChange({
+      ...content,
+      sectionVisibility: { ...(content.sectionVisibility || {}), [sectionId]: visible },
+    });
+  };
 
   return (
     <div className="space-y-4">
       <p className="text-xs text-zinc-500">Set background per section — bisa warna, gambar, atau efek overlay.</p>
+      {premium && (
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+          <p className="text-xs font-medium text-zinc-600 mb-2">Tampilkan halaman premium</p>
+          <div className="grid grid-cols-2 gap-2">
+            {sectionIds.filter((id) => id !== 'global').map((id) => (
+              <label key={id} className="flex items-center gap-2 text-xs text-zinc-500 capitalize">
+                <input
+                  type="checkbox"
+                  checked={content.sectionVisibility?.[id] !== false}
+                  onChange={(e) => setVisibility(id, e.target.checked)}
+                  className="rounded border-zinc-300 text-[var(--colors-primary)] focus:ring-[var(--colors-primary)]"
+                />
+                {id === 'event' ? 'Event / lokasi' : id}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
       {sectionIds.map((id) => (
         <details key={id} className="border border-zinc-200 rounded-lg overflow-hidden">
           <summary className="px-4 py-2 text-sm font-medium text-zinc-700 cursor-pointer hover:bg-zinc-50 capitalize">
-            {id}
+            {id === 'global' ? 'Page background' : id === 'event' ? 'Event / location' : id}
           </summary>
           <div className="p-4 space-y-3 bg-zinc-50/50">
             <div className="grid grid-cols-2 gap-3">
@@ -992,6 +1025,12 @@ export default function StudioEditorPage() {
             <section>
               <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Media (Gambar)</h2>
               <MediaEditor content={content} onChange={handleChange} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Background &amp; tampilan halaman</h2>
+              <p className="text-xs text-zinc-500 mb-4">Berlaku untuk Kaze dan seluruh template premium: atur background global atau per halaman tanpa mengubah gaya desain template.</p>
+              <SectionBackgroundEditor content={content} onChange={handleChange} premium premiumTemplateId={template.id} />
             </section>
             <div className="border-t border-zinc-200" />
             <section>

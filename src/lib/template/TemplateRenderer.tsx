@@ -7,6 +7,7 @@ import { SectionRegistry } from './SectionRegistry';
 import { FloralDecoration, OrnamentGroup } from '@/components/primitives';
 import { TreeRenderer } from './TreeRenderer';
 import { CanvasRenderer } from '@/components/mobile/CanvasRenderer';
+import { MonolithicCustomization } from '@/templates/premium/shared';
 
 interface TemplateRendererProps {
   template: { id: string; kind?: 'composed' | 'monolithic' | 'mobile-canvas'; component?: React.FC<{ content: InvitationContent; slug?: string; preview?: boolean }>; theme?: Record<string, unknown>; decorations?: { id: string; layer: string; anchor: string | number; type: string; props?: Record<string, unknown>; hiddenMobile?: boolean }[] };
@@ -88,7 +89,11 @@ export function TemplateRenderer({
   // `preview` is only set by the studio editor — public pages show the cover.
   if (template.kind === 'monolithic' && template.component) {
     const Monolithic = template.component;
-    return <Monolithic content={content} slug={slug} preview={preview} />;
+    return (
+      <MonolithicCustomization content={content} templateId={template.id}>
+        <Monolithic content={content} slug={slug} preview={preview} />
+      </MonolithicCustomization>
+    );
   }
 
   // Mobile-canvas switch: free-position element canvas.

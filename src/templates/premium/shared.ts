@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, type FormEvent } from 'react';
-import type { InvitationContent } from '@/lib/content/types';
+import { createElement, useState, useEffect, useCallback, useRef, type FormEvent, type ReactNode } from 'react';
+import type { InvitationContent, SectionBackground } from '@/lib/content/types';
 
 /** Treat common video extensions as video (else image). */
 export function isVideo(url: string): boolean {
@@ -165,4 +165,164 @@ export function pickMedia(
     video: content.media?.video || fallback.video || '',
     footerImage: content.media?.footerImage || fallback.footerImage || '',
   };
+}
+
+/**
+ * Applies the content-level visual controls to every self-contained premium
+ * template. Premium templates intentionally keep their own art direction and
+ * inline palette, so these overrides live at the renderer boundary instead of
+ * being duplicated in every template component.
+ *
+ * The standard premium section order is shared by Kaze, Hana, Sakura, Liana,
+ * Sora, and the other editorial templates. A template may opt into explicit
+ * data-lumina-section attributes later; the positional fallback keeps existing
+ * templates backwards compatible.
+ */
+export function MonolithicCustomization({
+  content,
+  templateId,
+  children,
+}: {
+  content: InvitationContent;
+  templateId?: string;
+  children: ReactNode;
+}) {
+  const rootRef = useRef<HTMLDivElement>(null);
+  const setRoot = useCallback((node: HTMLDivElement | null) => {
+    rootRef.current = node;
+  }, []);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const sectionKeys = templateId === 'undangan-bali-modern'
+      ? ['hero', 'couple', 'countdown', 'event', 'story', 'gallery', 'gift', 'rsvp']
+      : templateId === 'melati'
+      ? [
+        'hero', 'intro', 'couple', 'countdown', 'story', 'gallery',
+        'video', 'quote', 'event', 'dresscode', 'liveStream', 'rundown', 'gift', 'rsvp',
+      ]
+      : templateId === 'hana'
+      ? [
+        'hero', 'quote', 'couple', 'countdown', 'story',
+        'event', 'gallery', 'gift', 'rsvp',
+      ]
+      : [
+      'hero', 'quote', 'couple', 'countdown', 'story',
+      'event', 'gallery', 'rsvp', 'gift',
+      ];
+    const backgrounds = content.sectionBackgrounds || {};
+    const visibility = content.sectionVisibility || {};
+    const snapshots = new Map<HTMLElement, Map<string, readonly [string, string, string]>>();
+    const snapshot = (element: HTMLElement, properties: string[]) => {
+      let values = snapshots.get(element);
+      if (!values) { values = new Map(); snapshots.set(element, values); }
+      properties.forEach((property) => {
+        if (!values?.has(property)) values?.set(property, [property, element.style.getPropertyValue(property), element.style.getPropertyPriority(property)] as const);
+      });
+    };
+
+    const applyBackground = (element: HTMLElement, background?: SectionBackground) => {
+      if (!background) return;
+      const properties = [
+        'background-color', 'background-image', 'background-size', 'background-position',
+        'background-attachment', 'background-blend-mode', 'backdrop-filter',
+        '-webkit-backdrop-filter', 'display',
+      ];
+      snapshot(element, properties);
+
+      if (background.type === 'color' && background.color) {
+        element.style.setProperty('background-color', background.color, 'important');
+      }
+      if (background.type === 'gradient' && background.gradient) {
+        element.style.setProperty('background-image', background.gradient, 'important');
+      }
+      if (background.type === 'image' && background.image) {
+        element.style.setProperty('background-image', `url(${JSON.stringify(background.image)})`, 'important');
+        element.style.setProperty('background-size', 'cover', 'important');
+        element.style.setProperty('background-position', 'center', 'important');
+        element.style.setProperty('background-attachment', 'scroll', 'important');
+      }
+      if (background.overlay === 'darken') {
+        const opacity = Math.max(0, Math.min(1, background.overlayOpacity ?? 0.4));
+        const overlay = `linear-gradient(rgba(0,0,0,${opacity}), rgba(0,0,0,${opacity}))`;
+        element.style.setProperty('background-image', background.type === 'image' && background.image
+          ? `${overlay}, url(${JSON.stringify(background.image)})`
+          : overlay, 'important');
+        element.style.setProperty('background-blend-mode', 'multiply', 'important');
+      }
+      if (background.overlay === 'blur') {
+        element.style.setProperty('backdrop-filter', 'blur(4px)', 'important');
+        element.style.setProperty('-webkit-backdrop-filter', 'blur(4px)', 'important');
+      }
+
+    };
+
+    const allElements = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+    const isFullScreenOverlay = (element: HTMLElement) => {
+      const classes = element.className;
+      return typeof classes === 'string'
+        && classes.includes('fixed')
+        && classes.includes('inset-0')
+        && classes.includes('z-50');
+    };
+
+    // The first full-screen z-50 layer is the opening cover in all premium
+    // templates. It is also present in Bali Modern while its main page stays
+    // mounted, which makes the cover override work in both architectures.
+    const cover = allElements.find(isFullScreenOverlay);
+    const coverUrl = content.media?.cover;
+    if (cover && coverUrl && !isVideo(coverUrl)) {
+      snapshot(cover, ['background-image', 'background-size', 'background-position']);
+      cover.style.setProperty('background-image', `linear-gradient(rgba(0,0,0,0.16), rgba(0,0,0,0.16)), url(${JSON.stringify(coverUrl)})`, 'important');
+      cover.style.setProperty('background-size', 'cover', 'important');
+      cover.style.setProperty('background-position', 'center', 'important');
+    }
+
+    const sections = Array.from(root.querySelectorAll<HTMLElement>('section'));
+    sections.forEach((section, index) => {
+      const declaredKey = section.dataset.luminaSection || section.id;
+      const key = {
+        'couuple-information': 'couple',
+        'save-the-date': 'countdown',
+        'wedding-venue': 'event',
+        'wedding-gift-section': 'gift',
+      }[declaredKey] || declaredKey || sectionKeys[index];
+      if (!key) return;
+      const background = backgrounds[key];
+      applyBackground(section, background);
+      if (visibility[key] === false) {
+        snapshot(section, ['display']);
+        section.style.setProperty('display', 'none', 'important');
+      }
+    });
+    const footer = root.querySelector<HTMLElement>('footer');
+    if (footer) {
+      applyBackground(footer, backgrounds.footer);
+      if (visibility.footer === false) {
+        snapshot(footer, ['display']);
+        footer.style.setProperty('display', 'none', 'important');
+      }
+    }
+
+    const pageBackground = backgrounds.global || backgrounds.page;
+    if (pageBackground) {
+      const pageRoot = Array.from(root.children).find((element) =>
+        !isFullScreenOverlay(element as HTMLElement) && (element.querySelector('section') || element.tagName === 'MAIN'),
+      ) as HTMLElement | undefined;
+      if (pageRoot) applyBackground(pageRoot, pageBackground);
+    }
+
+    return () => {
+      snapshots.forEach((values, element) => {
+        values.forEach(([property, value, priority]) => {
+          if (value) element.style.setProperty(property, value, priority);
+          else element.style.removeProperty(property);
+        });
+      });
+    };
+  }, [content, templateId]);
+
+  return createElement('div', { ref: setRoot, className: 'lumina-monolithic-customization' }, children);
 }

@@ -214,6 +214,8 @@ export interface InvitationContent {
   footer: FooterContent;
   /** Per-section background overrides (keyed by section id from template) */
   sectionBackgrounds?: Record<string, SectionBackground>;
+  /** Show/hide premium monolithic sections by semantic key. */
+  sectionVisibility?: Record<string, boolean>;
   /** Global ornaments for the invitation */
   ornaments?: OrnamentConfig[];
   /** OG / social sharing overrides */
