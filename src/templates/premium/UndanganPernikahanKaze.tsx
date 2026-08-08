@@ -473,7 +473,7 @@ export function UndanganPernikahanKaze({ content, slug, preview }: MonolithicTem
             <h3 className="font-display text-2xl font-medium tracking-tight mb-4" style={{ color: BONE }}>{activeEvt.title}</h3>
             <div className="space-y-2.5 font-body text-sm" style={{ color: `${BONE}AA` }}>
               <div className="flex items-center gap-2.5"><Clock className="w-4 h-4" style={{ color: VERMILLION }} /> {activeEvt.time}</div>
-              <div className="flex items-start gap-2.5"><MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: VERMILLION }} /> <span>{activeEvt.venue}<br />{activeEvt.address}</span></div>
+              <div className="flex items-start gap-2.5"><MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: VERMILLION }} /> <span>{activeEvt.venue && <>{activeEvt.venue}<br /></>}{activeEvt.address}</span></div>
             </div>
             {activeEvt.note && <p className="text-[11px] italic font-body mt-3" style={{ color: MUTED }}>{activeEvt.note}</p>}
             {activeEvt.mapsUrl && (
