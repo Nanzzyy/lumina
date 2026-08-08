@@ -171,6 +171,21 @@ function supporterInstagramUrl(value: string): string {
   return `https://www.instagram.com/${trimmed.replace(/^@+/, '')}`;
 }
 
+function supporterInstagramLabel(value: string): string {
+  const trimmed = value.trim();
+  const match = trimmed.match(/instagram\.com\/([^/?#]+)/i);
+  const handle = (match?.[1] || trimmed).replace(/^@+/, '');
+  return handle ? `@${handle}` : trimmed;
+}
+
+function InstagramMark({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
+      <path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4a3.8 3.8 0 0 1-1.4-.9 3.8 3.8 0 0 1-.9-1.4c-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7.1.1 5.9.1 5 .3 4.2.6c-.8.3-1.5.8-2.1 1.4C1.5 2.6 1 3.3.7 4.2.3 5 .2 5.9.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.1 1.2.3 2.1.6 2.9.3.8.8 1.5 1.4 2.1.6.6 1.3 1.1 2.1 1.4.8.3 1.7.5 2.9.6 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c1.2-.1 2.1-.3 2.9-.6.8-.3 1.5-.8 2.1-1.4.6-.6 1.1-1.3 1.4-2.1.3-.8.5-1.7.6-2.9.1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.1-1.2-.3-2.1-.6-2.9-.3-.8-.8-1.5-1.4-2.1-.6-.6-1.3-1.1-2.1-1.4C18.9.3 18 .2 16.9.1 15.7 0 15.3 0 12 0zM12 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" />
+    </svg>
+  );
+}
+
 export function UndanganPernikahanBaliModern({ content, slug, preview }: MonolithicTemplateProps) {
   const data = deriveData(content);
   const { p1, p2, isoDate, displayDate, events, heroSlides, stories, gallery, gifts, quote, audio, media, footerMedia, bgVideo, youtubeIds } = data;
@@ -613,9 +628,22 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
               <h4 className="mt-2 font-bm-parisienne text-3xl md:text-4xl text-white">{p1.nick} &amp; {p2.nick}</h4>
             </div>
             <div className="flex flex-col items-center pt-6">
-              <div className="flex items-center gap-2 pb-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pb-2">
                 <img src="/icon.png" alt="" className="h-8 w-8 rounded-lg opacity-85" />
                 <p className="font-bm-montserrat text-[11px] uppercase tracking-[5px] text-white/60">Lumina</p>
+                {supporters.map((supporter, index) => (
+                  <div key={`${supporter.name}-${index}`} className="inline-flex items-center gap-2 text-white/75">
+                    <span className="text-white/40" aria-hidden="true">|</span>
+                    {supporter.instagram && supporter.showInstagram !== false ? (
+                      <a href={supporterInstagramUrl(supporter.instagram)} target="_blank" rel="noreferrer" aria-label={`Instagram ${supporter.name}`} className="inline-flex items-center gap-1.5 font-bm-montserrat text-[10px] tracking-[2px] hover:text-white transition-colors duration-300">
+                        <InstagramMark />
+                        <span>{supporterInstagramLabel(supporter.instagram)}</span>
+                      </a>
+                    ) : (
+                      <span className="font-bm-montserrat text-[10px] tracking-[2px]">{supporter.name}</span>
+                    )}
+                  </div>
+                ))}
               </div>
               <p className="font-bm-roboto pb-2 text-xs text-center text-white/70">© {new Date().getFullYear()} <span className="font-semibold">Lumina</span>. All rights reserved.</p>
               <div className="flex flex-row gap-3">
@@ -627,7 +655,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
                 </a>
               </div>
               {supporters.length > 0 && (
-                <div className="mt-5 pt-4 border-t border-white/15 max-w-md">
+                <div className="hidden">
                   <p className="font-bm-montserrat text-[9px] uppercase tracking-[4px] text-white/45">Supporter / Pihak Lain</p>
                   <div className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
                     {supporters.map((supporter, index) => (
