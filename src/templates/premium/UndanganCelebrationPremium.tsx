@@ -163,7 +163,7 @@ function deriveData(content: InvitationContent, mode: Mode) {
   const isoDate = content.event?.date || D.date;
   const displayDate = displayDateFrom(isoDate, D.date);
   const quote = content.quote?.text ? { text: content.quote.text, author: content.quote.source || '' } : D.quote;
-  const stories = content.stories?.length ? content.stories : D.stories;
+  const stories = content.stories?.length ? content.stories : [];
   const events = (content.schedule?.items?.length
     ? content.schedule.items.map((it) => ({ title: it.title || '', time: it.time || '', venue: it.venue || '', address: it.address || '', mapsUrl: it.mapsUrl || 'https://maps.google.com', note: it.description || '' }))
     : D.events).filter((e) => e.title);

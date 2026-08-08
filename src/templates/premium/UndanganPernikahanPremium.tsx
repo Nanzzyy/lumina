@@ -83,11 +83,6 @@ const DEFAULT_EVENTS = [
   { title: 'Akad Nikah', time: '08:00 - 10:00 WIB', venue: 'Masjid Raya Al-Baqarah', address: 'Jl. Boulevard Indah No. 45, Kebayoran Baru, Jakarta Selatan', mapsUrl: 'https://maps.google.com' },
   { title: 'Resepsi Pernikahan', time: '11:00 - 14:00 WIB', venue: 'Grand Ballroom Plataran', address: 'Plataran Menteng, Jl. Cokroaminoto No. 9, Jakarta Pusat', mapsUrl: 'https://maps.google.com' },
 ];
-const DEFAULT_STORIES = [
-  { year: '2021', title: 'Pertemuan Pertama', desc: 'Takdir mempertemukan kami di sebuah studio desain kreatif di Jakarta. Berawal dari rekan kerja profesional yang kemudian menyadari adanya frekuensi hati yang sama.' },
-  { year: '2023', title: 'Komitmen Bersama', desc: 'Setelah dua tahun saling mengenal karakter dan menyelaraskan impian masa depan, kami memutuskan untuk melangkah ke arah komitmen yang lebih serius.' },
-  { year: '2025', title: 'Lamaran Resmi', desc: 'Di hadapan kedua keluarga besar, Aditya resmi meminang Laras sebagai calon istri. Sebuah momen penuh haru yang mengunci langkah kami menuju pelaminan.' },
-];
 const DEFAULT_GALLERY = [
   'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800',
   'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80&w=800',
@@ -141,7 +136,7 @@ function deriveData(content: InvitationContent) {
       }))
     : DEFAULT_EVENTS).filter((e) => e.title);
 
-  const stories = (content.stories?.length ? content.stories : DEFAULT_STORIES);
+  const stories = (content.stories?.length ? content.stories : []);
 
   const gallery = content.gallery?.images?.length ? content.gallery.images : DEFAULT_GALLERY;
   const galleryLayout = content.gallery?.layout ?? 'grid';

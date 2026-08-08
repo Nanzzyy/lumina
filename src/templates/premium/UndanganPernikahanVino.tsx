@@ -85,7 +85,7 @@ function deriveData(content: VinoContent) {
     { time: '8:00 PM', label: 'With Love & Gratitude' },
   ];
   const sections: Record<string, boolean> = {
-    story: content.stories ? (content.stories.length > 0) : true,
+    story: !!content.stories?.length,
     gallery: content.gallery?.enabled !== false,
     video: content.video?.enabled !== false,
     liveStream: content.liveStream?.enabled !== false,

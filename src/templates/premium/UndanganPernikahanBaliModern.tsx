@@ -87,17 +87,17 @@ function deriveData(content: InvitationContent) {
   const displayDate = displayDateFrom(isoDate, DEFAULTS.date);
   const events = (content.schedule?.items?.length
     ? content.schedule.items.map((it) => ({ title: it.title || '', time: it.time || '', venue: it.venue || '', address: it.address || '', mapsUrl: it.mapsUrl || 'https://maps.google.com', note: it.description || '' }))
-    : DEFAULTS.events).filter((e) => e.title);
+    : []).filter((e) => e.title);
   const heroSlideOverrides = content.media?.heroSlides?.filter(Boolean) || [];
-  const heroSlides = heroSlideOverrides.length ? heroSlideOverrides : DEFAULTS.heroSlides;
+  const heroSlides = heroSlideOverrides.length ? heroSlideOverrides : [];
   const stories = content.stories?.length
     ? content.stories.map((s, i) => ({ ...s, image: s.image || DEFAULTS.stories[i % DEFAULTS.stories.length]?.image }))
-    : DEFAULTS.stories;
-  const gallery = content.gallery?.images?.length ? content.gallery.images : DEFAULTS.gallery;
+    : [];
+  const gallery = content.gallery?.images?.length ? content.gallery.images : [];
   const gifts = (content.gift?.items?.length
     ? content.gift.items.map((g) => ({ bank: g.bank || g.name || '', number: g.number || '', owner: g.owner || g.note || '' }))
-    : DEFAULTS.gifts).filter((g) => g.bank || g.number);
-  const quote = content.quote?.text ? { text: content.quote.text, source: content.quote.source || '' } : DEFAULTS.quote;
+    : []).filter((g) => g.bank || g.number);
+  const quote = content.quote?.text ? { text: content.quote.text, source: content.quote.source || '' } : null;
   const audio = content.music?.src || DEFAULTS.audio;
   const media = pickMedia(content, { cover: DEFAULTS.cover, hero: DEFAULTS.hero, p1: DEFAULTS.p1, p2: DEFAULTS.p2, video: `${A}/video-prewed.mp4`, footerImage: DEFAULTS.footer });
   const footerMedia = media.footerImage;
@@ -252,8 +252,8 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
     const d = new Date(isoDate);
     const start = isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10).replace(/-/g, '');
     const end = start ? start : '';
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`The Wedding of ${p1.nick} & ${p2.nick}`)}&dates=${start}/${end}&details=${encodeURIComponent(quote.text)}&location=${encodeURIComponent(activeEvent?.venue || '')}`;
-  }, [isoDate, p1.nick, p2.nick, quote.text, activeEvent?.venue]);
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(`The Wedding of ${p1.nick} & ${p2.nick}`)}&dates=${start}/${end}&details=${encodeURIComponent(quote?.text || '')}&location=${encodeURIComponent(activeEvent?.venue || '')}`;
+  }, [isoDate, p1.nick, p2.nick, quote, activeEvent?.venue]);
 
   const wishesPerPage = 5;
   const filteredWishes = wishes.filter(w => w.message && w.message.trim() !== '');
@@ -350,7 +350,9 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
                 </div>
               </div>
             )}
-            <p className="mt-8 font-bm-roboto text-sm text-white/80 italic max-w-md mx-auto">&ldquo;{quote.text}&rdquo;</p>
+            {quote && (
+              <p className="mt-8 font-bm-roboto text-sm text-white/80 italic max-w-md mx-auto">&ldquo;{quote.text}&rdquo;</p>
+            )}
           </div>
         </section>
 

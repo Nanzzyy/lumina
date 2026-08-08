@@ -68,7 +68,7 @@ function deriveData(content: InvitationContent) {
   const events = (content.schedule?.items?.length
     ? content.schedule.items.map((it) => ({ title: it.title || '', time: it.time || '', venue: it.venue || '', address: it.address || '', mapsUrl: it.mapsUrl || 'https://maps.google.com', note: it.description || '' }))
     : DEFAULTS.events).filter((e) => e.title);
-  const stories = content.stories?.length ? content.stories : DEFAULTS.stories;
+  const stories = content.stories?.length ? content.stories : [];
   const gallery = content.gallery?.images?.length ? content.gallery.images : DEFAULTS.gallery;
   const gifts = (content.gift?.items?.length
     ? content.gift.items.map((g) => ({ bank: g.bank || g.name || '', number: g.number || '', owner: g.owner || g.note || '' }))

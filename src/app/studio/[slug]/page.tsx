@@ -302,7 +302,7 @@ function StoriesEditor({ content, onChange }: { content: InvitationContent; onCh
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-zinc-400">Timeline kisah cinta (dipakai template premium). Kosong = fallback default.</p>
+      <p className="text-xs text-zinc-400">Timeline kisah cinta (dipakai template premium). Kosongkan semua momen untuk menyembunyikan section.</p>
       {stories.map((s, i) => (
         <div key={i} className="p-4 border border-zinc-200 rounded-lg space-y-3">
           <div className="flex items-center justify-between">
