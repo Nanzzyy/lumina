@@ -245,9 +245,8 @@ export function UndanganPernikahanCinta({ content, slug, preview }: MonolithicTe
         )}
         <div className="absolute inset-4 pointer-events-none z-10" style={{ border: `1px solid ${CHAMPAGNE}33`, borderRadius: '24px' }} />
 
-        <motion.div className="pt-12 z-20 flex items-center gap-3" variants={stagI} initial="hidden" animate="visible">
+        <motion.div className="pt-12 z-20 flex items-center justify-center gap-3" variants={stagI} initial="hidden" animate="visible">
           <RoseLine className="w-20 h-7" color={CHAMPAGNE} />
-          <HeartSprig className="w-5 h-5" color={BLUSH} />
           <RoseLine className="w-20 h-7" color={CHAMPAGNE} flip />
         </motion.div>
 

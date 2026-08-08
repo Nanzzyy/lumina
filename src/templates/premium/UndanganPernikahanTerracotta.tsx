@@ -185,7 +185,7 @@ export function UndanganPernikahanTerracotta({ content, slug }: MonolithicTempla
               <div className="absolute inset-0 bg-gradient-to-t from-[#4E3629]/40 to-transparent"></div>
             </div>
             <div className="absolute -bottom-4 -left-4 bg-[#D27C5C] text-[#FBF7F4] p-5 rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-lg border-2 border-white animate-float-gentle">
-              <Heart className="w-5 h-5 fill-white" /><span className="text-[10px] font-bold uppercase tracking-widest mt-1">Union</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest">Union</span>
             </div>
           </div>
         </div>

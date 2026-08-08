@@ -399,9 +399,6 @@ export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateP
         <div className="absolute inset-0 bg-gradient-to-t from-[#FAF9F6] via-transparent to-transparent"></div>
         <div className="relative text-center px-4 max-w-4xl z-10 text-white mt-12">
           <p className="text-xs uppercase tracking-[0.3em] text-[#FAF9F6] mb-4">Maha Suci Allah yang mempersatukan cinta</p>
-          <span className="inline-block p-1 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 mb-6">
-            <Heart className="w-5 h-5 text-[#C29B68] fill-[#C29B68]" />
-          </span>
           <h1 className="text-6xl md:text-8xl font-serif-wedding font-light text-white italic tracking-wide">
             {groom.nickname} <span className="text-3xl md:text-4xl text-[#C29B68] block md:inline-block my-2 md:my-0">&amp;</span> {bride.nickname}
           </h1>
