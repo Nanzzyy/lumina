@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import type { MonolithicTemplateProps } from '@/lib/template/types';
 import type { InvitationContent } from '@/lib/content/types';
 import {
-  Heart, Clock, MapPin, Copy, Check,
+  Clock, MapPin, Copy, Check,
   ChevronLeft, ChevronRight, Volume2, VolumeX, Gift, MessageSquare, Map,
   CalendarPlus, AtSign, Quote,
 } from 'lucide-react';
@@ -693,8 +693,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
           <img src={media.cover} alt="cover" className="absolute inset-0 w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/75"></div>
           <div className="relative z-10 flex flex-col items-center text-center px-6">
-            <Heart className="w-10 h-10 text-white/90 bm-heartbeat bm-gate-child" fill="currentColor" />
-            <p className="mt-6 font-bm-montserrat text-[11px] uppercase tracking-[6px] text-white/70 font-light bm-gate-child">The Wedding of</p>
+            <p className="font-bm-montserrat text-[11px] uppercase tracking-[6px] text-white/70 font-light bm-gate-child">The Wedding of</p>
             <h1 className="mt-3 font-bm-parisienne text-6xl md:text-7xl text-white leading-none bm-gate-child">{p1.nick} <span className="text-white/50 text-4xl">&amp;</span> {p2.nick}</h1>
             <p className="mt-4 font-bm-roboto text-xs uppercase tracking-[4px] text-white/60 font-light bm-gate-child">{displayDate}</p>
             <button onClick={open} className="mt-10 px-10 py-4 bg-white text-black font-bm-montserrat text-xs font-medium uppercase tracking-[3px] rounded-full hover:bg-white/80 transition-all duration-300 transform active:scale-95 cursor-pointer bm-gate-child">

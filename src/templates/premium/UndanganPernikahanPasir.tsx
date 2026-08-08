@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import type { MonolithicTemplateProps } from '@/lib/template/types';
 import type { InvitationContent } from '@/lib/content/types';
 import {
-  Heart, Calendar, Clock, MapPin, Send, Gift, Copy, Check, ChevronLeft, ChevronRight,
+  Calendar, Clock, MapPin, Send, Gift, Copy, Check, ChevronLeft, ChevronRight,
   Volume2, VolumeX, Map,
 } from 'lucide-react';
 import { isVideo, useCountdown, useGuestName, displayDateFrom, pickMedia, useRsvpWishes } from './shared';
@@ -298,7 +298,7 @@ export function UndanganPernikahanPasir({ content, slug, preview }: MonolithicTe
             <button onClick={open}
               className="group relative inline-flex items-center gap-2.5 px-10 py-4 text-xs uppercase tracking-[0.35em] font-body font-bold transition-all duration-300"
               style={{ color: SAND, backgroundColor: INK, border: `2px solid ${INK}` }}>
-              <Heart className="w-4 h-4" /> Buka Undangan
+              Buka Undangan
               <motion.span className="absolute inset-0 -z-0" style={{ backgroundColor: ADOBE }}
                 initial={{ scaleY: 0 }} whileHover={{ scaleY: 1 }} transition={{ duration: 0.32, ease: EASE }} />
               <span className="absolute inset-0 pointer-events-none" style={{ border: `2px solid ${ADOBE}`, transform: 'translate(5px, 5px)', zIndex: -1 }} />

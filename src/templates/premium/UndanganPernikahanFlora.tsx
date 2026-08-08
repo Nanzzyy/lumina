@@ -282,7 +282,7 @@ export function UndanganPernikahanFlora({ content, slug, preview }: MonolithicTe
             <button onClick={open}
               className="group relative px-10 py-4 bg-[#D4A574] hover:bg-white text-[#3D2C2A] font-semibold rounded-full shadow-2xl transition-all duration-500 text-xs uppercase tracking-[0.25em] overflow-hidden anim-pulse">
               <span className="relative z-10 flex items-center gap-2.5">
-                <Heart className="w-4 h-4 fill-current" /> Buka Undangan
+                Buka Undangan
               </span>
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent anim-shimmer"></span>
             </button>

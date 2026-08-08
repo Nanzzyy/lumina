@@ -231,9 +231,6 @@ export function UndanganPernikahanBumi({ content, slug, preview }: MonolithicTem
 
         <motion.div className="relative z-20 px-6 max-w-md w-full text-center" variants={stagC} initial="hidden" animate="visible">
           <motion.div variants={stagI} className="flex flex-col items-center gap-2 mb-7">
-            <span className="inline-flex items-center justify-center rounded-2xl" style={{ backgroundColor: CLAY, width: 52, height: 52 }}>
-              <Heart className="w-6 h-6" style={{ color: CREAM }} />
-            </span>
             <span className="text-[10px] uppercase tracking-[0.45em] font-body font-semibold" style={{ color: CLAY2 }}>The Wedding of</span>
           </motion.div>
 
@@ -257,7 +254,7 @@ export function UndanganPernikahanBumi({ content, slug, preview }: MonolithicTem
               whileHover={{ scale: 1.04, rotate: -1 }} whileTap={{ scale: 0.96 }}
               className="inline-flex items-center gap-2.5 px-10 py-4 text-xs uppercase tracking-[0.3em] font-body font-bold rounded-full"
               style={{ color: CREAM, backgroundColor: CLAY, boxShadow: `0 14px 30px -12px ${CLAY2}CC` }}>
-              <Heart className="w-4 h-4" /> Buka Undangan
+              Buka Undangan
             </motion.button>
           </motion.div>
         </motion.div>

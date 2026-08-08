@@ -156,7 +156,7 @@ export function UndanganPernikahanLuxury({ content, slug }: MonolithicTemplatePr
               </div>
             </div>
             <button onClick={open} className="px-10 py-4 bg-[#D4AF37] hover:bg-white text-[#111e14] font-semibold rounded-full shadow-2xl transition-all duration-300 transform hover:-translate-y-1 tracking-[0.2em] text-xs uppercase flex items-center gap-3 mx-auto">
-              <Heart className="w-4 h-4 fill-current" /> Buka Undangan
+              Buka Undangan
             </button>
           </div>
           <div className="mb-10 z-20"><p className="text-[10px] text-[#A6C3AF] tracking-[0.3em] uppercase">#{p1.nick}{p2.nick}Story</p></div>
