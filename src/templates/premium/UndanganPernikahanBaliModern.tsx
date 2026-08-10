@@ -626,7 +626,6 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/50"></div>
           <div className="relative z-10 flex flex-col items-center space-y-8 sm:space-y-10">
             <p data-bm-reveal="up" className="font-bm-parisienne text-lg md:text-xl text-white">Om Shanti Shanti Shanti Om</p>
-            <p className="font-bm-roboto text-xs text-white/80 font-light max-w-md mx-auto leading-relaxed">{content.footer?.text || 'Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir memberikan restu dan doa.'}</p>
             <div className="flex flex-col items-center pt-4">
               <p className="font-bm-montserrat text-[10px] uppercase tracking-[6px] text-white/60">Kami Yang Berbahagia</p>
               <h4 className="mt-2 font-bm-parisienne text-3xl md:text-4xl text-white">{p1.nick} &amp; {p2.nick}</h4>
