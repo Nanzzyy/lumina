@@ -341,8 +341,8 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
         />
       ) : <audio ref={audioRef} src={audio} loop />}
 
-      {/* ── MOBILE & DESKTOP KANAN: full-bleed bg video or static cover ── */}
-      {bgVideo ? (
+      {/* ── MOBILE & DESKTOP KANAN: full-bleed bg video or static image ── */}
+      {bgVideo && isVideo(bgVideo) ? (
         <video
           className={videoBgClass}
           autoPlay muted loop playsInline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen"
@@ -363,7 +363,7 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
         </video>
       ) : (
         <img
-          src={media.hero || media.cover}
+          src={bgVideo || media.hero || media.cover}
           alt=""
           className={videoBgClass}
         />
