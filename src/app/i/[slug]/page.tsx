@@ -23,16 +23,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: 'Undangan tidak ditemukan' };
   }
 
-  const c = inv.content?.couple;
+  const content = inv.publishedSnapshot?.content || inv.content;
+  const c = content?.couple;
   const p1 = c?.partner1 || 'Mempelai 1';
   const p2 = c?.partner2 || 'Mempelai 2';
   const title = `${p1} & ${p2}`;
-  const description = inv.content?.ogDescription
-    || (inv.content?.quote?.text
-      ? `Undangan pernikahan ${p1} & ${p2}. ${inv.content.quote.text.slice(0, 120)}…`
+  const description = content?.ogDescription
+    || (content?.quote?.text
+      ? `Undangan pernikahan ${p1} & ${p2}. ${content.quote.text.slice(0, 120)}…`
       : `Undangan pernikahan ${p1} & ${p2}. Dengan penuh kebahagiaan, kami mengundang Anda untuk hadir memberikan restu.`);
-  const coverImage = inv.content?.ogImage || inv.content?.media?.cover;
-  const baseUrl = getBaseUrl();
+  const coverImage = content?.ogImage || content?.media?.cover;
+  const baseUrl = await getBaseUrl();
 
   return {
     title: `${title} — Undangan Pernikahan`,
