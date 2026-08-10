@@ -107,7 +107,7 @@ function deriveData(content: InvitationContent) {
     : []).filter((g) => g.bank || g.number);
   const quote = content.quote?.text ? { text: content.quote.text, source: content.quote.source || '' } : null;
   const audio = content.music?.src || DEFAULTS.audio;
-  const media = pickMedia(content, { cover: DEFAULTS.cover, hero: DEFAULTS.hero, p1: DEFAULTS.p1, p2: DEFAULTS.p2, video: `${A}/video-prewed.mp4`, footerImage: DEFAULTS.footer });
+  const media = pickMedia(content, { cover: DEFAULTS.cover, hero: DEFAULTS.hero, p1: DEFAULTS.p1, p2: DEFAULTS.p2, video: '', footerImage: DEFAULTS.footer });
   const footerMedia = media.footerImage;
   const bgVideo = media.video;
   const youtubeIds = [content.video?.youtubeId, content.video?.title].filter((v): v is string => !!v && /^[a-zA-Z0-9_-]{6,}$/.test(v));
@@ -341,25 +341,33 @@ export function UndanganPernikahanBaliModern({ content, slug, preview }: Monolit
         />
       ) : <audio ref={audioRef} src={audio} loop />}
 
-      {/* ── MOBILE & DESKTOP KANAN: full-bleed bg video ── */}
-      <video
-        className={videoBgClass}
-        autoPlay muted loop playsInline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen"
-        poster={media.cover}
-        tabIndex={-1}
-        onContextMenu={(e) => e.preventDefault()}
-        ref={(el) => {
-          if (!el) return;
-          const resume = () => { if (el.paused) el.play().catch(() => {}); };
-          document.addEventListener('visibilitychange', () => { if (!document.hidden) resume(); });
-          el.addEventListener('pause', () => { setTimeout(resume, 100); });
-          const noPiP = (e: Event) => e.preventDefault();
-          el.addEventListener('enterpictureinpicture', noPiP as EventListener);
-          el.addEventListener('leavepictureinpicture', noPiP as EventListener);
-        }}
-      >
-        <source src={bgVideo} type="video/mp4" />
-      </video>
+      {/* ── MOBILE & DESKTOP KANAN: full-bleed bg video or static cover ── */}
+      {bgVideo ? (
+        <video
+          className={videoBgClass}
+          autoPlay muted loop playsInline disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen"
+          poster={media.cover}
+          tabIndex={-1}
+          onContextMenu={(e) => e.preventDefault()}
+          ref={(el) => {
+            if (!el) return;
+            const resume = () => { if (el.paused) el.play().catch(() => {}); };
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) resume(); });
+            el.addEventListener('pause', () => { setTimeout(resume, 100); });
+            const noPiP = (e: Event) => e.preventDefault();
+            el.addEventListener('enterpictureinpicture', noPiP as EventListener);
+            el.addEventListener('leavepictureinpicture', noPiP as EventListener);
+          }}
+        >
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+      ) : (
+        <img
+          src={media.hero || media.cover}
+          alt=""
+          className={videoBgClass}
+        />
+      )}
 
       {/* DESKTOP: bg kanan statis dihapus untuk memakai video */}
 
