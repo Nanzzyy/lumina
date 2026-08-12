@@ -83,15 +83,17 @@ export function FontCustomizer({ overrides, onChange, templateId, baseTypography
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <FontSelect label="Nama & heading" value={activeTypography['font-heading'] || ''} onChange={(value) => setFont('font-heading', value)} options={FONT_OPTIONS.filter((font) => !font.category.includes('Script'))} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <FontSelect label="Nama pengantin" value={activeTypography['font-name'] || activeTypography['font-heading'] || ''} onChange={(value) => setFont('font-name', value)} options={FONT_OPTIONS} />
+        <FontSelect label="Heading / judul" value={activeTypography['font-heading'] || ''} onChange={(value) => setFont('font-heading', value)} options={FONT_OPTIONS.filter((font) => !font.category.includes('Script'))} />
         <FontSelect label="Isi teks" value={activeTypography['font-body'] || ''} onChange={(value) => setFont('font-body', value)} options={FONT_OPTIONS.filter((font) => !font.category.includes('Script'))} />
         <FontSelect label="Aksen & pemanis" value={activeTypography['font-accent'] || ''} onChange={(value) => setFont('font-accent', value)} options={FONT_OPTIONS.filter((font) => font.category === 'Script' || font.category === 'Romantis' || font.category === 'Elegan')} />
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-zinc-50/70 px-5 py-4 text-center">
         <p className="text-[10px] uppercase tracking-[0.28em] text-zinc-400" style={{ fontFamily: activeTypography['font-body'] }}>The Wedding Of</p>
-        <p className="mt-2 text-3xl leading-tight text-zinc-800" style={{ fontFamily: activeTypography['font-heading'] }}>Alya &amp; Raka</p>
+        <p className="mt-2 text-3xl leading-tight text-zinc-800" style={{ fontFamily: activeTypography['font-name'] || activeTypography['font-heading'] }}>Alya &amp; Raka</p>
+        <p className="mt-3 text-base font-semibold text-zinc-700" style={{ fontFamily: activeTypography['font-heading'] }}>Heading Section</p>
         <p className="mt-2 text-sm text-zinc-500" style={{ fontFamily: activeTypography['font-accent'] }}>Sebuah cerita untuk selamanya</p>
       </div>
     </div>

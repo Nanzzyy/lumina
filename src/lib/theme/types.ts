@@ -18,6 +18,8 @@ export interface ThemeColors {
 }
 
 export interface ThemeTypography {
+  /** Optional override for couple/celebrant names; falls back to heading. */
+  'font-name'?: string;
   'font-heading': string;
   'font-body': string;
   'font-accent': string;

@@ -13,6 +13,7 @@ export interface FontPreset {
   name: string;
   description: string;
   heading: string;
+  nameFont?: string;
   body: string;
   accent: string;
 }
@@ -76,8 +77,10 @@ const recommendedPresetByTemplate: Record<string, string> = {
 };
 
 export function typographyFromPreset(preset: FontPreset): ThemeTypography {
+  const heading = byId[preset.heading].family;
   return {
-    'font-heading': byId[preset.heading].family,
+    'font-name': byId[preset.nameFont || preset.heading].family,
+    'font-heading': heading,
     'font-body': byId[preset.body].family,
     'font-accent': byId[preset.accent].family,
   };

@@ -359,6 +359,24 @@ export function MonolithicCustomization({
       ? ['hero', 'quote', 'couple', 'countdown', 'story', 'event', 'gallery', 'gift', 'rsvp']
       : ['hero', 'quote', 'couple', 'countdown', 'story', 'event', 'gallery', 'rsvp', 'gift'];
     const visibility = content.sectionVisibility || {};
+    const nameValues = [
+      content.couple.partner1,
+      content.couple.partner2,
+      content.couple.partner1Title,
+      content.couple.partner2Title,
+    ].filter((value): value is string => Boolean(value && value.trim())).map((value) => value.replace(/\s+/g, ' ').trim().toLowerCase());
+    const nameTags = new Set(['H1', 'H2', 'H3', 'H4', 'SPAN']);
+    const applyNameRoles = () => {
+      root.querySelectorAll<HTMLElement>('[data-lumina-font-role="name"]').forEach((element) => element.removeAttribute('data-lumina-font-role'));
+      root.querySelectorAll<HTMLElement>('h1,h2,h3,h4,span').forEach((element) => {
+        if (!nameTags.has(element.tagName)) return;
+        const text = element.textContent?.replace(/\s+/g, ' ').trim().toLowerCase() || '';
+        if (!text || text.length > 180) return;
+        const isCoupleName = nameValues.some((name) => text === name) ||
+          (nameValues.length >= 2 && nameValues.filter((name) => text.includes(name)).length >= 2);
+        if (isCoupleName) element.setAttribute('data-lumina-font-role', 'name');
+      });
+    };
     let frame = 0;
     const applyToMountedSections = () => {
       const sections = Array.from(root.querySelectorAll<HTMLElement>('section'))
@@ -383,6 +401,7 @@ export function MonolithicCustomization({
             chapterNumber += 1;
           });
         });
+      applyNameRoles();
     };
     const observer = new MutationObserver(() => {
       cancelAnimationFrame(frame);
@@ -397,23 +416,32 @@ export function MonolithicCustomization({
   }, [content, templateId]);
 
   const hasTypographyOverride = Boolean(typography && Object.keys(typography).length > 0);
-  const safeFont = (value?: string) => value && /^[a-zA-Z0-9\s,'_-]+$/.test(value) ? value : 'inherit';
+  const safeFont = (value: string | undefined, fallback: string) => value && /^[a-zA-Z0-9\s,'_-]+$/.test(value) ? value : fallback;
+  const fontName = safeFont(typography?.['font-name'], 'var(--typography-font-heading)');
+  const fontHeading = safeFont(typography?.['font-heading'], 'var(--typography-font-heading)');
+  const fontBody = safeFont(typography?.['font-body'], 'var(--typography-font-body)');
+  const fontAccent = safeFont(typography?.['font-accent'], 'var(--typography-font-accent)');
+  const hasNameOverride = Boolean(typography?.['font-name'] && /^[a-zA-Z0-9\s,'_-]+$/.test(typography['font-name']));
+  const nameRule = hasNameOverride
+    ? `.lumina-monolithic-customization [data-lumina-font-role="name"] { font-family: var(--lumina-font-name) !important; }`
+    : '';
   const fontStyles = hasTypographyOverride ? `
-.lumina-monolithic-customization { --lumina-font-heading: ${safeFont(typography?.['font-heading'])}; --lumina-font-body: ${safeFont(typography?.['font-body'])}; --lumina-font-accent: ${safeFont(typography?.['font-accent'])}; font-family: var(--lumina-font-body) !important; }
-.lumina-monolithic-customization h1,
-.lumina-monolithic-customization h2,
-.lumina-monolithic-customization h3,
-.lumina-monolithic-customization h4,
-.lumina-monolithic-customization h5,
-.lumina-monolithic-customization h6,
-.lumina-monolithic-customization .font-display,
-.lumina-monolithic-customization .font-title,
-.lumina-monolithic-customization .font-serif,
-.lumina-monolithic-customization .font-serif-wedding,
-.lumina-monolithic-customization .font-serif-terracotta,
-.lumina-monolithic-customization .font-luxury-serif,
-.lumina-monolithic-customization .font-header-deco,
-.lumina-monolithic-customization .font-bm-parisienne { font-family: var(--lumina-font-heading) !important; }
+.lumina-monolithic-customization { --lumina-font-name: ${fontName}; --lumina-font-heading: ${fontHeading}; --lumina-font-body: ${fontBody}; --lumina-font-accent: ${fontAccent}; font-family: var(--lumina-font-body) !important; }
+${nameRule}
+.lumina-monolithic-customization h1:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization h2:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization h3:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization h4:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization h5:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization h6:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-display:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-title:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-serif:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-serif-wedding:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-serif-terracotta:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-luxury-serif:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-header-deco:not([data-lumina-font-role="name"]),
+.lumina-monolithic-customization .font-bm-parisienne:not([data-lumina-font-role="name"]) { font-family: var(--lumina-font-heading) !important; }
 .lumina-monolithic-customization p,
 .lumina-monolithic-customization li,
 .lumina-monolithic-customization label,
