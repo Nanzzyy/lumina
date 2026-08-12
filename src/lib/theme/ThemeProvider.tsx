@@ -3,6 +3,7 @@
 import { useCallback, useRef, useEffect, type ReactNode } from 'react';
 import type { ThemeConfig, DeepPartial } from './types';
 import { defaultTheme } from './defaults';
+import { getFontImportUrls } from './fonts';
 
 function deepMerge(base: any, overrides: any): any {
   const result = { ...base };
@@ -31,7 +32,10 @@ function themeToCSSVars(theme: ThemeConfig, scope?: string): string {
   };
   walk(theme as any, '--');
   const selector = scope || ':root';
-  return `${selector} {\n${parts.join('\n')}\n}`;
+  const fontImports = getFontImportUrls(theme.typography)
+    .map((url) => `@import url('${url}');`)
+    .join('\n');
+  return `${fontImports}${fontImports ? '\n' : ''}${selector} {\n${parts.join('\n')}\n}`;
 }
 
 interface ThemeProviderProps {

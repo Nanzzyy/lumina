@@ -8,6 +8,7 @@ import { FloralDecoration, OrnamentGroup } from '@/components/primitives';
 import { TreeRenderer } from './TreeRenderer';
 import { CanvasRenderer } from '@/components/mobile/CanvasRenderer';
 import { MonolithicCustomization } from '@/templates/premium/shared';
+import type { ThemeTypography } from '@/lib/theme/types';
 
 interface TemplateRendererProps {
   template: { id: string; kind?: 'composed' | 'monolithic' | 'mobile-canvas'; component?: React.FC<{ content: InvitationContent; slug?: string; preview?: boolean }>; theme?: Record<string, unknown>; decorations?: { id: string; layer: string; anchor: string | number; type: string; props?: Record<string, unknown>; hiddenMobile?: boolean }[] };
@@ -19,6 +20,8 @@ interface TemplateRendererProps {
   slug?: string;
   /** Monolithic templates render their cover/loading screen unless preview. */
   preview?: boolean;
+  /** Explicit font overrides for self-contained premium templates. */
+  typographyOverrides?: Partial<ThemeTypography>;
 }
 
 interface SectionRendererProps {
@@ -84,13 +87,14 @@ export function TemplateRenderer({
   hideOrnaments,
   slug,
   preview,
+  typographyOverrides,
 }: TemplateRendererProps) {
   // Monolithic switch: a self-contained template renders the whole page itself.
   // `preview` is only set by the studio editor — public pages show the cover.
   if (template.kind === 'monolithic' && template.component) {
     const Monolithic = template.component;
     return (
-      <MonolithicCustomization content={content} templateId={template.id}>
+      <MonolithicCustomization content={content} templateId={template.id} typography={typographyOverrides}>
         <Monolithic content={content} slug={slug} preview={preview} />
       </MonolithicCustomization>
     );

@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils/cn';
 import { OrnamentCanvas, OrnamentPreview } from '@/components/studio/OrnamentCanvas';
 import { Globe } from 'lucide-react';
 import { IframePreview } from '@/components/studio/IframePreview';
+import { FontCustomizer } from '@/components/studio/editor/FontCustomizer';
+import { getRecommendedTypography } from '@/lib/theme/fonts';
 
 type EditorTab = 'content' | 'theme' | 'layout' | 'preview';
 
@@ -792,7 +794,7 @@ function OrnamentEditor({ content, onChange }: { content: InvitationContent; onC
 }
 
 /* ─── Theme Editor ─── */
-function ThemePanel({ overrides, onChange }: { overrides: DeepPartial<ThemeConfig>; onChange: (o: DeepPartial<ThemeConfig>) => void }) {
+function ThemePanel({ overrides, onChange, templateId, baseTypography, colors = true }: { overrides: DeepPartial<ThemeConfig>; onChange: (o: DeepPartial<ThemeConfig>) => void; templateId?: string; baseTypography?: Partial<ThemeConfig['typography']>; colors?: boolean }) {
   const setColor = (key: string, value: string) => {
     onChange({ ...overrides, colors: { ...((overrides.colors || {}) as Record<string, string>), [key]: value } });
   };
@@ -810,14 +812,19 @@ function ThemePanel({ overrides, onChange }: { overrides: DeepPartial<ThemeConfi
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {colorKeys.map(({ key, label }) => (
-        <div key={key}>
-          <label className="block text-xs font-medium text-zinc-500 mb-1 uppercase tracking-wider">{label}</label>
-          <ColorInput value={((overrides.colors || {}) as Record<string, string>)[key] || defaultTheme.colors[key as keyof typeof defaultTheme.colors] || ''}
-            onChange={(v) => setColor(key, v)} />
+    <div className="space-y-8">
+      {colors && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {colorKeys.map(({ key, label }) => (
+            <div key={key}>
+              <label className="block text-xs font-medium text-zinc-500 mb-1 uppercase tracking-wider">{label}</label>
+              <ColorInput value={((overrides.colors || {}) as Record<string, string>)[key] || defaultTheme.colors[key as keyof typeof defaultTheme.colors] || ''}
+                onChange={(v) => setColor(key, v)} />
+            </div>
+          ))}
         </div>
-      ))}
+      )}
+      <FontCustomizer overrides={overrides} onChange={onChange} templateId={templateId} baseTypography={baseTypography} />
     </div>
   );
 }
@@ -981,7 +988,7 @@ export default function StudioEditorPage() {
   const tabs: { id: EditorTab; label: string }[] = [
     { id: 'content', label: 'Content' },
     { id: 'preview', label: 'Preview' },
-    // Theme + Layout only apply to composed templates (premium renders itself).
+    // Layout only applies to composed templates; fonts are also available in premium templates.
     ...(isMonolithic ? [] : [{ id: 'theme' as const, label: 'Theme' }, { id: 'layout' as const, label: 'Layout' }]),
   ];
 
@@ -990,6 +997,7 @@ export default function StudioEditorPage() {
     return {
       ...template.theme,
       colors: { ...((template.theme.colors || {}) as Record<string, string>), ...((themeOverrides.colors || {}) as Record<string, string>) },
+      typography: { ...((template.theme.typography || {}) as Record<string, string>), ...((themeOverrides.typography || {}) as Record<string, string>) },
     } as DeepPartial<ThemeConfig>;
   }, [template?.theme, themeOverrides]);
 
@@ -1068,6 +1076,11 @@ export default function StudioEditorPage() {
               <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Background &amp; tampilan halaman</h2>
               <p className="text-xs text-zinc-500 mb-4">Berlaku untuk Kaze dan seluruh template premium: atur background global atau per halaman tanpa mengubah gaya desain template.</p>
               <SectionBackgroundEditor content={content} onChange={handleChange} premium premiumTemplateId={template.id} />
+            </section>
+            <div className="border-t border-zinc-200" />
+            <section>
+              <h2 className="text-sm font-semibold text-zinc-700 uppercase tracking-wider mb-4">Font &amp; Tipografi</h2>
+              <ThemePanel overrides={themeOverrides} onChange={handleThemeChange} templateId={template.id} baseTypography={getRecommendedTypography(template.id)} colors={false} />
             </section>
             <div className="border-t border-zinc-200" />
             <section>
@@ -1154,7 +1167,7 @@ export default function StudioEditorPage() {
                   height={device === 'tablet' ? 1024 : 728}
                 >
                   <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                    <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview />
+                    <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview typographyOverrides={themeOverrides.typography} />
                   </ThemeProvider>
                 </IframePreview>
               </div>
@@ -1252,8 +1265,8 @@ export default function StudioEditorPage() {
           {/* Theme Tab */}
           {tab === 'theme' && (
             <div>
-              <p className="text-sm text-zinc-500 mb-6">Customize colors for this invitation. These override the template defaults.</p>
-              <ThemePanel overrides={themeOverrides} onChange={handleThemeChange} />
+              <p className="text-sm text-zinc-500 mb-6">Customize warna dan font untuk undangan ini. Semua perubahan langsung terlihat di preview.</p>
+              <ThemePanel templateId={template.id} baseTypography={template.theme?.typography} overrides={themeOverrides} onChange={handleThemeChange} />
               <div className="mt-8 p-6 border border-zinc-200 rounded-xl">
                 <h3 className="text-sm font-semibold text-zinc-700 mb-4">Color Preview</h3>
                 <div className="flex flex-wrap gap-3">
@@ -1333,7 +1346,7 @@ export default function StudioEditorPage() {
                       height={device === 'mobile' ? 728 : 1024}
                     >
                       <ThemeProvider theme={mergedTheme} scopeClass="lumina-invitation-scope">
-                        <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview />
+                        <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview typographyOverrides={themeOverrides.typography} />
                       </ThemeProvider>
                     </IframePreview>
                   </div>
@@ -1362,7 +1375,7 @@ export default function StudioEditorPage() {
                           onChange={(ornaments) => handleChange({ ...content, ornaments })}
                           readOnly={!editOrnaments}
                         >
-                          <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview />
+                          <TemplateRenderer template={template} layout={layout ?? undefined} content={content} scopeClass="lumina-invitation-scope" hideOrnaments slug={slug} preview typographyOverrides={themeOverrides.typography} />
                         </OrnamentCanvas>
                       </ThemeProvider>
                     </IframePreview>

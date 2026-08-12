@@ -14,7 +14,7 @@ interface InvitationData {
   templateId: string;
   layoutId?: string;
   content: InvitationContent;
-  themeOverrides?: { colors?: Record<string, string> };
+  themeOverrides?: { colors?: Record<string, string>; typography?: ThemeConfig['typography'] };
 }
 
 export function InvitationClient({ slug, data }: { slug: string; data: InvitationData | null }) {
@@ -35,6 +35,7 @@ export function InvitationClient({ slug, data }: { slug: string; data: Invitatio
   const theme: DeepPartial<ThemeConfig> = {
     ...template.theme,
     colors: { ...((template.theme?.colors || {}) as Record<string, string>), ...((data.themeOverrides?.colors || {}) as Record<string, string>) },
+    typography: { ...((template.theme?.typography || {}) as ThemeConfig['typography']), ...((data.themeOverrides?.typography || {}) as ThemeConfig['typography']) },
   };
 
   return (
@@ -45,6 +46,7 @@ export function InvitationClient({ slug, data }: { slug: string; data: Invitatio
         content={content}
         slug={slug}
         scopeClass="lumina-invitation-scope"
+        typographyOverrides={data.themeOverrides?.typography}
       />
     </ThemeProvider>
   );

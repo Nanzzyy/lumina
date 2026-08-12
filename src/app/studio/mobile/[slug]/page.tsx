@@ -4,6 +4,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useStudioStore } from '@/lib/studio/store';
 import { getTemplate, TemplateRenderer } from '@/lib/template';
+import { ThemeProvider } from '@/lib/theme';
+import type { DeepPartial, ThemeConfig } from '@/lib/theme/types';
+import { getRecommendedTypography } from '@/lib/theme/fonts';
+import { FontCustomizer } from '@/components/studio/editor/FontCustomizer';
 import { ArrowLeft, Save, Smartphone, Heart, Calendar, MapPin, Clock, Image, Music, Quote, Gift, MessageSquare, Star, Sparkles, Globe, Upload } from 'lucide-react';
 import type { InvitationContent, StoryMoment, ScheduleItem, GiftItem } from '@/lib/content/types';
 
@@ -17,6 +21,7 @@ export default function MobileEditorPage() {
   const template = invitation ? getTemplate(invitation.templateId) : null;
 
   const [content, setContent] = useState<InvitationContent | null>(null);
+  const [themeOverrides, setThemeOverrides] = useState<DeepPartial<ThemeConfig>>({});
   const [saved, setSaved] = useState(true);
   const prevSlugRef = useRef(slug);
 
@@ -27,18 +32,20 @@ export default function MobileEditorPage() {
     if (prevSlugRef.current !== slug) {
       // Slug changed — re-init content.
       setContent(invitation.content);
+      setThemeOverrides(invitation.themeOverrides || {});
       prevSlugRef.current = slug;
     } else if (!content) {
       // First load.
       setContent(invitation.content);
+      setThemeOverrides(invitation.themeOverrides || {});
     }
   }, [invitation, slug, content]);
 
   const save = useCallback(() => {
     if (!content || !invitation) return;
-    update(slug, { content });
+    update(slug, { content, themeOverrides });
     setSaved(true);
-  }, [content, invitation, update, slug]);
+  }, [content, themeOverrides, invitation, update, slug]);
 
   useEffect(() => {
     if (!saved) { const t = setTimeout(save, 3000); return () => clearTimeout(t); }
@@ -88,6 +95,15 @@ export default function MobileEditorPage() {
           <GuestNameForm content={content} setContent={set} />
 
           <hr className="border-zinc-100" />
+          <SectionLabel icon={<Sparkles />} label="Font & Tipografi" />
+          <FontCustomizer
+            overrides={themeOverrides}
+            onChange={(next) => { setThemeOverrides(next); setSaved(false); }}
+            templateId={template.id}
+            baseTypography={getRecommendedTypography(template.id)}
+          />
+
+          <hr className="border-zinc-100" />
           <SectionLabel icon={<Heart />} label="Pasangan" />
           <CoupleForm content={content} setContent={set} />
 
@@ -130,7 +146,9 @@ export default function MobileEditorPage() {
               {template.name}
             </div>
             <div className="max-h-[780px] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-              <TemplateRenderer template={template} content={content} slug={slug} preview />
+              <ThemeProvider theme={{ typography: { ...getRecommendedTypography(template.id), ...((themeOverrides.typography || {}) as Record<string, string>) }}} scopeClass="lumina-invitation-scope">
+                <TemplateRenderer template={template} content={content} slug={slug} preview typographyOverrides={themeOverrides.typography} />
+              </ThemeProvider>
             </div>
           </div>
         </div>

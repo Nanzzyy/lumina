@@ -1,5 +1,6 @@
 import { createElement, useState, useEffect, useCallback, useRef, type FormEvent, type ReactNode } from 'react';
 import type { InvitationContent, SectionBackground } from '@/lib/content/types';
+import type { ThemeTypography } from '@/lib/theme/types';
 
 /** Treat common video extensions as video (else image). */
 export function isVideo(url: string): boolean {
@@ -181,10 +182,12 @@ export function pickMedia(
 export function MonolithicCustomization({
   content,
   templateId,
+  typography,
   children,
 }: {
   content: InvitationContent;
   templateId?: string;
+  typography?: Partial<ThemeTypography>;
   children: ReactNode;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -393,5 +396,50 @@ export function MonolithicCustomization({
     };
   }, [content, templateId]);
 
-  return createElement('div', { ref: setRoot, className: 'lumina-monolithic-customization' }, children);
+  const hasTypographyOverride = Boolean(typography && Object.keys(typography).length > 0);
+  const safeFont = (value?: string) => value && /^[a-zA-Z0-9\s,'_-]+$/.test(value) ? value : 'inherit';
+  const fontStyles = hasTypographyOverride ? `
+.lumina-monolithic-customization { --lumina-font-heading: ${safeFont(typography?.['font-heading'])}; --lumina-font-body: ${safeFont(typography?.['font-body'])}; --lumina-font-accent: ${safeFont(typography?.['font-accent'])}; font-family: var(--lumina-font-body) !important; }
+.lumina-monolithic-customization h1,
+.lumina-monolithic-customization h2,
+.lumina-monolithic-customization h3,
+.lumina-monolithic-customization h4,
+.lumina-monolithic-customization h5,
+.lumina-monolithic-customization h6,
+.lumina-monolithic-customization .font-display,
+.lumina-monolithic-customization .font-title,
+.lumina-monolithic-customization .font-serif,
+.lumina-monolithic-customization .font-serif-wedding,
+.lumina-monolithic-customization .font-serif-terracotta,
+.lumina-monolithic-customization .font-luxury-serif,
+.lumina-monolithic-customization .font-header-deco,
+.lumina-monolithic-customization .font-bm-parisienne { font-family: var(--lumina-font-heading) !important; }
+.lumina-monolithic-customization p,
+.lumina-monolithic-customization li,
+.lumina-monolithic-customization label,
+.lumina-monolithic-customization input,
+.lumina-monolithic-customization textarea,
+.lumina-monolithic-customization select,
+.lumina-monolithic-customization button,
+.lumina-monolithic-customization a,
+.lumina-monolithic-customization .font-body,
+.lumina-monolithic-customization .font-sans,
+.lumina-monolithic-customization .font-sans-wedding,
+.lumina-monolithic-customization .font-sans-terracotta,
+.lumina-monolithic-customization .font-sans-clean,
+.lumina-monolithic-customization .font-bm-montserrat,
+.lumina-monolithic-customization .font-bm-roboto { font-family: var(--lumina-font-body) !important; }
+.lumina-monolithic-customization .font-accent,
+.lumina-monolithic-customization .font-cursive,
+.lumina-monolithic-customization .font-cursive-love,
+.lumina-monolithic-customization .font-script,
+.lumina-monolithic-customization .font-display-accent { font-family: var(--lumina-font-accent) !important; }
+` : '';
+
+  return createElement(
+    'div',
+    { ref: setRoot, className: 'lumina-monolithic-customization' },
+    hasTypographyOverride ? createElement('style', null, fontStyles) : null,
+    children,
+  );
 }
