@@ -199,6 +199,29 @@ export function MonolithicCustomization({
     const root = rootRef.current;
     if (!root) return;
 
+    const closeLightboxOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      const lightbox = root.querySelector<HTMLElement>('[data-lumina-lightbox]');
+      if (!lightbox) return;
+
+      const closeButton = lightbox.querySelector<HTMLButtonElement>(
+        '[data-lumina-lightbox-close], button[aria-label="Tutup"], button[aria-label="Close"]',
+      ) || lightbox.querySelector<HTMLButtonElement>('button');
+      if (!closeButton) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      closeButton.click();
+    };
+
+    window.addEventListener('keydown', closeLightboxOnEscape);
+    return () => window.removeEventListener('keydown', closeLightboxOnEscape);
+  }, []);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
     const sectionKeys = templateId === 'undangan-bali-modern'
       ? ['hero', 'couple', 'countdown', 'event', 'story', 'gallery', 'gift', 'rsvp']
       : templateId === 'melati'

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SectionComponentProps } from '@/lib/template';
 import { Container, SectionTitle, Icon } from '@/components/primitives';
@@ -19,6 +19,15 @@ export function Gallery(props: SectionComponentProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const isNoir = variant === 'noir';
+
+  useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSelectedIndex(null);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, []);
+
   if (images.length === 0) return null;
 
   const borderClass = isNoir ? 'border border-[var(--colors-border)]' : 'rounded-lg overflow-hidden';
@@ -73,7 +82,7 @@ export function Gallery(props: SectionComponentProps) {
       <AnimatePresence>
         {selectedIndex !== null && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedIndex(null)}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90">
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90" data-lumina-lightbox>
             <motion.div onClick={(e) => e.stopPropagation()} className="relative w-full max-w-3xl">
               <img src={images[selectedIndex]} alt={`Foto ${selectedIndex + 1}`} className="w-full max-h-[80vh] object-contain rounded-lg" />
               <div className="flex justify-between items-center mt-4">
@@ -81,7 +90,7 @@ export function Gallery(props: SectionComponentProps) {
                 <span className="text-white/50 text-sm">{selectedIndex + 1} / {images.length}</span>
                 <button onClick={() => setSelectedIndex((p) => (p! + 1) % images.length)} className="p-2 text-white/60 hover:text-white"><Icon name="chevron-right" size={24} /></button>
               </div>
-              <button onClick={() => setSelectedIndex(null)} className="absolute -top-10 right-0 text-white/50 hover:text-white"><Icon name="x" size={24} /></button>
+              <button onClick={() => setSelectedIndex(null)} className="absolute -top-10 right-0 text-white/50 hover:text-white" data-lumina-lightbox-close aria-label="Tutup"><Icon name="x" size={24} /></button>
             </motion.div>
           </motion.div>
         )}

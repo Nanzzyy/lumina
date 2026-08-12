@@ -609,7 +609,7 @@ export function UndanganPernikahanPremium({ content, slug }: MonolithicTemplateP
 
       {/* LIGHTBOX  */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" data-lumina-lightbox>
           <button onClick={() => setLightboxIndex(null)} className="absolute top-6 right-6 text-white/80 hover:text-white text-3xl font-light cursor-pointer">&times;</button>
           <button onClick={() => setLightboxIndex((lightboxIndex - 1 + gallery.length) % gallery.length)} className="absolute left-4 p-2 text-white/70 hover:text-white"><ChevronLeft className="w-10 h-10" /></button>
           {isVideo(gallery[lightboxIndex]) ? (

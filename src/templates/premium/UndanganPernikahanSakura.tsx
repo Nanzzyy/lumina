@@ -563,7 +563,7 @@ export function UndanganPernikahanSakura({ content, slug, preview }: MonolithicT
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${DARK_TEXT}E6`, backdropFilter: 'blur(4px)' }}
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${DARK_TEXT}E6`, backdropFilter: 'blur(4px)' }} data-lumina-lightbox
           onClick={() => setLightboxIndex(null)}>
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/20 text-white text-sm hover:bg-white/30 transition-all">&times;</button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : gallery.length - 1); }}

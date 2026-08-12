@@ -547,7 +547,7 @@ export function UndanganPernikahanAwan({ content, slug, preview }: MonolithicTem
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${INK}E6`, backdropFilter: 'blur(6px)' }}
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${INK}E6`, backdropFilter: 'blur(6px)' }} data-lumina-lightbox
           onClick={() => setLightboxIndex(null)}>
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 z-10 p-2 rounded-full text-sm transition-all" style={{ backgroundColor: 'rgba(255,255,255,0.12)', color: CLOUD }} aria-label="Tutup">&times;</button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : gallery.length - 1); }}

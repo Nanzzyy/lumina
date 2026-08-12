@@ -130,7 +130,7 @@ export function UndanganBirthdayWish({ content, slug }: MonolithicTemplateProps)
 
       {/* LIGHTBOX */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setLightboxIndex(null)}>
+        <div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={() => setLightboxIndex(null)} data-lumina-lightbox>
           <div className="max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
             {isVideo(gallery[lightboxIndex]) ? <video src={gallery[lightboxIndex]} controls autoPlay className="w-full max-h-[80vh] rounded-2xl" /> : <img src={gallery[lightboxIndex]} alt="" className="w-full max-h-[80vh] object-contain rounded-2xl" />}
             <button onClick={() => setLightboxIndex(null)} className="mt-4 mx-auto block text-xs text-white/60 border border-white/20 rounded-full px-6 py-2">Tutup</button>

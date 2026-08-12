@@ -462,7 +462,7 @@ export function UndanganPernikahanHana({ content, slug, preview }: MonolithicTem
       </section></ScrollR>
 
       {lightboxIdx !== null && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxIdx(null)}>
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxIdx(null)} data-lumina-lightbox>
           <button className="absolute top-4 right-4 text-white/70 hover:text-white z-10" onClick={() => setLightboxIdx(null)}>
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeWidth="1.5" d="M6 18L18 6M6 6l12 12" /></svg>
           </button>

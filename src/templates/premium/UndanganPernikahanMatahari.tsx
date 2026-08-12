@@ -539,7 +539,7 @@ export function UndanganPernikahanMatahari({ content, slug, preview }: Monolithi
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${INK}F2`, backdropFilter: 'blur(6px)' }} onClick={() => setLightboxIndex(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${INK}F2`, backdropFilter: 'blur(6px)' }} onClick={() => setLightboxIndex(null)} data-lumina-lightbox>
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 z-10 p-2 rounded-full text-2xl font-light" style={{ color: SAND, backgroundColor: `${CORAL}AA` }} aria-label="Tutup">&times;</button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : gallery.length - 1); }} className="absolute left-4 z-10 p-2.5 rounded-full" style={{ color: SAND, backgroundColor: `${CORAL}AA` }} aria-label="Sebelumnya"><ChevronLeft className="w-6 h-6" /></button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex < gallery.length - 1 ? lightboxIndex + 1 : 0); }} className="absolute right-4 z-10 p-2.5 rounded-full" style={{ color: SAND, backgroundColor: `${CORAL}AA` }} aria-label="Berikutnya"><ChevronRight className="w-6 h-6" /></button>

@@ -409,7 +409,7 @@ export function UndanganCelebrationPremium({ content, slug, mode }: MonolithicTe
             </div>
           </div>
           {lightboxIndex !== null && (
-            <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxIndex(null)}>
+            <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" onClick={() => setLightboxIndex(null)} data-lumina-lightbox>
               <div className="relative max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
                 {isVideo(gallery[lightboxIndex]) ? <video src={gallery[lightboxIndex]} controls autoPlay className="w-full max-h-[80vh] rounded-xl" /> : <img src={gallery[lightboxIndex]} alt="Zoomed" className="w-full max-h-[80vh] object-contain rounded-xl" />}
                 <button onClick={() => setLightboxIndex(null)} className="mt-6 px-5 py-2 mx-auto block border border-white/20 text-white rounded-full text-[10px] uppercase tracking-widest">Tutup Media</button>

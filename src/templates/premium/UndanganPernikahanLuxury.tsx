@@ -306,7 +306,7 @@ export function UndanganPernikahanLuxury({ content, slug }: MonolithicTemplatePr
             </div>
           </div>
           {lightboxIndex !== null && (
-            <div className="fixed inset-0 z-50 bg-[#111e14]/95 flex items-center justify-center p-4" onClick={() => setLightboxIndex(null)}>
+            <div className="fixed inset-0 z-50 bg-[#111e14]/95 flex items-center justify-center p-4" onClick={() => setLightboxIndex(null)} data-lumina-lightbox>
               <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
                 {isVideo(gallery[lightboxIndex]) ? <video src={gallery[lightboxIndex]} controls autoPlay className="w-full max-h-[80vh] rounded-2xl" /> : <img src={gallery[lightboxIndex]} alt="Zoomed" className="w-full max-h-[80vh] object-contain rounded-2xl" />}
                 <button onClick={() => setLightboxIndex(null)} className="mt-6 px-6 py-2 mx-auto block border border-white/20 text-white/80 rounded-full text-xs uppercase tracking-widest">Tutup Galeri</button>

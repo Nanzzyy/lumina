@@ -507,7 +507,7 @@ export function UndanganPernikahanSora({ content, slug, preview }: MonolithicTem
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${NIGHT}F2`, backdropFilter: 'blur(8px)' }} onClick={() => setLightboxIndex(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: `${NIGHT}F2`, backdropFilter: 'blur(8px)' }} onClick={() => setLightboxIndex(null)} data-lumina-lightbox>
           <button onClick={() => setLightboxIndex(null)} className="absolute top-4 right-4 z-10 p-2 text-2xl font-light rounded-full" style={{ color: SILVER, ...glass(8) }} aria-label="Tutup">&times;</button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : gallery.length - 1); }} className="absolute left-4 z-10 p-2 rounded-full" style={{ color: SILVER, ...glass(8) }} aria-label="Sebelumnya"><ChevronLeft className="w-7 h-7" /></button>
           <button onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex < gallery.length - 1 ? lightboxIndex + 1 : 0); }} className="absolute right-4 z-10 p-2 rounded-full" style={{ color: SILVER, ...glass(8) }} aria-label="Berikutnya"><ChevronRight className="w-7 h-7" /></button>

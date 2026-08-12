@@ -1,19 +1,12 @@
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { getInvitation } from '@/lib/db';
 import { initializeRegistries } from '@/lib/registry';
 import { loadExternalTemplates } from '@/lib/registry/server-init';
+import { getPublicBaseUrl, toAbsoluteUrl } from '@/lib/metadata';
 import { InvitationClient } from './client';
 
 initializeRegistries();
 loadExternalTemplates();
-
-async function getBaseUrl() {
-  const h = await headers();
-  const host = h.get('host') || 'localhost:3000';
-  const proto = h.get('x-forwarded-proto') || 'http';
-  return `${proto}://${host}`;
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -32,8 +25,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     || (content?.quote?.text
       ? `Undangan pernikahan ${p1} & ${p2}. ${content.quote.text.slice(0, 120)}…`
       : `Undangan pernikahan ${p1} & ${p2}. Dengan penuh kebahagiaan, kami mengundang Anda untuk hadir memberikan restu.`);
-  const coverImage = content?.ogImage || content?.media?.cover;
-  const baseUrl = await getBaseUrl();
+  const baseUrl = await getPublicBaseUrl();
+  const coverImage = toAbsoluteUrl(content?.ogImage || content?.media?.cover, baseUrl);
+  const ogImage = coverImage ? `${baseUrl}/api/og/${encodeURIComponent(slug)}` : undefined;
 
   return {
     title: `${title} — Undangan Pernikahan`,
@@ -43,13 +37,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description,
       url: `${baseUrl}/i/${slug}`,
       type: 'website',
-      images: coverImage ? [{ url: coverImage, width: 1200, height: 630 }] : [],
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: title }] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: coverImage ? [coverImage] : [],
+      images: ogImage ? [ogImage] : [],
     },
   };
 }
