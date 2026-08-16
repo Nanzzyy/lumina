@@ -22,15 +22,22 @@ export function getJwtSecret(): string {
   return secret || 'lumina-dev-secret-do-not-use-in-production';
 }
 
-export function verifySession(req: NextRequest): boolean {
-  const token = req.cookies.get('lumina_session')?.value;
+/** Signing/verification algorithm — pinned so a token cannot pick its own. */
+export const JWT_ALGORITHM = 'HS256' as const;
+
+/** Verify a raw session token. Returns false for missing/expired/forged tokens. */
+export function verifySessionToken(token: string | undefined): boolean {
   if (!token) return false;
   try {
-    jwt.verify(token, getJwtSecret());
+    jwt.verify(token, getJwtSecret(), { algorithms: [JWT_ALGORITHM] });
     return true;
   } catch {
     return false;
   }
+}
+
+export function verifySession(req: NextRequest): boolean {
+  return verifySessionToken(req.cookies.get('lumina_session')?.value);
 }
 
 /** Standard 401 for trust-boundary routes whose verifySession check failed. */

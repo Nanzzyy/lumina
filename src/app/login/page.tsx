@@ -9,7 +9,10 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const redirect = searchParams.get('redirect') || '/studio';
+  // Only same-origin absolute paths: `//host` or `https://host` would turn the
+  // login form into an open redirect.
+  const requested = searchParams.get('redirect') || '';
+  const redirect = /^\/(?!\/)/.test(requested) ? requested : '/studio';
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
